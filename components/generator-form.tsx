@@ -1,0 +1,514 @@
+"use client"
+
+import type React from "react"
+import { useState, useMemo } from "react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
+import type { Strategy } from "@/lib/types"
+import { generateTemplate } from "@/app/actions/generate"
+import { Loader2, Copy, Crown, Mail } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
+import { Badge } from "@/components/ui/badge"
+import Link from "next/link"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
+interface GeneratorFormProps {
+  user: any
+  usage: number
+  strategies: Strategy[]
+  userTier: string
+  userId: string
+  canGenerate: boolean
+}
+
+export function GeneratorForm({ user, usage, strategies, userTier, userId, canGenerate }: GeneratorFormProps) {
+  const [subject, setSubject] = useState("")
+  const [recipientName, setRecipientName] = useState("")
+  const [recipientEmail, setRecipientEmail] = useState("")
+  const [sellerSignature, setSellerSignature] = useState("")
+  const [selectedStrategies, setSelectedStrategies] = useState<string[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [result, setResult] = useState<string | null>(null)
+  const [activeCategory, setActiveCategory] = useState<string>("SaaS & Startup")
+
+  const [tone, setTone] = useState<string>("Professional")
+  const [emailLength, setEmailLength] = useState<string>("Medium")
+  const [goal, setGoal] = useState<string>("Get a reply")
+  const [personalization, setPersonalization] = useState<string>("Medium")
+
+  const { toast } = useToast()
+
+  // Group strategies by category
+  const categorizedStrategies = useMemo(() => {
+    const grouped: Record<string, Strategy[]> = {}
+    strategies.forEach((strategy) => {
+      if (!grouped[strategy.category]) {
+        grouped[strategy.category] = []
+      }
+      grouped[strategy.category].push(strategy)
+    })
+    return grouped
+  }, [strategies])
+
+  const categories = Object.keys(categorizedStrategies).sort()
+
+  const handleStrategyToggle = (strategyId: string, tier: string) => {
+    if (tier === "pro" && userTier === "free") {
+      toast({
+        title: "Pro Strategy",
+        description: "Upgrade to Pro to use this strategy",
+        variant: "destructive",
+      })
+      return
+    }
+
+    setSelectedStrategies((prev) => {
+      if (prev.includes(strategyId)) {
+        return prev.filter((id) => id !== strategyId)
+      } else {
+        const maxStrategies = userTier === "free" ? 1 : 999
+        if (prev.length >= maxStrategies) {
+          toast({
+            title: "Maximum strategies selected",
+            description:
+              userTier === "free"
+                ? "Free tier can only select 1 strategy. Upgrade to Pro for unlimited selections."
+                : "You've selected the maximum number of strategies",
+            variant: "destructive",
+          })
+          return prev
+        }
+        return [...prev, strategyId]
+      }
+    })
+  }
+
+  const handleCopy = () => {
+    if (result) {
+      navigator.clipboard.writeText(result)
+      toast({
+        title: "Copied!",
+        description: "Template copied to clipboard",
+      })
+    }
+  }
+
+  const handleOpenEmail = () => {
+    if (!recipientEmail) {
+      toast({
+        title: "No recipient email",
+        description: "Please enter a recipient email address first",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (!result) {
+      toast({
+        title: "No email content",
+        description: "Please generate an email first",
+        variant: "destructive",
+      })
+      return
+    }
+
+    const mailtoSubject = `Regarding ${subject}`
+    const mailtoBody = result
+
+    // Create mailto URL with both subject and body
+    const mailtoUrl = `mailto:${recipientEmail}?subject=${encodeURIComponent(mailtoSubject)}&body=${encodeURIComponent(mailtoBody)}`
+
+    // Check URL length - mailto has practical limits around 2000-8000 chars depending on browser/OS
+    if (mailtoUrl.length > 2000) {
+      // If too long, just use subject and copy body to clipboard
+      const shortMailtoUrl = `mailto:${recipientEmail}?subject=${encodeURIComponent(mailtoSubject)}`
+      navigator.clipboard.writeText(result)
+      window.location.href = shortMailtoUrl
+
+      toast({
+        title: "Email client opened",
+        description: "Email was too long for direct insert. Content copied - paste it into the message body.",
+      })
+    } else {
+      // URL is short enough, include everything
+      window.location.href = mailtoUrl
+
+      toast({
+        title: "Email ready to send",
+        description: "Your email client opened with the message pre-filled.",
+      })
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (!canGenerate) {
+      toast({
+        title: "Usage limit reached",
+        description: "Upgrade to Pro for unlimited templates",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (selectedStrategies.length === 0) {
+      toast({
+        title: "No strategies selected",
+        description: "Please select at least one strategy",
+        variant: "destructive",
+      })
+      return
+    }
+
+    setIsLoading(true)
+    setResult(null)
+
+    try {
+      const data = await generateTemplate({
+        subject,
+        category: activeCategory,
+        recipientName: recipientName || undefined,
+        recipientEmail: recipientEmail || undefined,
+        sellerSignature: sellerSignature || undefined,
+        strategyIds: selectedStrategies,
+        userId,
+        inputData: {},
+        tone,
+        emailLength,
+        goal,
+        personalization,
+      })
+
+      setResult(data.result)
+      toast({
+        title: "Template generated!",
+        description: "Your cold outreach email is ready",
+      })
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to generate template",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // Get label for subject field based on category
+  const getSubjectLabel = () => {
+    switch (activeCategory) {
+      case "Domain Sellers":
+        return "Domain Name"
+      case "SaaS & Startup":
+      case "Affiliate Marketing":
+      case "E-commerce & Dropshipping":
+        return "Product Name"
+      case "Real Estate":
+        return "Property Address"
+      case "Freelancers & Agencies":
+      case "B2B Services":
+        return "Service Type"
+      case "Recruiting":
+        return "Job Title / Service"
+      case "Investment":
+        return "Business / Opportunity"
+      default:
+        return "Topic / Subject"
+    }
+  }
+
+  const getSubjectPlaceholder = () => {
+    switch (activeCategory) {
+      case "Domain Sellers":
+        return "example.com"
+      case "SaaS & Startup":
+      case "Affiliate Marketing":
+      case "E-commerce & Dropshipping":
+        return "My Product Name"
+      case "Real Estate":
+        return "123 Main Street, New York"
+      case "Freelancers & Agencies":
+        return "Web Development"
+      case "B2B Services":
+        return "Marketing Consulting"
+      case "Recruiting":
+        return "Senior Software Engineer"
+      case "Investment":
+        return "TechCo Inc."
+      default:
+        return "Your topic here"
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      <form onSubmit={handleSubmit} className="rounded-lg border bg-card p-6 space-y-6">
+        <Tabs value={activeCategory} onValueChange={setActiveCategory}>
+          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-9 h-auto gap-1">
+            {categories.map((cat) => (
+              <TabsTrigger key={cat} value={cat} className="text-xs">
+                {cat.split(" ")[0]}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
+
+        <div className="space-y-2">
+          <Label htmlFor="subject">{getSubjectLabel()} *</Label>
+          <Input
+            id="subject"
+            placeholder={getSubjectPlaceholder()}
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="recipient-name">Recipient Name</Label>
+          <Input
+            id="recipient-name"
+            placeholder="John Smith"
+            value={recipientName}
+            onChange={(e) => setRecipientName(e.target.value)}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="recipient-email">Recipient Email</Label>
+          <Input
+            id="recipient-email"
+            type="email"
+            placeholder="john@company.com"
+            value={recipientEmail}
+            onChange={(e) => setRecipientEmail(e.target.value)}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="signature">Your Signature</Label>
+          <Input
+            id="signature"
+            placeholder="Your Name | your@email.com | +1-555-0123"
+            value={sellerSignature}
+            onChange={(e) => setSellerSignature(e.target.value)}
+          />
+          <p className="text-sm text-muted-foreground">Your contact information added at the end</p>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <Label>{userTier === "free" ? "Select 1 Strategy *" : "Select Strategies *"}</Label>
+            <p className="text-sm text-muted-foreground mt-1">
+              {userTier === "free"
+                ? `Choose 1 ${activeCategory} strategy (Pro: unlimited)`
+                : `Choose from ${activeCategory} strategies (unlimited)`}
+            </p>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            {categorizedStrategies[activeCategory]?.map((strategy) => {
+              const isProStrategy = strategy.tier === "pro"
+              const isLocked = isProStrategy && userTier === "free"
+              const isSelected = selectedStrategies.includes(strategy.id)
+
+              return (
+                <div
+                  key={strategy.id}
+                  className={`relative flex items-start gap-3 rounded-lg border p-4 transition-colors ${
+                    isLocked
+                      ? "cursor-not-allowed opacity-50"
+                      : isSelected
+                        ? "border-primary bg-primary/5"
+                        : "cursor-pointer hover:border-primary/50"
+                  }`}
+                >
+                  <Checkbox
+                    id={strategy.id}
+                    checked={isSelected}
+                    disabled={isLocked}
+                    onCheckedChange={() => handleStrategyToggle(strategy.id, strategy.tier)}
+                  />
+                  <div
+                    className="flex-1 space-y-1"
+                    onClick={() => !isLocked && handleStrategyToggle(strategy.id, strategy.tier)}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Label
+                        htmlFor={strategy.id}
+                        className={`font-medium ${isLocked ? "cursor-not-allowed" : "cursor-pointer"}`}
+                      >
+                        {strategy.name}
+                      </Label>
+                      {isProStrategy && (
+                        <Badge variant="secondary" className="gap-1">
+                          <Crown className="h-3 w-3" />
+                          Pro
+                        </Badge>
+                      )}
+                    </div>
+                    <p className="text-sm text-muted-foreground">{strategy.description}</p>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
+          {userTier === "free" && (
+            <div className="rounded-lg bg-muted p-4 text-sm">
+              Want access to all strategies?{" "}
+              <Link href="/upgrade" className="font-medium underline underline-offset-4">
+                Upgrade to Pro
+              </Link>
+            </div>
+          )}
+        </div>
+
+        {selectedStrategies.length > 0 && (
+          <div className="space-y-4 rounded-lg border-2 border-primary/20 bg-primary/5 p-6">
+            <div className="space-y-2">
+              <Label className="text-base font-semibold">🎯 Customize Your Email</Label>
+              <p className="text-sm text-muted-foreground">Fine-tune how your email is generated for better results</p>
+            </div>
+
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Tone</Label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {["Professional", "Friendly", "Persuasive", "Casual"].map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => setTone(option)}
+                      className={`px-4 py-2 text-sm rounded-md border transition-colors ${
+                        tone === option
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-background hover:bg-muted border-border"
+                      }`}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Email Length</Label>
+                <div className="grid grid-cols-3 gap-2">
+                  {["Short", "Medium", "Long"].map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => setEmailLength(option)}
+                      className={`px-4 py-2 text-sm rounded-md border transition-colors ${
+                        emailLength === option
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-background hover:bg-muted border-border"
+                      }`}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Short: ~100 words | Medium: ~150 words | Long: ~200 words
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Goal</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  {["Book a call", "Get a reply", "Make a sale", "Introduce product"].map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => setGoal(option)}
+                      className={`px-4 py-2 text-sm rounded-md border transition-colors ${
+                        goal === option
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-background hover:bg-muted border-border"
+                      }`}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Personalization Level</Label>
+                <div className="grid grid-cols-3 gap-2">
+                  {["Low", "Medium", "High"].map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => setPersonalization(option)}
+                      className={`px-4 py-2 text-sm rounded-md border transition-colors ${
+                        personalization === option
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-background hover:bg-muted border-border"
+                      }`}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Higher personalization uses more recipient details in the email
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <Button type="submit" className="w-full" disabled={isLoading || !canGenerate}>
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Generating...
+            </>
+          ) : (
+            "Generate Email"
+          )}
+        </Button>
+
+        {!canGenerate && (
+          <div className="rounded-lg bg-destructive/10 p-4 text-sm text-destructive">
+            You&apos;ve reached your monthly limit.{" "}
+            <Link href="/upgrade" className="font-medium underline underline-offset-4">
+              Upgrade to Pro
+            </Link>{" "}
+            for unlimited emails.
+          </div>
+        )}
+      </form>
+
+      {result && (
+        <div className="rounded-lg border bg-card p-6 space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">Your Outreach Email</h3>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={handleCopy}>
+                <Copy className="mr-2 h-4 w-4" />
+                Copy
+              </Button>
+              {recipientEmail && (
+                <Button variant="outline" size="sm" onClick={handleOpenEmail}>
+                  <Mail className="mr-2 h-4 w-4" />
+                  Open Email
+                </Button>
+              )}
+            </div>
+          </div>
+          <div className="rounded-lg bg-muted p-4">
+            <pre className="whitespace-pre-wrap text-sm font-mono">{result}</pre>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
