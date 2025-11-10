@@ -1,3 +1,4 @@
+import { errorLog } from "@/lib/logger"
 import { createClient } from "@/lib/supabase/server"
 import type { User } from "@/lib/types"
 
@@ -10,50 +11,50 @@ async function withTimeout<T>(promise: Promise<T>, timeoutMs = 5000): Promise<T>
 
 export async function getCurrentUser(): Promise<User | null> {
   try {
-    const supabase = await createClient()
+    const supabase: any = await createClient()
 
     const {
       data: { user: authUser },
-    } = await withTimeout(supabase.auth.getUser(), 5000)
+    } = await withTimeout<any>(supabase.auth.getUser(), 5000)
 
     if (!authUser) return null
 
-    const { data: user, error } = await withTimeout(
+    const { data: user, error } = await withTimeout<any>(
       supabase.from("users").select("*").eq("id", authUser.id).single(),
       5000,
     )
 
-    if (error) {
-      console.error("[v0] Error fetching user:", error)
-      return null
-    }
+      if (error) {
+        errorLog("[v0] Error fetching user:", error)
+        return null
+      }
 
     return user
   } catch (error) {
-    console.error("[v0] getCurrentUser error:", error)
+      errorLog("[v0] getCurrentUser error:", error)
     return null
   }
 }
 
 export async function getUserUsage(userId: string): Promise<number> {
   try {
-    const supabase = await createClient()
+    const supabase: any = await createClient()
     const currentMonth = new Date().toISOString().slice(0, 7) // YYYY-MM format
 
-    const { data, error } = await withTimeout(
+    const { data, error } = await withTimeout<any>(
       supabase.from("usage").select("count").eq("user_id", userId).eq("month", currentMonth).maybeSingle(),
       5000,
     )
 
-    if (error) {
-      console.error("[v0] Error fetching usage:", error)
-      return 0
-    }
+      if (error) {
+        errorLog("[v0] Error fetching usage:", error)
+        return 0
+      }
 
     if (!data) return 0
     return data.count
   } catch (error) {
-    console.error("[v0] getUserUsage error:", error)
+      errorLog("[v0] getUserUsage error:", error)
     return 0
   }
 }

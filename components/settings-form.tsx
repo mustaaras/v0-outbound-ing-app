@@ -12,6 +12,7 @@ import { Crown, Mail, Shield, Loader2, CreditCard, AlertTriangle } from "lucide-
 import type { User } from "@/lib/types"
 import { TIER_LIMITS } from "@/lib/types"
 import { useToast } from "@/hooks/use-toast"
+import { errorLog } from "@/lib/logger"
 import { changePassword } from "@/app/actions/change-password"
 import { createPortalSession, cancelSubscription } from "@/app/actions/stripe"
 import {
@@ -87,7 +88,7 @@ export function SettingsForm({ user, hasPassword }: SettingsFormProps) {
       const url = await createPortalSession()
       window.location.href = url
     } catch (error) {
-      console.error("Failed to create portal session:", error)
+      errorLog("Failed to create portal session:", error)
       toast({
         title: "Error",
         description: error instanceof Error ? error.message : "Failed to open subscription portal",
@@ -113,7 +114,7 @@ export function SettingsForm({ user, hasPassword }: SettingsFormProps) {
         throw new Error(result.error || "Failed to cancel subscription")
       }
     } catch (error) {
-      console.error("Failed to cancel subscription:", error)
+      errorLog("Failed to cancel subscription:", error)
       toast({
         title: "Error",
         description: error instanceof Error ? error.message : "Failed to cancel subscription",

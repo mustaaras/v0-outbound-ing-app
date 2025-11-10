@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { canGenerateTemplate, incrementUsage } from "@/lib/auth-utils"
 import { generateText } from "ai"
+import { errorLog } from "@/lib/logger"
 
 interface GenerateTemplateInput {
   subject: string
@@ -95,7 +96,6 @@ Generate ONLY the email body text, no subject line. The sender's signature will 
       model: "openai/gpt-4o-mini",
       prompt,
       temperature: 0.8,
-      maxTokens: 500,
     })
 
     const finalText = input.sellerSignature ? `${text.trim()}\n\n${input.sellerSignature}` : text.trim()
@@ -112,7 +112,7 @@ Generate ONLY the email body text, no subject line. The sender's signature will 
     })
 
     if (insertError) {
-      console.error("Failed to save template:", insertError)
+      errorLog("Failed to save template:", insertError)
     }
 
     // Increment usage
@@ -120,7 +120,7 @@ Generate ONLY the email body text, no subject line. The sender's signature will 
 
     return { result: finalText }
   } catch (error) {
-    console.error("AI generation error:", error)
+    errorLog("AI generation error:", error)
     throw new Error("Failed to generate template. Please try again.")
   }
 }

@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { devLog, errorLog } from "@/lib/logger"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
@@ -26,27 +27,27 @@ export function SuccessPageClient({
   useEffect(() => {
     async function updateTier() {
       if (!productId || !userId) {
-        console.log("[v0] Client: Missing productId or userId")
+        devLog("[v0] Client: Missing productId or userId")
         setIsUpdating(false)
         return
       }
 
-      console.log("[v0] Client: Starting tier update for:", { userId, productId })
+      devLog("[v0] Client: Starting tier update for:", { userId, productId })
 
       try {
         const result = await updateUserTier(userId, productId)
 
         if (result.success) {
-          console.log("[v0] Client: Tier updated successfully to:", result.tier)
+          devLog("[v0] Client: Tier updated successfully to:", result.tier)
           setTierUpdated(true)
           // Refresh the page data
           router.refresh()
         } else {
-          console.error("[v0] Client: Failed to update tier:", result.error)
+          errorLog("[v0] Client: Failed to update tier:", result.error)
           setError(result.error || "Failed to update subscription")
         }
       } catch (err) {
-        console.error("[v0] Client: Exception during tier update:", err)
+        errorLog("[v0] Client: Exception during tier update:", err)
         setError("An unexpected error occurred")
       }
 

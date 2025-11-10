@@ -14,8 +14,10 @@ import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
+import type { User } from "@/lib/types"
+
 interface GeneratorFormProps {
-  user: any
+  user: User | null
   usage: number
   strategies: Strategy[]
   userTier: string

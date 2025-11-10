@@ -4,13 +4,15 @@ import { GeneratorForm } from "@/components/generator-form"
 import { getCurrentUser, getUserUsage } from "@/lib/auth-utils"
 import { createClient } from "@/lib/supabase/server"
 import { TIER_LIMITS } from "@/lib/types"
+import type { User } from "@/lib/types"
 import { redirect } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Crown } from "lucide-react"
 import Link from "next/link"
+import { errorLog } from "@/lib/logger"
 
 export default async function GeneratorPage() {
-  let user
+  let user: User | null = null
   let strategies = []
   let usage = 0
 
@@ -19,6 +21,7 @@ export default async function GeneratorPage() {
 
     if (!user) {
       redirect("/auth/login")
+      return null
     }
 
     const supabase = await createClient()
@@ -30,15 +33,17 @@ export default async function GeneratorPage() {
       .order("name", { ascending: true })
 
     if (strategiesError) {
-      console.error("Error fetching strategies:", strategiesError)
+      errorLog("Error fetching strategies:", strategiesError)
     }
 
     strategies = Array.isArray(strategiesData) ? strategiesData.filter((s) => s && typeof s.tier !== "undefined") : []
 
     usage = await getUserUsage(user.id)
   } catch (error) {
-    console.error("Error in GeneratorPage:", error)
+     errorLog("Error in GeneratorPage:", error)
   }
+
+  if (!user) return null
 
   const limit = TIER_LIMITS[user.tier as keyof typeof TIER_LIMITS] || 5
   const canGenerate = usage < limit

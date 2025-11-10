@@ -3,18 +3,19 @@
 import { createClient } from "@/lib/supabase/server"
 import { PRODUCTS } from "@/lib/products"
 import { revalidatePath } from "next/cache"
+import { devLog, errorLog } from "@/lib/logger"
 
 export async function updateUserTier(userId: string, productId: string) {
-  console.log("[v0] updateUserTier called:", { userId, productId })
+  devLog("[v0] updateUserTier called:", { userId, productId })
 
   const product = PRODUCTS.find((p) => p.id === productId)
 
   if (!product) {
-    console.error("[v0] Product not found:", productId)
+    errorLog("[v0] Product not found:", productId)
     return { success: false, error: "Product not found" }
   }
 
-  console.log("[v0] Found product:", { name: product.name, tier: product.tier })
+  devLog("[v0] Found product:", { name: product.name, tier: product.tier })
 
   const supabase = await createClient()
 
@@ -26,21 +27,21 @@ export async function updateUserTier(userId: string, productId: string) {
     .single()
 
   if (fetchError || !existingUser) {
-    console.error("[v0] User not found:", fetchError)
+    errorLog("[v0] User not found:", fetchError)
     return { success: false, error: "User not found" }
   }
 
-  console.log("[v0] Current user tier:", existingUser.tier)
+  devLog("[v0] Current user tier:", existingUser.tier)
 
   // Update the tier
   const { data, error } = await supabase.from("users").update({ tier: product.tier }).eq("id", userId).select().single()
 
   if (error) {
-    console.error("[v0] Failed to update tier:", error)
+    errorLog("[v0] Failed to update tier:", error)
     return { success: false, error: error.message }
   }
 
-  console.log("[v0] Successfully updated tier:", data)
+  devLog("[v0] Successfully updated tier:", data)
 
   // Revalidate relevant paths
   revalidatePath("/dashboard")

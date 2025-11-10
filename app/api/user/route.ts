@@ -1,5 +1,6 @@
 import { getCurrentUser } from "@/lib/auth-utils"
 import { NextResponse } from "next/server"
+import { errorLog } from "@/lib/logger"
 
 export async function GET() {
   try {
@@ -16,7 +17,7 @@ export async function GET() {
       stripe_customer_id: user.stripe_customer_id,
     })
   } catch (error) {
-    console.error("[v0] Error fetching user:", error)
+    errorLog("[v0] Error fetching user:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

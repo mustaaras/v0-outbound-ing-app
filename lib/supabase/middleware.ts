@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
+import { devLog } from "@/lib/logger"
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -29,7 +30,7 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  console.log("[v0] Middleware check:", {
+  devLog("[v0] Middleware check:", {
     path: request.nextUrl.pathname,
     hasUser: !!user,
   })
@@ -41,7 +42,7 @@ export async function updateSession(request: NextRequest) {
   const isProtectedRoute = protectedRoutes.some((route) => request.nextUrl.pathname.startsWith(route))
 
   if (!user && isProtectedRoute) {
-    console.log("[v0] Redirecting to login - no user found")
+  devLog("[v0] Redirecting to login - no user found")
     const url = request.nextUrl.clone()
     url.pathname = "/auth/login"
     return NextResponse.redirect(url)
@@ -51,7 +52,7 @@ export async function updateSession(request: NextRequest) {
     user &&
     (request.nextUrl.pathname.startsWith("/auth/login") || request.nextUrl.pathname.startsWith("/auth/signup"))
   ) {
-    console.log("[v0] Redirecting to dashboard - user already logged in")
+  devLog("[v0] Redirecting to dashboard - user already logged in")
     const url = request.nextUrl.clone()
     url.pathname = "/dashboard"
     return NextResponse.redirect(url)

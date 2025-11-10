@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { devLog, errorLog } from "@/lib/logger"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -28,7 +29,7 @@ export default function LoginPage() {
     setError(null)
     setNeedsVerification(false)
 
-    console.log("[v0] Attempting login for:", email)
+  devLog("[v0] Attempting login for:", email)
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -36,7 +37,7 @@ export default function LoginPage() {
         password,
       })
 
-      console.log("[v0] Login response:", { data, error })
+  devLog("[v0] Login response:", { data, error })
 
       if (error) {
         if (error.message.includes("Email not confirmed")) {
@@ -54,12 +55,12 @@ export default function LoginPage() {
       }
 
       if (data.user) {
-        console.log("[v0] Login successful, redirecting to dashboard")
+  devLog("[v0] Login successful, redirecting to dashboard")
         router.push("/dashboard")
         router.refresh()
       }
     } catch (error: unknown) {
-      console.error("[v0] Login error:", error)
+  errorLog("[v0] Login error:", error)
       setError(error instanceof Error ? error.message : "An error occurred")
     } finally {
       setIsLoading(false)
@@ -88,7 +89,7 @@ export default function LoginPage() {
       setEmailSent(true)
       setError(null)
     } catch (error: unknown) {
-      console.error("[v0] Resend verification error:", error)
+  errorLog("[v0] Resend verification error:", error)
       setError(error instanceof Error ? error.message : "Failed to resend verification email")
     } finally {
       setResendingEmail(false)
@@ -111,7 +112,7 @@ export default function LoginPage() {
 
       if (error) throw error
     } catch (error: unknown) {
-      console.error("[v0] Google login error:", error)
+  errorLog("[v0] Google login error:", error)
       setError(error instanceof Error ? error.message : "An error occurred")
     }
   }

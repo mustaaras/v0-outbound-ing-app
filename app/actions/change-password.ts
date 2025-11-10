@@ -1,6 +1,7 @@
 "use server"
 
 import { createClient } from "@/lib/supabase/server"
+import { errorLog } from "@/lib/logger"
 
 export async function changePassword(newPassword: string) {
   try {
@@ -24,7 +25,7 @@ export async function changePassword(newPassword: string) {
 
     return { success: true }
   } catch (error) {
-    console.error("Password change error:", error)
+    errorLog("Password change error:", error)
     return { success: false, error: "Failed to change password" }
   }
 }

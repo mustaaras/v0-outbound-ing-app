@@ -1,9 +1,10 @@
 "use server"
 
-import { stripe } from "@/lib/stripe"
+import { getStripe } from "@/lib/stripe"
 import { PRODUCTS } from "@/lib/products"
 import { getCurrentUser } from "@/lib/auth-utils"
 import { createClient } from "@/lib/supabase/server"
+import { errorLog } from "@/lib/logger"
 
 export async function startCheckoutSession(productId: string) {
   const user = await getCurrentUser()
@@ -19,6 +20,7 @@ export async function startCheckoutSession(productId: string) {
 
   // Create or get Stripe customer
   let customerId = user.stripe_customer_id
+  const stripe = getStripe()
 
   if (!customerId) {
     const customer = await stripe.customers.create({
@@ -74,6 +76,7 @@ export async function createPortalSession() {
     throw new Error("You don't have an active subscription yet. Please upgrade to a paid plan first.")
   }
 
+  const stripe = getStripe()
   const session = await stripe.billingPortal.sessions.create({
     customer: user.stripe_customer_id,
     return_url: `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/upgrade`,
@@ -95,6 +98,7 @@ export async function cancelSubscription() {
 
   try {
     // Get all active subscriptions for the customer
+    const stripe = getStripe()
     const subscriptions = await stripe.subscriptions.list({
       customer: user.stripe_customer_id,
       status: "active",
@@ -112,7 +116,7 @@ export async function cancelSubscription() {
 
     return { success: true }
   } catch (error) {
-    console.error("Failed to cancel subscription:", error)
+      errorLog("Failed to cancel subscription:", error)
     return { success: false, error: error instanceof Error ? error.message : "Failed to cancel subscription" }
   }
 }

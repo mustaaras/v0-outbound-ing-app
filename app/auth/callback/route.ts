@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
+import { devLog, errorLog } from "@/lib/logger"
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
@@ -11,7 +12,7 @@ export async function GET(request: Request) {
     const { error, data } = await supabase.auth.exchangeCodeForSession(code)
 
     if (error) {
-      console.error("[v0] OAuth callback error:", error)
+      errorLog("[v0] OAuth callback error:", error)
       return NextResponse.redirect(`${origin}/auth/login?error=OAuthCallbackError`)
     }
 
@@ -19,7 +20,7 @@ export async function GET(request: Request) {
       const { data: existingUser } = await supabase.from("users").select("id").eq("id", data.user.id).maybeSingle()
 
       if (!existingUser) {
-        console.log("[v0] Creating user entry for OAuth user:", data.user.id)
+        devLog("[v0] Creating user entry for OAuth user:", data.user.id)
         const { error: insertError } = await supabase.from("users").insert({
           id: data.user.id,
           email: data.user.email,
@@ -27,7 +28,7 @@ export async function GET(request: Request) {
         })
 
         if (insertError) {
-          console.error("[v0] Error creating user entry:", insertError)
+          errorLog("[v0] Error creating user entry:", insertError)
         }
       }
     }

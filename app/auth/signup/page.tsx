@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { devLog, errorLog } from "@/lib/logger"
 
 export default function SignupPage() {
   const [email, setEmail] = useState("")
@@ -37,7 +38,7 @@ export default function SignupPage() {
       return
     }
 
-    console.log("[v0] Attempting signup for:", email)
+  devLog("[v0] Attempting signup for:", email)
 
     try {
       const { data, error } = await supabase.auth.signUp({
@@ -45,7 +46,7 @@ export default function SignupPage() {
         password,
       })
 
-      console.log("[v0] Signup response:", { data, error })
+  devLog("[v0] Signup response:", { data, error })
 
       if (error) throw error
 
@@ -56,23 +57,23 @@ export default function SignupPage() {
           return
         }
 
-        console.log("[v0] Signup successful, attempting auto-login")
+  devLog("[v0] Signup successful, attempting auto-login")
         const { error: signInError } = await supabase.auth.signInWithPassword({
           email,
           password,
         })
 
         if (signInError) {
-          console.error("[v0] Auto-login failed:", signInError)
+          errorLog("[v0] Auto-login failed:", signInError)
           setError("Account created! Please check your email to verify your account, then login.")
         } else {
-          console.log("[v0] Auto-login successful, redirecting to dashboard")
+          devLog("[v0] Auto-login successful, redirecting to dashboard")
           router.push("/dashboard")
           router.refresh()
         }
       }
     } catch (error: unknown) {
-      console.error("[v0] Signup error:", error)
+      errorLog("[v0] Signup error:", error)
       setError(error instanceof Error ? error.message : "An error occurred")
     } finally {
       setIsLoading(false)
@@ -95,7 +96,7 @@ export default function SignupPage() {
 
       if (error) throw error
     } catch (error: unknown) {
-      console.error("[v0] Google signup error:", error)
+      errorLog("[v0] Google signup error:", error)
       setError(error instanceof Error ? error.message : "An error occurred")
     }
   }

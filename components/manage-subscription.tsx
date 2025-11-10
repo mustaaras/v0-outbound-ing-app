@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Settings } from "lucide-react"
 import { createPortalSession } from "@/app/actions/stripe"
 import { useState } from "react"
+import { errorLog } from "@/lib/logger"
 import { useToast } from "@/hooks/use-toast"
 
 export function ManageSubscription() {
@@ -16,7 +17,7 @@ export function ManageSubscription() {
       const url = await createPortalSession()
       window.location.href = url
     } catch (error) {
-      console.error("Failed to create portal session:", error)
+      errorLog("Failed to create portal session:", error)
       toast({
         title: "Error",
         description: error instanceof Error ? error.message : "Failed to open subscription portal",
