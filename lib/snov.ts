@@ -62,39 +62,89 @@ class SnovClient {
 
   private async fetchAccessToken(): Promise<void> {
     if (!(this.clientId && this.clientSecret)) return
-
     try {
-      const body = new URLSearchParams()
-      body.append("grant_type", "client_credentials")
-      body.append("client_id", this.clientId)
-      body.append("client_secret", this.clientSecret)
+      // Try multiple token endpoints and Basic auth fallback. Some Snov accounts
+      // use different token endpoints or require HTTP Basic auth for client creds.
+      const candidateUrls = [
+        this.tokenUrl,
+        `${this.apiUrl}/oauth/token`,
+        `https://api.snov.io/oauth/token`,
+        `https://api.snov.io/v1/oauth/token`,
+        `${this.apiUrl.replace('/v2', '/v1')}/oauth/token`,
+      ].filter(Boolean) as string[]
 
-      devLog("[v0] Requesting Snov access token from", this.tokenUrl)
+      for (const url of candidateUrls) {
+        try {
+          const form = new URLSearchParams()
+          form.append('grant_type', 'client_credentials')
+          // Try with client_id/client_secret in body first
+          form.append('client_id', this.clientId!)
+          form.append('client_secret', this.clientSecret!)
 
-      const resp = await fetch(this.tokenUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: body.toString(),
-      })
+          devLog('[v0] Attempting Snov token request (body) to', url)
 
-      if (!resp.ok) {
-        const text = await resp.text()
-        errorLog("[v0] Failed to fetch Snov token:", resp.status, text)
-        return
+          let resp = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: form.toString(),
+          })
+
+          // If not found or bad request, try Basic auth variant
+          if (resp.status === 404 || resp.status === 400) {
+            // Try Basic auth (some endpoints expect client credentials via Basic)
+            const basic = Buffer.from(`${this.clientId}:${this.clientSecret}`).toString('base64')
+            const basicForm = new URLSearchParams()
+            basicForm.append('grant_type', 'client_credentials')
+
+            devLog('[v0] Trying Basic auth token request to', url)
+            resp = await fetch(url, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                Authorization: `Basic ${basic}`,
+              },
+              body: basicForm.toString(),
+            })
+          }
+
+          const text = await resp.text()
+          let data: any = null
+          try {
+            data = text ? JSON.parse(text) : null
+          } catch (e) {
+            // keep raw text
+            data = text
+          }
+
+          if (!resp.ok) {
+            devLog('[v0] Token request to', url, 'returned', resp.status, data)
+            // Try next candidate URL
+            continue
+          }
+
+          // Expect an access_token in the response
+          if (data?.access_token) {
+            this.accessToken = data.access_token
+            const expiresIn = Number(data.expires_in) || 3600
+            this.tokenExpiresAt = Date.now() + expiresIn * 1000 - 5000 // refresh 5s early
+            devLog('[v0] Obtained Snov access token from', url, 'expires in', expiresIn)
+            return
+          } else {
+            errorLog('[v0] Snov token response missing access_token from', url, data)
+            // try next
+            continue
+          }
+        } catch (innerErr) {
+          errorLog('[v0] Error requesting token from', url, innerErr)
+          // try next endpoint
+          continue
+        }
       }
 
-      const data = await resp.json()
-      // Typical response: { access_token, expires_in }
-      if (data?.access_token) {
-        this.accessToken = data.access_token
-        const expiresIn = Number(data.expires_in) || 3600
-        this.tokenExpiresAt = Date.now() + expiresIn * 1000 - 5000 // refresh 5s early
-        devLog("[v0] Obtained Snov access token, expires in", expiresIn)
-      } else {
-        errorLog("[v0] Snov token response missing access_token:", data)
-      }
+      // If we reach here, no token endpoint succeeded
+      errorLog('[v0] Unable to obtain Snov access token from any candidate endpoint')
     } catch (err) {
-      errorLog("[v0] Error fetching Snov access token:", err)
+      errorLog('[v0] Error fetching Snov access token:', err)
     }
   }
 
