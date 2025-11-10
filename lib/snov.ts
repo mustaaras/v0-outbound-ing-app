@@ -39,13 +39,69 @@ interface SnovSearchResponse {
 class SnovClient {
   private apiKey: string
   private apiUrl = "https://api.snov.io/v2"
+  private clientId?: string
+  private clientSecret?: string
+  private tokenUrl: string
+  private accessToken: string | null = null
+  private tokenExpiresAt: number | null = null
 
   constructor() {
     const key = process.env.SNOV_API_KEY
-    if (!key) {
-      throw new Error("SNOV_API_KEY environment variable is not set")
+    this.apiKey = key || ""
+
+    this.clientId = process.env.SNOV_CLIENT_ID
+    this.clientSecret = process.env.SNOV_CLIENT_SECRET
+    this.tokenUrl = process.env.SNOV_TOKEN_URL || `${this.apiUrl}/oauth/token`
+
+    // It's okay if SNOV_API_KEY is empty when client credentials are provided;
+    // we'll attempt client credentials flow if clientId/clientSecret exist.
+    if (!this.apiKey && !(this.clientId && this.clientSecret)) {
+      throw new Error("SNOV_API_KEY or SNOV_CLIENT_ID & SNOV_CLIENT_SECRET must be set")
     }
-    this.apiKey = key
+  }
+
+  private async fetchAccessToken(): Promise<void> {
+    if (!(this.clientId && this.clientSecret)) return
+
+    try {
+      const body = new URLSearchParams()
+      body.append("grant_type", "client_credentials")
+      body.append("client_id", this.clientId)
+      body.append("client_secret", this.clientSecret)
+
+      devLog("[v0] Requesting Snov access token from", this.tokenUrl)
+
+      const resp = await fetch(this.tokenUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: body.toString(),
+      })
+
+      if (!resp.ok) {
+        const text = await resp.text()
+        errorLog("[v0] Failed to fetch Snov token:", resp.status, text)
+        return
+      }
+
+      const data = await resp.json()
+      // Typical response: { access_token, expires_in }
+      if (data?.access_token) {
+        this.accessToken = data.access_token
+        const expiresIn = Number(data.expires_in) || 3600
+        this.tokenExpiresAt = Date.now() + expiresIn * 1000 - 5000 // refresh 5s early
+        devLog("[v0] Obtained Snov access token, expires in", expiresIn)
+      } else {
+        errorLog("[v0] Snov token response missing access_token:", data)
+      }
+    } catch (err) {
+      errorLog("[v0] Error fetching Snov access token:", err)
+    }
+  }
+
+  private async ensureAccessToken(): Promise<void> {
+    if (!(this.clientId && this.clientSecret)) return
+    if (this.accessToken && this.tokenExpiresAt && Date.now() < this.tokenExpiresAt) return
+    await this.fetchAccessToken()
   }
 
   /**
@@ -68,19 +124,54 @@ class SnovClient {
       searchParams.append("limit", String(params.limit || 20))
       searchParams.append("offset", String(params.offset || 0))
 
-      const response = await fetch(`${this.apiUrl}/prospects/search`, {
+      // Ensure we have an access token if client credentials are configured
+      await this.ensureAccessToken()
+
+      const authHeader = this.accessToken ? `Bearer ${this.accessToken}` : `Bearer ${this.apiKey}`
+
+      let response = await fetch(`${this.apiUrl}/prospects/search`, {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${this.apiKey}`,
+          Authorization: authHeader,
           "Content-Type": "application/x-www-form-urlencoded",
         },
         body: searchParams.toString(),
       })
 
+      // If forbidden and we have client credentials, attempt to refresh token once and retry
+      if ((response.status === 401 || response.status === 403) && this.clientId && this.clientSecret) {
+        devLog("[v0] Received 401/403 from Snov, attempting token refresh and retry")
+        await this.fetchAccessToken()
+        const retryAuth = this.accessToken ? `Bearer ${this.accessToken}` : `Bearer ${this.apiKey}`
+        response = await fetch(`${this.apiUrl}/prospects/search`, {
+          method: "POST",
+          headers: {
+            Authorization: retryAuth,
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: searchParams.toString(),
+        })
+      }
+
       if (!response.ok) {
-        const errorData = await response.text()
+        let errorData: string | Record<string, unknown> = await response.text()
+        try {
+          errorData = JSON.parse(String(errorData))
+        } catch {
+          // keep raw text
+        }
+
         errorLog(`Snov.io API error: ${response.status}`, errorData)
-        throw new Error(`Snov.io API error: ${response.status}`)
+        return {
+          success: false,
+          data: {
+            total: 0,
+            results: [],
+          },
+          error: `Snov.io API error: ${response.status} - ${
+            typeof errorData === "string" ? errorData : JSON.stringify(errorData)
+          }`,
+        }
       }
 
       const data = await response.json()
