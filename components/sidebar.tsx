@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { Home, Wand2, Archive, Crown, LogOut, Settings } from "lucide-react"
+import { Home, Wand2, Archive, Crown, LogOut, Settings, Users } from "lucide-react"
 import type { User } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -18,6 +18,7 @@ interface SidebarProps {
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
   { name: "Generator", href: "/generator", icon: Wand2 },
+  { name: "Search Buyers", href: "/search-buyers", icon: Users },
   { name: "Archive", href: "/archive", icon: Archive },
   { name: "Settings", href: "/settings", icon: Settings },
   { name: "Upgrade", href: "/upgrade", icon: Crown },
@@ -48,6 +49,11 @@ export function Sidebar({ user }: SidebarProps) {
 
       <nav className="flex-1 space-y-1 p-4">
         {navigation.map((item) => {
+          // Restrict Search Buyers to pro/ultra users
+          if (item.name === "Search Buyers" && !(user.tier === "pro" || user.tier === "ultra")) {
+            return null
+          }
+
           const isActive = pathname === item.href
           const Icon = item.icon
 

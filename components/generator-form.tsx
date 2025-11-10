@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -41,6 +41,21 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
   const [personalization, setPersonalization] = useState<string>("Medium")
 
   const { toast } = useToast()
+
+  // Prefill recipient fields if a buyer was selected from Search Buyers
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem("selectedBuyer")
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        if (parsed?.name) setRecipientName(parsed.name)
+        if (parsed?.email) setRecipientEmail(parsed.email)
+        // Keep the selection in sessionStorage in case user wants to switch; do not remove automatically
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, [])
 
   // Group strategies by category
   const categorizedStrategies = useMemo(() => {

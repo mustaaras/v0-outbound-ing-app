@@ -48,3 +48,19 @@ export const TIER_LIMITS = {
   pro: 750,
   ultra: 1500,
 } as const
+
+export const SNOV_SEARCH_LIMITS = {
+  free: 0,
+  light: 0,
+  pro: 150,
+  ultra: 300,
+} as const
+
+export interface SnovSearch {
+  id: string
+  user_id: string
+  month: string
+  search_count: number
+  created_at: string
+  updated_at: string
+}
