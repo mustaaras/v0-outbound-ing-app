@@ -51,7 +51,8 @@ class SnovClient {
 
     this.clientId = process.env.SNOV_CLIENT_ID
     this.clientSecret = process.env.SNOV_CLIENT_SECRET
-    this.tokenUrl = process.env.SNOV_TOKEN_URL || `${this.apiUrl}/oauth/token`
+    // Snov.io uses v1/oauth/access_token for token generation (per their docs)
+    this.tokenUrl = process.env.SNOV_TOKEN_URL || "https://api.snov.io/v1/oauth/access_token"
 
     // It's okay if SNOV_API_KEY is empty when client credentials are provided;
     // we'll attempt client credentials flow if clientId/clientSecret exist.

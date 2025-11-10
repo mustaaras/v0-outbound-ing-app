@@ -28,9 +28,9 @@ console.log(`   API Secret: ${clientSecret.slice(0, 4)}...${clientSecret.slice(-
 
 // Candidate token endpoints
 const candidateUrls = [
+  "https://api.snov.io/v1/oauth/access_token",
   "https://api.snov.io/v2/oauth/token",
   "https://api.snov.io/oauth/token",
-  "https://api.snov.io/v1/oauth/token",
 ];
 
 interface TokenResponse {
