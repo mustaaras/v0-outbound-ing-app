@@ -78,6 +78,10 @@ export default async function UpgradePage({
                 <Check className="mt-0.5 h-4 w-4 text-muted-foreground" />
                 <span className="text-sm">Full archive access</span>
               </li>
+              <li className="flex items-start gap-2">
+                <Check className="mt-0.5 h-4 w-4 text-muted-foreground" />
+                <span className="text-sm">Public Email Finder – 30 searches/month</span>
+              </li>
             </ul>
             <Button disabled className="w-full bg-transparent" variant="outline">
               {!isPaid ? "Current Plan" : "Downgrade Not Available"}

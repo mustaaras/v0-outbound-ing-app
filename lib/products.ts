@@ -22,6 +22,7 @@ export const PRODUCTS: Product[] = [
       "Email support",
       "Full archive access",
       "Search Buyers – up to 50 saved buyer emails/month (email-only billing)",
+      "Public Email Finder – unlimited searches",
     ],
   },
   {
@@ -38,6 +39,7 @@ export const PRODUCTS: Product[] = [
       "Priority email support",
       "Full archive access",
       "Search Buyers – up to 150 saved buyer emails/month (email-only billing)",
+      "Public Email Finder – unlimited searches",
     ],
   },
   {
@@ -55,6 +57,7 @@ export const PRODUCTS: Product[] = [
       "Full archive access",
       "Early access to new features",
       "Search Buyers – up to 300 saved buyer emails/month (email-only billing)",
+      "Public Email Finder – unlimited searches",
     ],
   },
 ]

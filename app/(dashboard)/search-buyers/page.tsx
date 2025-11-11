@@ -1,8 +1,9 @@
 import { getCurrentUser } from "@/lib/auth-utils"
 import { redirect } from "next/navigation"
 import { getUserSearchCount } from "@/app/actions/search-buyers"
+import { getPublicEmailSearchCount } from "@/app/actions/public-email-finder"
 import { createClient } from "@/lib/supabase/server"
-import { SNOV_SEARCH_LIMITS } from "@/lib/types"
+import { SNOV_SEARCH_LIMITS, PUBLIC_EMAIL_SEARCH_LIMITS } from "@/lib/types"
 import { SearchBuyersForm } from "@/components/search-buyers-form"
 import { PublicEmailFinderForm } from "@/components/public-email-finder-form"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -20,6 +21,7 @@ export default async function SearchBuyersPage() {
   }
 
   const searchesUsed = await getUserSearchCount((user as any).id)
+  const publicEmailSearchesUsed = await getPublicEmailSearchCount((user as any).id)
   // Fetch saved buyers for display (exclude archived by default)
   const supabase = await createClient()
   const { data: savedBuyers } = await supabase
@@ -35,6 +37,7 @@ export default async function SearchBuyersPage() {
     .eq("archived", true)
     .order("created_at", { ascending: false })
   const searchLimit = SNOV_SEARCH_LIMITS[user!.tier as keyof typeof SNOV_SEARCH_LIMITS] || 0
+  const publicEmailSearchLimit = PUBLIC_EMAIL_SEARCH_LIMITS[user!.tier as keyof typeof PUBLIC_EMAIL_SEARCH_LIMITS] || 30
 
   // Domain summary for active contacts
   const domainSummary = (savedBuyers || []).reduce<Record<string, number>>((acc, c: any) => {
@@ -76,7 +79,12 @@ export default async function SearchBuyersPage() {
         </TabsContent>
 
         <TabsContent value="public" className="space-y-6 mt-6">
-          <PublicEmailFinderForm userId={(user as any).id} />
+          <PublicEmailFinderForm 
+            userId={(user as any).id} 
+            userTier={(user as any).tier}
+            searchesUsed={publicEmailSearchesUsed}
+            searchLimit={publicEmailSearchLimit}
+          />
         </TabsContent>
       </Tabs>
 

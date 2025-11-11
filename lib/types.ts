@@ -56,7 +56,23 @@ export const SNOV_SEARCH_LIMITS = {
   ultra: 300,
 } as const
 
+export const PUBLIC_EMAIL_SEARCH_LIMITS = {
+  free: 30,
+  light: 999999,
+  pro: 999999,
+  ultra: 999999,
+} as const
+
 export interface SnovSearch {
+  id: string
+  user_id: string
+  month: string
+  search_count: number
+  created_at: string
+  updated_at: string
+}
+
+export interface PublicEmailSearch {
   id: string
   user_id: string
   month: string

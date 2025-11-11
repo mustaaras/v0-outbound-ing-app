@@ -10,18 +10,22 @@ import { AlertCircle, Globe, Link as LinkIcon, Loader2, Send } from "lucide-reac
 import { useToast } from "@/hooks/use-toast"
 import { findPublicEmails } from "@/app/actions/public-email-finder"
 import { saveBuyer } from "@/app/actions/save-buyer"
+import Link from "next/link"
 
 interface Props {
   userId: string
+  userTier: string
+  searchesUsed: number
+  searchLimit: number
 }
 
-export function PublicEmailFinderForm({ userId }: Props) {
+export function PublicEmailFinderForm({ userId, userTier, searchesUsed, searchLimit }: Props) {
   const { toast } = useToast()
   const [keyword, setKeyword] = useState("")
   const [domains, setDomains] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [results, setResults] = useState<Array<{ domain: string; email: string; type: "generic" | "personal"; sourceUrl: string }>>([])
-  
+  const [searchesRemainingLocal, setSearchesRemainingLocal] = useState(searchLimit - searchesUsed)
   const handleSendEmail = (r: { domain: string; email: string; type: "generic" | "personal"; sourceUrl: string }) => {
     sessionStorage.setItem(
       "selectedBuyer",
@@ -40,12 +44,13 @@ export function PublicEmailFinderForm({ userId }: Props) {
     setIsLoading(true)
     setResults([])
     try {
-      const res = await findPublicEmails({ userId, keyword: keyword || undefined, domains: domains || undefined, perDomainCap: 3, totalCap: 50 })
+      const res = await findPublicEmails({ userId, userTier, keyword: keyword || undefined, domains: domains || undefined, perDomainCap: 3, totalCap: 50 })
       if (!res.success) {
         toast({ title: "Search failed", description: res.error || "Unknown error", variant: "destructive" })
         return
       }
       setResults(res.data.results)
+      setSearchesRemainingLocal(res.data.searchesRemaining)
       
       // Auto-save all results
       if (res.data.results.length > 0) {
@@ -78,6 +83,25 @@ export function PublicEmailFinderForm({ userId }: Props) {
     }
   }
 
+  if (searchLimit === 0 || searchesRemainingLocal < 0) {
+    return (
+      <Card className="border-yellow-500/50 bg-yellow-500/10">
+        <CardContent className="p-4 flex items-start gap-3">
+          <AlertCircle className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <p className="text-sm font-semibold text-yellow-600">Public Email Finder Unavailable</p>
+            <p className="text-sm text-yellow-600">
+              You've reached your monthly limit of {searchLimit} searches.{" "}
+              <Link href="/upgrade" className="font-semibold underline underline-offset-2">
+                Upgrade for unlimited searches
+              </Link>
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
   const onSave = async (domain: string, email: string) => {
     try {
       const res = await saveBuyer({ userId, buyer: { email, first_name: null as any, last_name: null as any, company: domain, title: "Public email" } })
@@ -98,6 +122,10 @@ export function PublicEmailFinderForm({ userId }: Props) {
         <CardDescription>
          Extract publicly listed emails from company websites. Try keywords like: affiliate, marketing, saas, crm, ecommerce, payment, analytics, ai, blockchain, healthcare, education, hr, security, design, development, and 100+ more.
         </CardDescription>
+        <div className="text-sm text-muted-foreground pt-2">
+          Searches remaining this month: <span className="font-bold">{searchesRemainingLocal}</span> / {searchLimit}
+          {searchLimit > 900000 && <span className="text-green-600 font-semibold ml-2">✓ Unlimited</span>}
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         <form onSubmit={onSubmit} className="space-y-4">
