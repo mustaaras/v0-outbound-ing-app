@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server"
 import { TIER_LIMITS } from "@/lib/types"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Wand2, Archive, Crown, TrendingUp } from "lucide-react"
+import { TrendingUp, Archive, Crown } from "lucide-react"
 import Link from "next/link"
 
 export default async function DashboardPage() {
@@ -93,64 +93,34 @@ export default async function DashboardPage() {
         </Card>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <Button asChild className="w-full justify-start bg-transparent" variant="outline">
-              <Link href="/generator">
-                <Wand2 className="mr-2 h-4 w-4" />
-                Generate New Template
-              </Link>
-            </Button>
-            <Button asChild className="w-full justify-start bg-transparent" variant="outline">
-              <Link href="/archive">
-                <Archive className="mr-2 h-4 w-4" />
-                View Archive
-              </Link>
-            </Button>
-            {user.tier === "free" && (
-              <Button asChild className="w-full justify-start bg-transparent" variant="outline">
-                <Link href="/upgrade">
-                  <Crown className="mr-2 h-4 w-4" />
-                  Upgrade to Pro
-                </Link>
-              </Button>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Templates</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {!recentTemplates || recentTemplates.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No templates yet. Generate your first one!</p>
-            ) : (
-              <div className="space-y-3">
-                {recentTemplates.map((template) => (
-                  <div key={template.id} className="flex items-start justify-between rounded-lg border p-3">
-                    <div className="space-y-1">
-                      <div className="font-medium text-sm line-clamp-1">{template.subject || "Untitled"}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {new Date(template.created_at).toLocaleDateString()}
-                      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Recent Emails</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {!recentTemplates || recentTemplates.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No emails yet. Generate your first one!</p>
+          ) : (
+            <div className="space-y-3">
+              {recentTemplates.map((template) => (
+                <div key={template.id} className="flex items-start justify-between rounded-lg border p-3">
+                  <div className="space-y-1">
+                    <div className="font-medium text-sm line-clamp-1">{template.subject || "Untitled"}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {new Date(template.created_at).toLocaleDateString()}
                     </div>
                   </div>
-                ))}
-              </div>
-            )}
-            {recentTemplates && recentTemplates.length > 0 && (
-              <Button asChild variant="link" className="mt-4 h-auto p-0 text-sm">
-                <Link href="/archive">View all →</Link>
-              </Button>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+                </div>
+              ))}
+            </div>
+          )}
+          {recentTemplates && recentTemplates.length > 0 && (
+            <Button asChild variant="link" className="mt-4 h-auto p-0 text-sm">
+              <Link href="/archive">View all →</Link>
+            </Button>
+          )}
+        </CardContent>
+      </Card>
     </div>
   )
 }
