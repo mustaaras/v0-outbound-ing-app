@@ -49,7 +49,7 @@ export async function startCheckoutSession(productId: string) {
           },
           unit_amount: product.priceInCents,
           recurring: {
-            interval: "month",
+            interval: product.billingCycle === "annual" ? "year" : "month",
           },
         },
         quantity: 1,
