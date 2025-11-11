@@ -8,7 +8,9 @@ import { SNOV_SEARCH_LIMITS } from "@/lib/types"
 interface SearchBuyersInput {
   userId: string
   userTier: string
+  mode?: "domain" | "keyword"
   domain?: string
+  keyword?: string
   title?: string
   requestedCount?: number
 }
@@ -176,7 +178,9 @@ export async function searchBuyers(input: SearchBuyersInput): Promise<SearchBuye
     const toRequest = Math.min(requested, searchesRemaining, 50) // cap absolute request to 50
 
     const searchResponse = await snovClient.searchBuyers({
+      mode: input.mode,
       domain: input.domain,
+      keyword: input.keyword,
       title: input.title,
       limit: toRequest,
       page: 1,

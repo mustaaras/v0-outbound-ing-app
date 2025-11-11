@@ -15,7 +15,9 @@ interface SnovBuyer {
 }
 
 interface SnovSearchParams {
-  domain?: string // required for domain prospect search
+  mode?: "domain" | "keyword" // search mode
+  domain?: string // required for domain prospect search when mode=domain
+  keyword?: string // company name / keyword when mode=keyword
   title?: string // free-text job title to be tokenized into positions[]
   limit?: number // desired number of prospects to return (client slices)
   page?: number // optional page for pagination (default 1)
@@ -147,6 +149,69 @@ class SnovClient {
     if (!(this.clientId && this.clientSecret)) return
     if (this.accessToken && this.tokenExpiresAt && Date.now() < this.tokenExpiresAt) return
     await this.fetchAccessToken()
+  }
+
+  /**
+   * Start company-domain-by-name task given a keyword/company name
+   */
+  private async startCompanyDomainByName(keyword: string): Promise<string[] | null> {
+    try {
+      await this.ensureAccessToken()
+      const authHeader = this.accessToken ? `Bearer ${this.accessToken}` : `Bearer ${this.apiKey}`
+      const url = `${this.apiUrl}/company-domain-by-name/start`
+      const names = [keyword.trim()].filter(Boolean)
+      const payload = { names }
+      devLog('[v0] Starting company-domain-by-name search', names)
+      let resp = await fetch(url, {
+        method: 'POST',
+        headers: { Authorization: authHeader, 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      if ((resp.status === 401 || resp.status === 403) && this.clientId && this.clientSecret) {
+        await this.fetchAccessToken()
+        const retryHeader = this.accessToken ? `Bearer ${this.accessToken}` : `Bearer ${this.apiKey}`
+        resp = await fetch(url, {
+          method: 'POST',
+          headers: { Authorization: retryHeader, 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
+      }
+      const text = await resp.text()
+      devLog('[v0] company-domain-by-name start response', resp.status, text)
+      if (!resp.ok) return null
+      let json: any
+      try { json = JSON.parse(text) } catch { return null }
+      const taskHash = json?.data?.task_hash || json?.task_hash || json?.meta?.task_hash
+      if (!taskHash) {
+        errorLog('[v0] company-domain-by-name missing task_hash', json)
+        return null
+      }
+      // poll result endpoint
+      const resultUrl = `${this.apiUrl}/company-domain-by-name/result?task_hash=${encodeURIComponent(taskHash)}`
+      const delays = [800, 1500, 2500, 4000]
+      for (let i = 0; i < delays.length; i++) {
+        await new Promise(r => setTimeout(r, delays[i]))
+        let rResp = await fetch(resultUrl, { headers: { Authorization: authHeader } })
+        if ((rResp.status === 401 || rResp.status === 403) && this.clientId && this.clientSecret) {
+          await this.fetchAccessToken()
+          const retryAuth = this.accessToken ? `Bearer ${this.accessToken}` : `Bearer ${this.apiKey}`
+            rResp = await fetch(resultUrl, { headers: { Authorization: retryAuth } })
+        }
+        const rText = await rResp.text()
+        devLog(`[v0] company-domain-by-name poll ${i+1}`, rResp.status, rText.substring(0,300))
+        if (!rResp.ok) continue
+        let rJson: any
+        try { rJson = JSON.parse(rText) } catch { continue }
+        if (rJson.status === 'completed') {
+          const domains: string[] = (rJson.data || []).map((d: any) => d?.result?.domain).filter((d: any) => typeof d === 'string' && d.includes('.'))
+          return domains.length ? domains : null
+        }
+      }
+      return null
+    } catch (e) {
+      errorLog('[v0] company-domain-by-name exception', e)
+      return null
+    }
   }
 
   /**
@@ -300,12 +365,27 @@ class SnovClient {
    */
   async searchBuyers(params: SnovSearchParams): Promise<SnovSearchResponse> {
     try {
-      if (!params.domain) {
-        return { success: false, data: { total: 0, results: [] }, error: "Domain is required" }
+      const mode = params.mode || (params.keyword ? 'keyword' : 'domain')
+      let workingDomain = params.domain
+      if (mode === 'keyword') {
+        if (!params.keyword) {
+          return { success: false, data: { total: 0, results: [] }, error: 'Keyword is required' }
+        }
+        // convert keyword to domain(s)
+        const domains = await this.startCompanyDomainByName(params.keyword)
+        if (!domains || domains.length === 0) {
+          return { success: true, data: { total: 0, results: [] } }
+        }
+        // just use first domain for now (future: iterate until enough prospects)
+        workingDomain = domains[0]
+        devLog('[v0] keyword resolved to domain', workingDomain, 'from', domains)
+      }
+      if (!workingDomain) {
+        return { success: false, data: { total: 0, results: [] }, error: 'Domain is required' }
       }
       
       // Clean domain - remove protocol and paths if present
-      let cleanDomain = params.domain.trim().toLowerCase()
+  let cleanDomain = workingDomain.trim().toLowerCase()
       cleanDomain = cleanDomain.replace(/^https?:\/\//, '') // remove http:// or https://
       cleanDomain = cleanDomain.replace(/^www\./, '') // remove www.
       cleanDomain = cleanDomain.split('/')[0] // remove any paths
@@ -367,6 +447,7 @@ class SnovClient {
       }
       
       const total = result.total || result.count || prospects.length || 0
+      // Map and filter to only those with an email
       const mapped: SnovBuyer[] = prospects.map((p: any) => ({
         email: p.email || p.emails?.[0] || "",
         first_name: p.first_name || p.firstname || "",
@@ -377,7 +458,7 @@ class SnovClient {
         phone: p.phone || p.phones?.[0],
         industry: p.industry || p.company_industry,
         company_size: p.company_size || p.company_size_range,
-      }))
+      })).filter((b: SnovBuyer) => b.email && b.email.trim() !== "")
       const limit = params.limit && params.limit > 0 ? params.limit : mapped.length
       const sliced = mapped.slice(0, limit)
       devLog("[v0] domain search completed:", { domain: cleanDomain, total, returned: sliced.length, positions })

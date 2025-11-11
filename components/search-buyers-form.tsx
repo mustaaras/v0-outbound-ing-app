@@ -22,7 +22,9 @@ interface SearchBuyersFormProps {
 }
 
 export function SearchBuyersForm({ userId, userTier, searchesUsed, searchLimit }: SearchBuyersFormProps) {
+  const [mode, setMode] = useState<"keyword" | "domain">("keyword")
   const [domain, setDomain] = useState("")
+  const [keyword, setKeyword] = useState("")
   const [title, setTitle] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [results, setResults] = useState<SnovBuyer[]>([])
@@ -40,12 +42,12 @@ export function SearchBuyersForm({ userId, userTier, searchesUsed, searchLimit }
     setResults([])
     setSelectedBuyer(null)
 
-    if (!domain) {
-      toast({
-        title: "Domain required",
-        description: "Please enter a company domain (e.g. example.com)",
-        variant: "destructive",
-      })
+    if (mode === 'domain' && !domain) {
+      toast({ title: 'Domain required', description: 'Enter a company domain (e.g. example.com)', variant: 'destructive' })
+      return
+    }
+    if (mode === 'keyword' && !keyword) {
+      toast({ title: 'Keyword required', description: 'Enter a company name or keyword', variant: 'destructive' })
       return
     }
 
@@ -55,7 +57,9 @@ export function SearchBuyersForm({ userId, userTier, searchesUsed, searchLimit }
       const result = await searchBuyers({
         userId,
         userTier,
-        domain: domain || undefined,
+        mode,
+        domain: mode === 'domain' ? (domain || undefined) : undefined,
+        keyword: mode === 'keyword' ? (keyword || undefined) : undefined,
         title: title || undefined,
         requestedCount: requestedCount,
       })
@@ -165,27 +169,24 @@ export function SearchBuyersForm({ userId, userTier, searchesUsed, searchLimit }
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="domain">Company Domain</Label>
-            <Input
-              id="domain"
-              placeholder="e.g., google.com"
-              value={domain}
-              onChange={(e) => setDomain(e.target.value)}
-              disabled={isLoading}
-            />
+        <div className="flex flex-col gap-4">
+          <div className="flex gap-2">
+            <Button type="button" variant={mode === 'keyword' ? 'default' : 'outline'} disabled={isLoading} onClick={() => setMode('keyword')}>Keyword</Button>
+            <Button type="button" variant={mode === 'domain' ? 'default' : 'outline'} disabled={isLoading} onClick={() => setMode('domain')}>Domain</Button>
           </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="title">Job Title</Label>
-            <Input
-              id="title"
-              placeholder="e.g., Sales Manager"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              disabled={isLoading}
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              {mode === 'domain' ? <Label htmlFor="domain">Company Domain</Label> : <Label htmlFor="keyword">Keyword / Company Name</Label>}
+              {mode === 'domain' ? (
+                <Input id="domain" placeholder="e.g., hubspot.com" value={domain} onChange={(e) => setDomain(e.target.value)} disabled={isLoading} />
+              ) : (
+                <Input id="keyword" placeholder="e.g., HubSpot" value={keyword} onChange={(e) => setKeyword(e.target.value)} disabled={isLoading} />
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="title">Job Title (optional)</Label>
+              <Input id="title" placeholder="e.g., Sales Manager" value={title} onChange={(e) => setTitle(e.target.value)} disabled={isLoading} />
+            </div>
           </div>
         </div>
 
@@ -223,7 +224,7 @@ export function SearchBuyersForm({ userId, userTier, searchesUsed, searchLimit }
           ) : (
             <>
               <Search className="mr-2 h-4 w-4" />
-              Search Prospects
+              {mode === 'keyword' ? 'Search By Keyword' : 'Search By Domain'}
             </>
           )}
         </Button>
@@ -232,7 +233,7 @@ export function SearchBuyersForm({ userId, userTier, searchesUsed, searchLimit }
       {results.length > 0 && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold">Search Results</h3>
+            <h3 className="text-lg font-semibold">Search Results {mode === 'keyword' && keyword ? `for "${keyword}"` : ''}</h3>
             <Badge variant="outline">{results.length} prospects found</Badge>
           </div>
 
