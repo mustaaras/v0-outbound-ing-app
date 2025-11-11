@@ -39,6 +39,11 @@ export function MobileHeader({ user }: MobileHeaderProps) {
     router.refresh()
   }
 
+  // Debug: log navigation items count
+  if (typeof window !== 'undefined') {
+    console.log('Mobile nav items:', navigation.length)
+  }
+
   return (
     <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-background px-4 md:hidden">
       <Link href="/dashboard" className="flex items-center gap-2 font-semibold">

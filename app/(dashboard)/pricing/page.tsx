@@ -29,7 +29,7 @@ export default async function PricingPage() {
     {
       name: "Free",
       price: "$0",
-      description: "Perfect for trying out Outbound.ing",
+      description: "Generous free tier for new users and testing",
       tier: "free" as const,
       productId: null,
       features: [
@@ -39,6 +39,7 @@ export default async function PricingPage() {
         "Basic customization",
         "Email support",
         "Email Finder – 30 searches/month",
+        "Verified Contacts (Premium Beta) – Not included",
       ],
       cta: user.tier === "free" ? "Current Plan" : "Downgrade",
       disabled: user.tier === "free",
@@ -49,7 +50,13 @@ export default async function PricingPage() {
       description: product.description,
       tier: product.tier,
       productId: product.id,
-      features: product.features,
+      features: [
+        ...product.features.map(f =>
+          f.startsWith("Verified Contacts")
+            ? "Verified Contacts (Premium Beta) – Included"
+            : f
+        ),
+      ],
       cta: user.tier === product.tier ? "Current Plan" : "Upgrade Now",
       disabled: user.tier === product.tier,
     })),
@@ -85,15 +92,21 @@ export default async function PricingPage() {
                 {plan.features.map((feature, index) => {
                   const lower = feature.toLowerCase()
                   const isSearch = lower.startsWith("search contacts") || lower.includes("contact searches") || lower.includes("saved contact emails")
+                  const isVerified = lower.includes("verified contacts")
                   return (
                     <li key={index} className="flex items-start gap-2">
                       {isSearch ? (
                         <Search className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                      ) : isVerified ? (
+                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-green-600" />
                       ) : (
                         <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                       )}
                       <span className="text-sm flex items-center gap-2">
                         {feature}
+                        {isVerified && (
+                          <span className="inline-flex items-center rounded-full bg-yellow-200 px-2 py-0.5 text-[10px] font-medium text-yellow-800">Premium Beta</span>
+                        )}
                         {isSearch && (
                           <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">Email-only</span>
                         )}

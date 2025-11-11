@@ -22,6 +22,8 @@ interface SearchContactsFormProps {
 }
 
 export function SearchContactsForm({ userId, userTier, searchesUsed, searchLimit }: SearchContactsFormProps) {
+  // Premium Beta: Verified Contacts is not available for any tier yet
+  const isVerifiedContactsBeta = true // Set to true to show beta messaging and disable feature
   const [domain, setDomain] = useState("")
   const [title, setTitle] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -161,52 +163,49 @@ export function SearchContactsForm({ userId, userTier, searchesUsed, searchLimit
   }
 
   if (searchLimit === 0) {
-    return (
-      <div className="space-y-6">
-        <Card className="border-blue-500/50 bg-blue-500/10">
-          <CardContent className="p-4 flex items-start gap-3">
-            <AlertCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
-            <div className="space-y-1">
-              <p className="text-sm font-semibold text-blue-600">Upgrade Required</p>
-              <p className="text-sm text-blue-600">
-                Verified Contacts is available on Light, Pro, and Ultra plans.{" "}
-                <Link href="/upgrade" className="font-semibold underline underline-offset-2">
-                  Upgrade now
-                </Link>{" "}
-                to unlock verified prospect search with job titles and company data.
+    // Block all usage of Verified Contacts (API search) during beta
+    if (isVerifiedContactsBeta) {
+      return (
+        <div className="space-y-6">
+          <Card className="border-yellow-400/30 bg-yellow-100/10">
+            <CardContent className="p-4 flex items-start gap-3">
+              <AlertCircle className="h-5 w-5 text-yellow-800 flex-shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <p className="text-sm font-semibold text-yellow-800">Premium Beta</p>
+                <p className="text-sm text-yellow-800">
+                  Verified Contacts is a Premium Beta feature and is not available yet. Pricing and access will be announced soon.<br />
+                  <span className="font-semibold">Stay tuned for updates!</span>
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+          <form className="rounded-lg border bg-card p-6 space-y-6 opacity-50 pointer-events-none">
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Search for Prospects</h3>
+              <p className="text-sm text-muted-foreground">
+                Find the right people to reach out to.
               </p>
             </div>
-          </CardContent>
-        </Card>
-
-        <form onSubmit={handleSearch} className="rounded-lg border bg-card p-6 space-y-6 opacity-50 pointer-events-none">
-          <div>
-            <h3 className="text-lg font-semibold mb-2">Search for Prospects</h3>
-            <p className="text-sm text-muted-foreground">
-              Find the right people to reach out to.
-            </p>
-          </div>
-
-          <div className="flex flex-col gap-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="domain">Company Domain</Label>
-                <Input id="domain" placeholder="e.g., hubspot.com" disabled />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="title">Job Title (optional)</Label>
-                <Input id="title" placeholder="e.g., Sales Manager" disabled />
+            <div className="flex flex-col gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="domain">Company Domain</Label>
+                  <Input id="domain" placeholder="e.g., hubspot.com" disabled />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="title">Job Title (optional)</Label>
+                  <Input id="title" placeholder="e.g., Sales Manager" disabled />
+                </div>
               </div>
             </div>
-          </div>
-
-          <Button type="submit" className="w-full" disabled>
-            <Search className="mr-2 h-4 w-4" />
-            Search By Domain
-          </Button>
-        </form>
-      </div>
-    )
+            <Button type="submit" className="w-full" disabled>
+              <Search className="mr-2 h-4 w-4" />
+              Search By Domain
+            </Button>
+          </form>
+        </div>
+      )
+    }
   }
 
   return (
