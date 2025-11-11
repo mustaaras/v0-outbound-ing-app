@@ -3,6 +3,9 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
 import { PRODUCTS } from "@/lib/products"
+import { getUserSearchCount } from "@/app/actions/search-buyers"
+import { SNOV_SEARCH_LIMITS } from "@/lib/types"
+import { SearchBuyersForm } from "@/components/search-buyers-form"
 import { getCurrentUser } from "@/lib/auth-utils"
 import { redirect } from "next/navigation"
 
@@ -10,6 +13,14 @@ export default async function PricingPage() {
   const user = await getCurrentUser()
   if (!user) {
     redirect("/auth/login")
+  }
+
+  const isEligibleForSearch = user.tier === "pro" || user.tier === "ultra"
+  let searchesUsed: number | null = null
+  let searchLimit: number | null = null
+  if (isEligibleForSearch) {
+    searchesUsed = await getUserSearchCount((user as any).id)
+    searchLimit = SNOV_SEARCH_LIMITS[user!.tier as keyof typeof SNOV_SEARCH_LIMITS] || 0
   }
 
   const plans = [
@@ -204,6 +215,40 @@ export default async function PricingPage() {
               </tbody>
             </table>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Search Buyers section */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Search Buyers</CardTitle>
+          <CardDescription>
+            Find and add buyer prospects directly to your templates. Available on Pro and Ultra.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {isEligibleForSearch && searchesUsed !== null && searchLimit !== null ? (
+            <div className="max-w-4xl">
+              <SearchBuyersForm
+                userId={(user as any).id}
+                userTier={(user as any).tier}
+                searchesUsed={searchesUsed}
+                searchLimit={searchLimit}
+              />
+            </div>
+          ) : (
+            <div className="rounded-lg border bg-muted/30 p-6">
+              <p className="text-sm text-muted-foreground">
+                Search Buyers is a Pro and Ultra feature. Upgrade to unlock monthly buyer searches and add prospects
+                to your templates in one click.
+              </p>
+              <div className="mt-4">
+                <Button asChild>
+                  <Link href="/upgrade">Upgrade to Pro or Ultra</Link>
+                </Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
