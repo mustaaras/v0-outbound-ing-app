@@ -651,31 +651,67 @@ export async function publicEmailFinder(
   const fromKeyword = resolveDomainsFromKeyword(params.keyword)
   domains.push(...fromKeyword)
   if (params.domains) domains.push(...params.domains)
-  // Increase unique domains to check more companies
   const uniqueDomains = Array.from(new Set(domains.map(normalizeDomain))).slice(0, 20)
 
   const all: PublicEmailResult[] = []
-  // Increase per-domain cap to get more results per company
   const perDomainCap = Math.max(1, params.perDomainCap ?? 5)
   const totalCap = Math.max(10, params.totalCap ?? 50)
   const seen = new Set<string>()
-  for (const d of uniqueDomains) {
-    if (all.length >= totalCap) break
-    // Increase pages per domain to scrape more pages per company
-    const res = await extractPublicEmailsForDomain(d, { pagesPerDomain: params.pagesPerDomain ?? 12 })
-    // Enforce per-domain cap and global cap, dedupe by email
-    let addedForDomain = 0
-    for (const r of res) {
-      if (all.length >= totalCap) break
-      if (addedForDomain >= perDomainCap) break
-      const key = `${r.email}`
-      if (seen.has(key)) continue
-      seen.add(key)
-      all.push(r)
-      addedForDomain++
+
+  // Concurrency limit for domains
+  const CONCURRENCY = 5
+  let idx = 0
+  let active = 0
+  let finished = false
+  let errors: any[] = []
+
+  // Helper to run domain fetches in parallel
+  async function runNext(): Promise<void> {
+    if (finished) return
+    if (idx >= uniqueDomains.length) return
+    if (all.length >= totalCap) {
+      finished = true
+      return
+    }
+    const d = uniqueDomains[idx++]
+    active++
+    try {
+      const res = await extractPublicEmailsForDomain(d, { pagesPerDomain: params.pagesPerDomain ?? 12, timeoutMs: 4000 })
+      let addedForDomain = 0
+      for (const r of res) {
+        if (all.length >= totalCap) break
+        if (addedForDomain >= perDomainCap) break
+        const key = `${r.email}`
+        if (seen.has(key)) continue
+        seen.add(key)
+        all.push(r)
+        addedForDomain++
+      }
+    } catch (e) {
+      errors.push(e)
+    } finally {
+      active--
+      if (!finished && idx < uniqueDomains.length) {
+        await runNext()
+      }
     }
   }
-  // If we still don't have enough results, ensure we return at least what we found
-  devLog("[public-email] Final results:", all.length, "from", uniqueDomains.length, "domains")
+
+  // Run with concurrency
+  const runners: Promise<void>[] = []
+  for (let i = 0; i < Math.min(CONCURRENCY, uniqueDomains.length); i++) {
+    runners.push(runNext())
+  }
+
+  // Global timeout
+  let timedOut = false
+  await Promise.race([
+    Promise.all(runners),
+    new Promise((_, reject) => setTimeout(() => { timedOut = true; reject(new Error("Search timed out (30s)")); }, 30000)),
+  ]).catch((e) => {
+    devLog("[public-email] Timeout or error:", e)
+  })
+
+  devLog("[public-email] Final results:", all.length, "from", uniqueDomains.length, "domains", timedOut ? "(timed out)" : "")
   return { results: all }
 }
