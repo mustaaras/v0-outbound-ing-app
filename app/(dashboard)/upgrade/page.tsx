@@ -80,7 +80,7 @@ export default async function UpgradePage({
               </li>
               <li className="flex items-start gap-2">
                 <Check className="mt-0.5 h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">Public Email Finder – 30 searches/month</span>
+                <span className="text-sm">Email Finder – 30 searches/month</span>
               </li>
             </ul>
             <Button disabled className="w-full bg-transparent" variant="outline">

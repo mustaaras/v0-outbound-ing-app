@@ -15,14 +15,14 @@ export const PRODUCTS: Product[] = [
     priceInCents: 1500, // $15/month
     tier: "light",
     features: [
-  "100 emails per month",
+      "100 emails per month",
       "All 101 premium strategies",
       "All 9 industry categories",
       "Full customization options",
       "Email support",
       "Full archive access",
-  "Search Contacts – up to 50 saved contact emails/month (email-only billing)",
-      "Public Email Finder – unlimited searches",
+      "Verified Contacts – 50 searches/month",
+      "Email Finder – unlimited searches",
     ],
   },
   {
@@ -32,15 +32,15 @@ export const PRODUCTS: Product[] = [
     priceInCents: 3900, // $39/month
     tier: "pro",
     features: [
-  "750 emails per month",
+      "750 emails per month",
       "All 101 premium strategies",
       "All 9 industry categories",
       "Full customization options",
       "A/B Test Generator (3 variants per email)",
       "Priority email support",
       "Full archive access",
-  "Search Contacts – up to 150 saved contact emails/month (email-only billing)",
-      "Public Email Finder – unlimited searches",
+      "Verified Contacts – 150 searches/month",
+      "Email Finder – unlimited searches",
     ],
   },
   {
@@ -50,7 +50,7 @@ export const PRODUCTS: Product[] = [
     priceInCents: 6900, // $69/month
     tier: "ultra",
     features: [
-  "1,500 emails per month",
+      "1,500 emails per month",
       "All 101 premium strategies",
       "All 9 industry categories",
       "Full customization options",
@@ -59,8 +59,8 @@ export const PRODUCTS: Product[] = [
       "Premium priority support",
       "Full archive access",
       "Early access to new features",
-  "Search Contacts – up to 300 saved contact emails/month (email-only billing)",
-      "Public Email Finder – unlimited searches",
+      "Verified Contacts – 300 searches/month",
+      "Email Finder – unlimited searches",
     ],
   },
 ]

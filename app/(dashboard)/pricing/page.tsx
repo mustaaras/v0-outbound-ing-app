@@ -33,11 +33,12 @@ export default async function PricingPage() {
       tier: "free" as const,
       productId: null,
       features: [
-      "25 emails per month",
+        "25 emails per month",
         "Access to free strategies",
         "9 industry categories",
         "Basic customization",
         "Email support",
+        "Email Finder – 30 searches/month",
       ],
       cta: user.tier === "free" ? "Current Plan" : "Downgrade",
       disabled: user.tier === "free",
