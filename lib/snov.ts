@@ -234,9 +234,11 @@ class SnovClient {
       
       try {
         const json = JSON.parse(text)
-        if (json?.task_hash) {
-          devLog("[v0] Got task_hash:", json.task_hash)
-          return { task_hash: json.task_hash }
+        // task_hash can be at root level or nested in meta
+        const taskHash = json?.task_hash || json?.meta?.task_hash
+        if (taskHash) {
+          devLog("[v0] Got task_hash:", taskHash)
+          return { task_hash: taskHash }
         }
         errorLog("[v0] startDomainProspects missing task_hash:", json)
         return null
