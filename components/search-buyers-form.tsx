@@ -22,9 +22,7 @@ interface SearchBuyersFormProps {
 }
 
 export function SearchBuyersForm({ userId, userTier, searchesUsed, searchLimit }: SearchBuyersFormProps) {
-  const [mode, setMode] = useState<"keyword" | "domain">("keyword")
   const [domain, setDomain] = useState("")
-  const [keyword, setKeyword] = useState("")
   const [title, setTitle] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [results, setResults] = useState<SnovBuyer[]>([])
@@ -42,12 +40,8 @@ export function SearchBuyersForm({ userId, userTier, searchesUsed, searchLimit }
     setResults([])
     setSelectedBuyer(null)
 
-    if (mode === 'domain' && !domain) {
+    if (!domain) {
       toast({ title: 'Domain required', description: 'Enter a company domain (e.g. example.com)', variant: 'destructive' })
-      return
-    }
-    if (mode === 'keyword' && !keyword) {
-      toast({ title: 'Keyword required', description: 'Enter a company name or keyword', variant: 'destructive' })
       return
     }
 
@@ -57,9 +51,8 @@ export function SearchBuyersForm({ userId, userTier, searchesUsed, searchLimit }
       const result = await searchBuyers({
         userId,
         userTier,
-        mode,
-        domain: mode === 'domain' ? (domain || undefined) : undefined,
-        keyword: mode === 'keyword' ? (keyword || undefined) : undefined,
+        mode: 'domain',
+        domain: domain || undefined,
         title: title || undefined,
         requestedCount: requestedCount,
       })
@@ -148,7 +141,7 @@ export function SearchBuyersForm({ userId, userTier, searchesUsed, searchLimit }
           <div className="space-y-1">
             <p className="text-sm font-semibold text-yellow-600">Search Buyers Unavailable</p>
             <p className="text-sm text-yellow-600">
-              Search Buyers is only available for Pro and Ultra plans.{" "}
+              Search Buyers is available on Light, Pro, and Ultra plans.{" "}
               <Link href="/upgrade" className="font-semibold underline underline-offset-2">
                 Upgrade now
               </Link>
@@ -170,18 +163,10 @@ export function SearchBuyersForm({ userId, userTier, searchesUsed, searchLimit }
         </div>
 
         <div className="flex flex-col gap-4">
-          <div className="flex gap-2">
-            <Button type="button" variant={mode === 'keyword' ? 'default' : 'outline'} disabled={isLoading} onClick={() => setMode('keyword')}>Keyword</Button>
-            <Button type="button" variant={mode === 'domain' ? 'default' : 'outline'} disabled={isLoading} onClick={() => setMode('domain')}>Domain</Button>
-          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              {mode === 'domain' ? <Label htmlFor="domain">Company Domain</Label> : <Label htmlFor="keyword">Keyword / Company Name</Label>}
-              {mode === 'domain' ? (
-                <Input id="domain" placeholder="e.g., hubspot.com" value={domain} onChange={(e) => setDomain(e.target.value)} disabled={isLoading} />
-              ) : (
-                <Input id="keyword" placeholder="e.g., HubSpot" value={keyword} onChange={(e) => setKeyword(e.target.value)} disabled={isLoading} />
-              )}
+              <Label htmlFor="domain">Company Domain</Label>
+              <Input id="domain" placeholder="e.g., hubspot.com" value={domain} onChange={(e) => setDomain(e.target.value)} disabled={isLoading} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="title">Job Title (optional)</Label>
@@ -202,7 +187,7 @@ export function SearchBuyersForm({ userId, userTier, searchesUsed, searchLimit }
               onChange={(e) => setRequestedCount(Number(e.target.value))}
               disabled={isLoading}
             />
-            <p className="text-xs text-muted-foreground mt-1">Each buyer counts as one search credit.</p>
+            <p className="text-xs text-muted-foreground mt-1">Each saved email counts toward your monthly quota.</p>
           </div>
         </div>
 
@@ -224,7 +209,7 @@ export function SearchBuyersForm({ userId, userTier, searchesUsed, searchLimit }
           ) : (
             <>
               <Search className="mr-2 h-4 w-4" />
-              {mode === 'keyword' ? 'Search By Keyword' : 'Search By Domain'}
+              Search By Domain
             </>
           )}
         </Button>
@@ -233,7 +218,7 @@ export function SearchBuyersForm({ userId, userTier, searchesUsed, searchLimit }
       {results.length > 0 && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold">Search Results {mode === 'keyword' && keyword ? `for "${keyword}"` : ''}</h3>
+            <h3 className="text-lg font-semibold">Search Results</h3>
             <Badge variant="outline">{results.length} prospects found</Badge>
           </div>
 
@@ -314,9 +299,8 @@ export function SearchBuyersForm({ userId, userTier, searchesUsed, searchLimit }
           <CardContent className="p-4 text-sm text-muted-foreground space-y-2">
             <div className="font-medium text-foreground">No prospects found</div>
             <ul className="list-disc pl-5 space-y-1">
-              <li>Try switching to Domain mode and enter a specific company domain.</li>
+              <li>Try a different company domain.</li>
               <li>Add a Job Title like “Affiliate Manager”, “Partnerships Manager”, or “Head of Partnerships”.</li>
-              <li>Use a more specific keyword (e.g., a company name instead of a broad term).</li>
             </ul>
           </CardContent>
         </Card>
