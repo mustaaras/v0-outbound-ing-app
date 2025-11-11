@@ -121,7 +121,7 @@ export default function SignupPage() {
         <div className="flex flex-col gap-6">
           <div className="flex flex-col items-center gap-2 text-center">
             <h1 className="text-3xl font-bold tracking-tight">Outbound.ing</h1>
-            <p className="text-sm text-muted-foreground">AI-powered cold outreach templates</p>
+            <p className="text-sm text-muted-foreground">AI-powered cold email generator</p>
           </div>
           <Card>
             <CardHeader>

@@ -49,24 +49,21 @@ export default function TermsPage() {
 
             <section className="space-y-3">
               <h2 className="text-2xl font-semibold">3. Subscription Plans & Pricing</h2>
-              <p>We offer four subscription tiers:</p>
+              <p>We offer three subscription tiers:</p>
               <ul className="list-disc space-y-2 pl-6">
                 <li>
-                  <strong>Free Plan:</strong> 5 email generations per month at no cost
+                  <strong>Free Plan:</strong> 30 email generations per month at no cost
                 </li>
                 <li>
-                  <strong>Light Plan:</strong> 100 email generations per month at $9.99/month
+                  <strong>Light Plan:</strong> 300 email generations per month at $15/month (or $12/month billed annually)
                 </li>
                 <li>
-                  <strong>Pro Plan:</strong> 750 email generations per month at $29/month
-                </li>
-                <li>
-                  <strong>Ultra Plan:</strong> 1,500 email generations per month at $49/month
+                  <strong>Pro Plan:</strong> Unlimited email generations at $39/month (or $31.20/month billed annually)
                 </li>
               </ul>
               <p className="pt-2">
-                All prices are in USD and billed monthly. Subscription automatically renews unless cancelled before the
-                next billing cycle.
+                All prices are in USD. Monthly plans are billed monthly, annual plans are billed yearly. Subscriptions automatically renew unless cancelled before the
+                next billing cycle. Annual plans offer a 20% discount compared to monthly billing.
               </p>
             </section>
 

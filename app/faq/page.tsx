@@ -50,19 +50,16 @@ export default function FAQPage() {
               <AccordionContent className="text-muted-foreground">
                 <ul className="space-y-2">
                   <li>
-                    <strong>Free Plan:</strong> 5 email generations per month
+                    <strong>Free Plan:</strong> 30 email generations per month
                   </li>
                   <li>
-                    <strong>Light Plan:</strong> 100 emails/month at $9.99/month
+                    <strong>Light Plan:</strong> 300 emails/month at $15/month (or $12/month billed annually - save 20%)
                   </li>
                   <li>
-                    <strong>Pro Plan:</strong> 750 emails/month at $29/month
-                  </li>
-                  <li>
-                    <strong>Ultra Plan:</strong> 1,500 emails/month at $49/month
+                    <strong>Pro Plan:</strong> Unlimited emails at $39/month (or $31.20/month billed annually - save 20%)
                   </li>
                 </ul>
-                <p className="mt-2">All paid plans are billed monthly and renew automatically.</p>
+                <p className="mt-2">All paid plans include access to all 101 premium strategies. Monthly plans renew automatically each month, annual plans renew yearly.</p>
               </AccordionContent>
             </AccordionItem>
 
@@ -84,7 +81,7 @@ export default function FAQPage() {
               <AccordionContent className="text-muted-foreground">
                 Yes, you can cancel your subscription at any time from your account settings. When you cancel, you'll
                 retain access to your paid plan until the end of your current billing period. After that, your account
-                will automatically revert to the Free plan with 25 emails/month.
+                will automatically revert to the Free plan with 30 emails/month.
               </AccordionContent>
             </AccordionItem>
 
