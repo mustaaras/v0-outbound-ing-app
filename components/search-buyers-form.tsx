@@ -11,6 +11,7 @@ import { Loader2, Search, Mail, Briefcase, AlertCircle, Send } from "lucide-reac
 import { useToast } from "@/hooks/use-toast"
 import { searchBuyers } from "@/app/actions/search-buyers"
 import { saveBuyer } from "@/app/actions/save-buyer"
+import { generateContacts } from "@/app/actions/contact-generator"
 import type { SnovBuyer } from "@/lib/snov"
 import Link from "next/link"
 
@@ -31,12 +32,24 @@ export function SearchContactsForm({ userId, userTier, searchesUsed, searchLimit
     setContactLoading(true)
     setContactResults(null)
     try {
-      // @ts-ignore
-      const { findContactEmails } = await import("@/lib/public-email")
-      const results = await findContactEmails({ keyword, maxResults: 5 })
-      setContactResults(results)
+      const result = await generateContacts(keyword)
+      if (result.success) {
+        setContactResults(result.data.results)
+      } else {
+        setContactResults([])
+        toast({
+          title: "Search failed",
+          description: result.error || "Failed to find contacts",
+          variant: "destructive",
+        })
+      }
     } catch (e) {
       setContactResults([])
+      toast({
+        title: "Error",
+        description: e instanceof Error ? e.message : "Unexpected error",
+        variant: "destructive",
+      })
     } finally {
       setContactLoading(false)
     }
