@@ -49,11 +49,6 @@ export function Sidebar({ user }: SidebarProps) {
 
       <nav className="flex-1 space-y-1 p-4">
         {navigation.map((item) => {
-          // Restrict Search Contacts to light/pro/ultra users (not free)
-          if (item.name === "Search Contacts" && user.tier === "free") {
-            return null
-          }
-
           const isActive = pathname === item.href
           const Icon = item.icon
 

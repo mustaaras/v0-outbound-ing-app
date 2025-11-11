@@ -40,6 +40,16 @@ export function SearchContactsForm({ userId, userTier, searchesUsed, searchLimit
     setResults([])
     setSelectedContact(null)
 
+    // Check if free tier user trying to use API search
+    if (searchLimit === 0) {
+      toast({
+        title: "Upgrade Required",
+        description: "Company Email Search (API) is only available for paid users. Upgrade to Light, Pro, or Ultra to access this feature.",
+        variant: "destructive",
+      })
+      return
+    }
+
     if (!domain) {
       toast({ title: 'Domain required', description: 'Enter a company domain (e.g. example.com)', variant: 'destructive' })
       return
@@ -152,20 +162,50 @@ export function SearchContactsForm({ userId, userTier, searchesUsed, searchLimit
 
   if (searchLimit === 0) {
     return (
-      <Card className="border-yellow-500/50 bg-yellow-500/10">
-        <CardContent className="p-4 flex items-start gap-3">
-          <AlertCircle className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
-          <div className="space-y-1">
-            <p className="text-sm font-semibold text-yellow-600">Search Contacts Unavailable</p>
-            <p className="text-sm text-yellow-600">
-              Search Contacts is available on Light, Pro, and Ultra plans.{" "}
-              <Link href="/upgrade" className="font-semibold underline underline-offset-2">
-                Upgrade now
-              </Link>
+      <div className="space-y-6">
+        <Card className="border-blue-500/50 bg-blue-500/10">
+          <CardContent className="p-4 flex items-start gap-3">
+            <AlertCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-blue-600">Upgrade Required</p>
+              <p className="text-sm text-blue-600">
+                Company Email Search (API) is available on Light, Pro, and Ultra plans.{" "}
+                <Link href="/upgrade" className="font-semibold underline underline-offset-2">
+                  Upgrade now
+                </Link>{" "}
+                to unlock verified prospect search with job titles and company data.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <form onSubmit={handleSearch} className="rounded-lg border bg-card p-6 space-y-6 opacity-50 pointer-events-none">
+          <div>
+            <h3 className="text-lg font-semibold mb-2">Search for Prospects</h3>
+            <p className="text-sm text-muted-foreground">
+              Find the right people to reach out to.
             </p>
           </div>
-        </CardContent>
-      </Card>
+
+          <div className="flex flex-col gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="domain">Company Domain</Label>
+                <Input id="domain" placeholder="e.g., hubspot.com" disabled />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="title">Job Title (optional)</Label>
+                <Input id="title" placeholder="e.g., Sales Manager" disabled />
+              </div>
+            </div>
+          </div>
+
+          <Button type="submit" className="w-full" disabled>
+            <Search className="mr-2 h-4 w-4" />
+            Search By Domain
+          </Button>
+        </form>
+      </div>
     )
   }
 
