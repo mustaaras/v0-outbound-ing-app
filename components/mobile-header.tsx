@@ -16,6 +16,7 @@ interface MobileHeaderProps {
   user: User
 }
 
+// Navigation items for mobile menu - all users can see all items
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
   { name: "Search Contacts", href: "/search-buyers", icon: Users },
