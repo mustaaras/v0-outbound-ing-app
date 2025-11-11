@@ -39,7 +39,7 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
   const [tone, setTone] = useState<string>("Professional")
   const [emailLength, setEmailLength] = useState<string>("Medium")
   const [goal, setGoal] = useState<string>("Get a reply")
-  const [personalization, setPersonalization] = useState<string>("Medium")
+  const [language, setLanguage] = useState<string>("English")
   const [showAdvancedOptions, setShowAdvancedOptions] = useState<boolean>(false)
   
   // Premium features
@@ -220,7 +220,7 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
         tone,
         emailLength,
         goal,
-        personalization,
+        language,
         generateVariants,
         generateMultiChannel,
         additionalNotes: additionalNotes || undefined,
@@ -515,30 +515,33 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Personalization Level</Label>
-                <div className="grid grid-cols-3 gap-2">
-                  {[
-                    { value: "Low", label: "Minimal", desc: "Generic message" },
-                    { value: "Medium", label: "Balanced", desc: "Some personalization" },
-                    { value: "High", label: "Highly Personal", desc: "Maximum details" }
-                  ].map(({ value, label, desc }) => (
-                    <button
-                      key={value}
-                      type="button"
-                      onClick={() => setPersonalization(value)}
-                      className={`px-4 py-3 text-sm rounded-md border transition-colors ${
-                        personalization === value
-                          ? "bg-primary text-primary-foreground border-primary"
-                          : "bg-background hover:bg-muted border-border"
-                      }`}
-                    >
-                      <div className="font-medium">{label}</div>
-                      <div className="text-xs opacity-75 mt-1">{desc}</div>
-                    </button>
-                  ))}
+              {(userTier === "pro" || userTier === "ultra") && (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Label className="text-sm font-medium">Language</Label>
+                    <Badge variant="secondary" className="gap-1">
+                      <Crown className="h-3 w-3" />
+                      Pro
+                    </Badge>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                    {["English", "Spanish", "French", "German", "Italian", "Portuguese", "Dutch", "Chinese"].map((lang) => (
+                      <button
+                        key={lang}
+                        type="button"
+                        onClick={() => setLanguage(lang)}
+                        className={`px-4 py-2 text-sm rounded-md border transition-colors ${
+                          language === lang
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "bg-background hover:bg-muted border-border"
+                        }`}
+                      >
+                        {lang}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
             )}
           </div>

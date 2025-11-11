@@ -17,7 +17,7 @@ interface GenerateTemplateInput {
   tone: string
   emailLength: string
   goal: string
-  personalization: string
+  language: string
   generateVariants?: boolean
   generateMultiChannel?: boolean
   additionalNotes?: string
@@ -58,19 +58,13 @@ export async function generateTemplate(input: GenerateTemplateInput) {
   const lengthGuide =
   input.emailLength === "Short" ? "2-3 sentences" : input.emailLength === "Medium" ? "4-6 sentences" : "a full paragraph (7-10 sentences)"
 
-  const personalizationGuide =
-    input.personalization === "Low"
-      ? "Keep personalization minimal, focus on the core message"
-      : input.personalization === "Medium"
-        ? "Use moderate personalization with recipient details where available"
-        : "Heavily personalize using all available recipient information and context"
+  const languageInstruction = input.language !== "English" ? `\n**IMPORTANT: Write the entire email in ${input.language}. All content must be in ${input.language}.**\n` : ""
 
   const prompt = `You are an expert cold email copywriter specializing in ${input.category} outreach. Generate a persuasive cold email about "${input.subject}" ${recipientText}.
-
+${languageInstruction}
 **Tone:** ${input.tone}
 **Length:** ${lengthGuide}
 **Goal:** ${input.goal}
-**Personalization:** ${personalizationGuide}
 
 Combine and blend the following strategies into one cohesive, compelling email:
 
@@ -80,7 +74,6 @@ Requirements:
 - Adopt a ${input.tone.toLowerCase()} tone throughout
 - Keep the email to approximately ${lengthGuide}
 - Primary goal is to: ${input.goal.toLowerCase()}
-- ${personalizationGuide}
 - Make it conversational and engaging
 - Focus on value and benefits for the recipient
 - Include a clear call-to-action that aligns with the goal
@@ -90,6 +83,7 @@ ${input.recipientName ? `- Address the recipient as ${input.recipientName}` : "-
 - Do NOT include any signature, sign-off with a name, or contact information at the end
 - End with just "Best regards," or similar closing phrase
 - Do NOT add placeholders like [Your Name], [Your Company], etc.
+${input.language !== "English" ? `- Write EVERYTHING in ${input.language}, including greetings, body, and closing` : ""}
 
 Generate ONLY the email body text, no subject line. The sender's signature will be added separately.`
 
