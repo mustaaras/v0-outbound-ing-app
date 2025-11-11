@@ -4,6 +4,7 @@ import { getUserSearchCount } from "@/app/actions/search-buyers"
 import { createClient } from "@/lib/supabase/server"
 import { SNOV_SEARCH_LIMITS } from "@/lib/types"
 import { SearchBuyersForm } from "@/components/search-buyers-form"
+import { PublicEmailFinderForm } from "@/components/public-email-finder-form"
 
 export default async function SearchBuyersPage() {
   const user = await getCurrentUser()
@@ -37,6 +38,8 @@ export default async function SearchBuyersPage() {
         searchesUsed={searchesUsed}
         searchLimit={searchLimit}
       />
+
+      <PublicEmailFinderForm userId={(user as any).id} />
 
       {savedBuyers && savedBuyers.length > 0 && (
         <div className="space-y-4">
