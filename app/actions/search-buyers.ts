@@ -9,14 +9,8 @@ interface SearchBuyersInput {
   userId: string
   userTier: string
   domain?: string
-  company?: string
   title?: string
-  firstName?: string
-  lastName?: string
-  industry?: string
-  country?: string
   requestedCount?: number
-  offset?: number
 }
 
 interface SearchBuyersResult {
@@ -183,14 +177,9 @@ export async function searchBuyers(input: SearchBuyersInput): Promise<SearchBuye
 
     const searchResponse = await snovClient.searchBuyers({
       domain: input.domain,
-      company: input.company,
       title: input.title,
-      first_name: input.firstName,
-      last_name: input.lastName,
-      industry: input.industry,
-      country: input.country,
       limit: toRequest,
-      offset: input.offset || 0,
+      page: 1,
     })
 
     if (!searchResponse.success) {

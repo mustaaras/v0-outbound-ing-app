@@ -15,16 +15,10 @@ interface SnovBuyer {
 }
 
 interface SnovSearchParams {
-  domain?: string
-  company?: string
-  title?: string
-  first_name?: string
-  last_name?: string
-  industry?: string
-  company_size?: string
-  country?: string
-  limit?: number
-  offset?: number
+  domain?: string // required for domain prospect search
+  title?: string // free-text job title to be tokenized into positions[]
+  limit?: number // desired number of prospects to return (client slices)
+  page?: number // optional page for pagination (default 1)
 }
 
 interface SnovSearchResponse {
@@ -156,112 +150,125 @@ class SnovClient {
   }
 
   /**
-   * Search for buyers/prospects using Snov.io API
+   * Start a domain prospect search task (task-based flow per Snov docs)
+   */
+  private async startDomainProspects(domain: string, positions: string[], page: number): Promise<{ task_hash: string } | null> {
+    await this.ensureAccessToken()
+    const authHeader = this.accessToken ? `Bearer ${this.accessToken}` : `Bearer ${this.apiKey}`
+    const body = new URLSearchParams()
+    body.append("domain", domain)
+    body.append("page", String(page))
+    positions.forEach((p) => body.append("positions[]", p))
+    const url = `${this.apiUrl}/domain-search/prospects/start`
+    let resp = await fetch(url, {
+      method: "POST",
+      headers: { Authorization: authHeader, "Content-Type": "application/x-www-form-urlencoded" },
+      body: body.toString(),
+    })
+    if ((resp.status === 401 || resp.status === 403) && this.clientId && this.clientSecret) {
+      devLog("[v0] startDomainProspects auth error; refreshing token")
+      await this.fetchAccessToken()
+      const retryAuth = this.accessToken ? `Bearer ${this.accessToken}` : `Bearer ${this.apiKey}`
+      resp = await fetch(url, {
+        method: "POST",
+        headers: { Authorization: retryAuth, "Content-Type": "application/x-www-form-urlencoded" },
+        body: body.toString(),
+      })
+    }
+    if (!resp.ok) {
+      const text = await resp.text()
+      errorLog(`[v0] startDomainProspects error ${resp.status}`, text)
+      return null
+    }
+    try {
+      const json = await resp.json()
+      if (json?.task_hash) return { task_hash: json.task_hash }
+      errorLog("[v0] startDomainProspects missing task_hash", json)
+      return null
+    } catch (e) {
+      errorLog("[v0] startDomainProspects parse error", e)
+      return null
+    }
+  }
+
+  /**
+   * Retrieve results for a previously started domain prospect search task.
+   */
+  private async getDomainProspectsResult(taskHash: string): Promise<any | null> {
+    await this.ensureAccessToken()
+    const authHeader = this.accessToken ? `Bearer ${this.accessToken}` : `Bearer ${this.apiKey}`
+    const url = `${this.apiUrl}/domain-search/prospects/result/${encodeURIComponent(taskHash)}`
+    let resp = await fetch(url, { headers: { Authorization: authHeader } })
+    if ((resp.status === 401 || resp.status === 403) && this.clientId && this.clientSecret) {
+      devLog("[v0] getDomainProspectsResult auth error; refreshing token")
+      await this.fetchAccessToken()
+      const retryAuth = this.accessToken ? `Bearer ${this.accessToken}` : `Bearer ${this.apiKey}`
+      resp = await fetch(url, { headers: { Authorization: retryAuth } })
+    }
+    if (!resp.ok) {
+      const text = await resp.text()
+      errorLog(`[v0] getDomainProspectsResult error ${resp.status}`, text)
+      return null
+    }
+    try {
+      return await resp.json()
+    } catch (e) {
+      errorLog("[v0] getDomainProspectsResult parse error", e)
+      return null
+    }
+  }
+
+  /**
+   * Public search method: start task, poll for results, map, slice.
    */
   async searchBuyers(params: SnovSearchParams): Promise<SnovSearchResponse> {
     try {
-      const searchParams = new URLSearchParams()
-      
-      // Add parameters
-      if (params.domain) searchParams.append("domain", params.domain)
-      if (params.company) searchParams.append("company", params.company)
-      if (params.title) searchParams.append("title", params.title)
-      if (params.first_name) searchParams.append("first_name", params.first_name)
-      if (params.last_name) searchParams.append("last_name", params.last_name)
-      if (params.industry) searchParams.append("industry", params.industry)
-      if (params.company_size) searchParams.append("company_size", params.company_size)
-      if (params.country) searchParams.append("country", params.country)
-      
-      searchParams.append("limit", String(params.limit || 20))
-      searchParams.append("offset", String(params.offset || 0))
-
-      // Ensure we have an access token if client credentials are configured
-      await this.ensureAccessToken()
-
-      const authHeader = this.accessToken ? `Bearer ${this.accessToken}` : `Bearer ${this.apiKey}`
-
-      let response = await fetch(`${this.apiUrl}/prospects/search`, {
-        method: "POST",
-        headers: {
-          Authorization: authHeader,
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: searchParams.toString(),
-      })
-
-      // If forbidden and we have client credentials, attempt to refresh token once and retry
-      if ((response.status === 401 || response.status === 403) && this.clientId && this.clientSecret) {
-        devLog("[v0] Received 401/403 from Snov, attempting token refresh and retry")
-        await this.fetchAccessToken()
-        const retryAuth = this.accessToken ? `Bearer ${this.accessToken}` : `Bearer ${this.apiKey}`
-        response = await fetch(`${this.apiUrl}/prospects/search`, {
-          method: "POST",
-          headers: {
-            Authorization: retryAuth,
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: searchParams.toString(),
-        })
+      if (!params.domain) {
+        return { success: false, data: { total: 0, results: [] }, error: "Domain is required" }
       }
-
-      if (!response.ok) {
-        let errorData: string | Record<string, unknown> = await response.text()
-        try {
-          errorData = JSON.parse(String(errorData))
-        } catch {
-          // keep raw text
-        }
-
-        errorLog(`Snov.io API error: ${response.status}`, errorData)
-        return {
-          success: false,
-          data: {
-            total: 0,
-            results: [],
-          },
-          error: `Snov.io API error: ${response.status} - ${
-            typeof errorData === "string" ? errorData : JSON.stringify(errorData)
-          }`,
-        }
+      const page = params.page || 1
+      const positions: string[] = []
+      if (params.title) {
+        const tokens = params.title.split(/[^A-Za-z0-9]+/).filter((t) => t.length > 2)
+        tokens.forEach((t) => positions.push(t))
       }
-
-      const data = await response.json()
-
-      devLog("[v0] Snov.io search response:", {
-        total: data.total,
-        count: data.prospects?.length || 0,
-      })
-
-      // Transform Snov.io response to our format
-      const buyers: SnovBuyer[] = (data.prospects || []).map((prospect: any) => ({
-        email: prospect.email || "",
-        first_name: prospect.first_name || "",
-        last_name: prospect.last_name || "",
-        company: prospect.company_name || "",
-        title: prospect.title || "",
-        linkedin_url: prospect.linkedin_url,
-        phone: prospect.phone,
-        industry: prospect.industry,
-        company_size: prospect.company_size,
+      if (positions.length === 0) {
+        positions.push("manager", "director", "lead", "head")
+      }
+      const start = await this.startDomainProspects(params.domain, positions, page)
+      if (!start?.task_hash) {
+        return { success: false, data: { total: 0, results: [] }, error: "Failed to start search" }
+      }
+      const delays = [400, 700, 1100, 1600, 2200]
+      let result: any | null = null
+      for (let i = 0; i < delays.length; i++) {
+        result = await this.getDomainProspectsResult(start.task_hash)
+        if (result && (result.prospects || result.results || result.data?.prospects)) break
+        await new Promise((r) => setTimeout(r, delays[i]))
+      }
+      if (!result) {
+        return { success: false, data: { total: 0, results: [] }, error: "Timed out waiting for results" }
+      }
+      const prospects = result.prospects || result.results || result.data?.prospects || []
+      const total = result.total || result.count || prospects.length || 0
+      const mapped: SnovBuyer[] = prospects.map((p: any) => ({
+        email: p.email || p.emails?.[0] || "",
+        first_name: p.first_name || p.firstname || "",
+        last_name: p.last_name || p.lastname || "",
+        company: p.company_name || p.company || params.domain || "",
+        title: p.position || p.title || "",
+        linkedin_url: p.linkedin || p.linkedin_url || p.social_linkedin,
+        phone: p.phone || p.phones?.[0],
+        industry: p.industry || p.company_industry,
+        company_size: p.company_size || p.company_size_range,
       }))
-
-      return {
-        success: true,
-        data: {
-          total: data.total || 0,
-          results: buyers,
-        },
-      }
+      const limit = params.limit && params.limit > 0 ? params.limit : mapped.length
+      const sliced = mapped.slice(0, limit)
+      devLog("[v0] domain search", { domain: params.domain, total, returned: sliced.length, positions })
+      return { success: true, data: { total, results: sliced } }
     } catch (error) {
-      errorLog("[v0] Snov.io search error:", error)
-      return {
-        success: false,
-        data: {
-          total: 0,
-          results: [],
-        },
-        error: error instanceof Error ? error.message : "Failed to search prospects",
-      }
+      errorLog("[v0] domain search error", error)
+      return { success: false, data: { total: 0, results: [] }, error: error instanceof Error ? error.message : "Failed to search prospects" }
     }
   }
 

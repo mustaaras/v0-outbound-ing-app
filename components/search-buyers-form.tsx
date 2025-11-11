@@ -22,12 +22,7 @@ interface SearchBuyersFormProps {
 
 export function SearchBuyersForm({ userId, userTier, searchesUsed, searchLimit }: SearchBuyersFormProps) {
   const [domain, setDomain] = useState("")
-  const [company, setCompany] = useState("")
   const [title, setTitle] = useState("")
-  const [firstName, setFirstName] = useState("")
-  const [lastName, setLastName] = useState("")
-  const [industry, setIndustry] = useState("")
-  const [country, setCountry] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [results, setResults] = useState<SnovBuyer[]>([])
   const [selectedBuyer, setSelectedBuyer] = useState<SnovBuyer | null>(null)
@@ -44,10 +39,10 @@ export function SearchBuyersForm({ userId, userTier, searchesUsed, searchLimit }
     setResults([])
     setSelectedBuyer(null)
 
-    if (!domain && !company && !title) {
+    if (!domain) {
       toast({
-        title: "Missing search criteria",
-        description: "Please enter at least one search parameter (domain, company, or title)",
+        title: "Domain required",
+        description: "Please enter a company domain (e.g. example.com)",
         variant: "destructive",
       })
       return
@@ -60,14 +55,8 @@ export function SearchBuyersForm({ userId, userTier, searchesUsed, searchLimit }
         userId,
         userTier,
         domain: domain || undefined,
-        company: company || undefined,
         title: title || undefined,
-        firstName: firstName || undefined,
-        lastName: lastName || undefined,
-        industry: industry || undefined,
-        country: country || undefined,
         requestedCount: requestedCount,
-        offset: 0,
       })
 
       if (!result.success) {
@@ -168,67 +157,12 @@ export function SearchBuyersForm({ userId, userTier, searchesUsed, searchLimit }
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="company">Company Name</Label>
-            <Input
-              id="company"
-              placeholder="e.g., Google"
-              value={company}
-              onChange={(e) => setCompany(e.target.value)}
-              disabled={isLoading}
-            />
-          </div>
-
-          <div className="space-y-2">
             <Label htmlFor="title">Job Title</Label>
             <Input
               id="title"
               placeholder="e.g., Sales Manager"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              disabled={isLoading}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="firstName">First Name</Label>
-            <Input
-              id="firstName"
-              placeholder="e.g., John"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              disabled={isLoading}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="lastName">Last Name</Label>
-            <Input
-              id="lastName"
-              placeholder="e.g., Smith"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              disabled={isLoading}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="industry">Industry</Label>
-            <Input
-              id="industry"
-              placeholder="e.g., Technology"
-              value={industry}
-              onChange={(e) => setIndustry(e.target.value)}
-              disabled={isLoading}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="country">Country</Label>
-            <Input
-              id="country"
-              placeholder="e.g., United States"
-              value={country}
-              onChange={(e) => setCountry(e.target.value)}
               disabled={isLoading}
             />
           </div>
