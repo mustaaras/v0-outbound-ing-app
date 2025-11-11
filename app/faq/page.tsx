@@ -84,7 +84,7 @@ export default function FAQPage() {
               <AccordionContent className="text-muted-foreground">
                 Yes, you can cancel your subscription at any time from your account settings. When you cancel, you'll
                 retain access to your paid plan until the end of your current billing period. After that, your account
-                will automatically revert to the Free plan with 5 emails/month.
+                will automatically revert to the Free plan with 25 emails/month.
               </AccordionContent>
             </AccordionItem>
 

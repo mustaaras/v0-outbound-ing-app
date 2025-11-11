@@ -68,7 +68,7 @@ export default async function UpgradePage({
             <ul className="space-y-2">
               <li className="flex items-start gap-2">
                 <Check className="mt-0.5 h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">5 emails per month</span>
+                <span className="text-sm">25 emails per month</span>
               </li>
               <li className="flex items-start gap-2">
                 <Check className="mt-0.5 h-4 w-4 text-muted-foreground" />

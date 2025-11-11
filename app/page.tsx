@@ -50,7 +50,7 @@ export default function LandingPage() {
               <Button asChild size="lg" className="gap-2">
                 <Link href="/auth/signup">
                   <Wand2 className="h-4 w-4" />
-                  Start Free - 5 Emails/Month
+                  Start Free - 25 Emails/Month
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg">
@@ -144,7 +144,7 @@ export default function LandingPage() {
                   </div>
                   <h3 className="text-xl font-semibold">Flexible Pricing Plans</h3>
                   <p className="text-sm text-muted-foreground">
-                    Start free with 5 emails/month. Upgrade to Light for 100 emails at $9.99/month, Pro for 750 emails
+                    Start free with 25 emails/month. Upgrade to Light for 100 emails at $9.99/month, Pro for 750 emails
                     at $29/month, or Ultra for 1,500 emails at $49/month
                   </p>
                 </div>
@@ -194,7 +194,7 @@ export default function LandingPage() {
                 <CardContent>
                   <ul className="space-y-3 text-left">
                     {[
-                      "5 emails per month",
+                      "25 emails per month",
                       "Access to free strategies",
                       "9 industry categories",
                       "Basic customization",

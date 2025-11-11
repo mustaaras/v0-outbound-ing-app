@@ -43,7 +43,7 @@ export interface Usage {
 }
 
 export const TIER_LIMITS = {
-  free: 5,
+  free: 25,
   light: 100,
   pro: 750,
   ultra: 1500,
