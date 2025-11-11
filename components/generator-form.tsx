@@ -272,7 +272,11 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
       
       toast({
         title: "Email generated!",
-        description: data.variants ? "3 A/B test variants created" : data.multiChannelResults ? "Multi-channel variants created" : "Your cold outreach email is ready",
+  description: data.variants
+    ? "3 A/B test variants created"
+    : data.multiChannelResults
+      ? "Multi-channel variants created"
+      : "Your cold outreach email is ready",
       })
     } catch (error) {
       toast({
@@ -487,8 +491,8 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
               <div className="space-y-4 pt-2">
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Tone</Label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
-                  {["Professional", "Friendly", "Persuasive", "Casual", "Direct"].map((option) => (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                    {["Professional", "Friendly", "Persuasive", "Casual", "Enthusiastic", "Consultative", "Direct", "Empathetic"].map((option) => (
                     <button
                       key={option}
                       type="button"
@@ -531,8 +535,8 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Goal</Label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
-                  {["Book a call", "Get a reply", "Schedule demo", "Make a sale", "Follow-up"].map((option) => (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {["Book a call", "Get a reply", "Make a sale", "Introduce product", "Schedule demo", "Request feedback", "Propose partnership", "Follow-up"].map((option) => (
                     <button
                       key={option}
                       type="button"
