@@ -107,7 +107,7 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
       navigator.clipboard.writeText(result)
       toast({
         title: "Copied!",
-        description: "Template copied to clipboard",
+        description: "Email copied to clipboard",
       })
     }
   }
@@ -165,7 +165,7 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
     if (!canGenerate) {
       toast({
         title: "Usage limit reached",
-        description: "Upgrade to Pro for unlimited templates",
+        description: "Upgrade to Pro for unlimited emails",
         variant: "destructive",
       })
       return
@@ -201,13 +201,13 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
 
       setResult(data.result)
       toast({
-        title: "Template generated!",
+        title: "Email generated!",
         description: "Your cold outreach email is ready",
       })
     } catch (error) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to generate template",
+        description: error instanceof Error ? error.message : "Failed to generate email",
         variant: "destructive",
       })
     } finally {
@@ -395,8 +395,8 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Tone</Label>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {["Professional", "Friendly", "Persuasive", "Casual"].map((option) => (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                  {["Professional", "Friendly", "Persuasive", "Casual", "Enthusiastic", "Consultative", "Direct", "Empathetic"].map((option) => (
                     <button
                       key={option}
                       type="button"
@@ -416,30 +416,31 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Email Length</Label>
                 <div className="grid grid-cols-3 gap-2">
-                  {["Short", "Medium", "Long"].map((option) => (
+                  {[
+                    { value: "Short", label: "Short (2-3 sentences)" },
+                    { value: "Medium", label: "Medium (4-6 sentences)" },
+                    { value: "Long", label: "Long (Full paragraph)" }
+                  ].map(({ value, label }) => (
                     <button
-                      key={option}
+                      key={value}
                       type="button"
-                      onClick={() => setEmailLength(option)}
+                      onClick={() => setEmailLength(value)}
                       className={`px-4 py-2 text-sm rounded-md border transition-colors ${
-                        emailLength === option
+                        emailLength === value
                           ? "bg-primary text-primary-foreground border-primary"
                           : "bg-background hover:bg-muted border-border"
                       }`}
                     >
-                      {option}
+                      {label}
                     </button>
                   ))}
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Short: ~100 words | Medium: ~150 words | Long: ~200 words
-                </p>
               </div>
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Goal</Label>
-                <div className="grid grid-cols-2 gap-2">
-                  {["Book a call", "Get a reply", "Make a sale", "Introduce product"].map((option) => (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {["Book a call", "Get a reply", "Make a sale", "Introduce product", "Schedule demo", "Request feedback", "Propose partnership", "Follow-up"].map((option) => (
                     <button
                       key={option}
                       type="button"

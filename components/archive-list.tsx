@@ -38,7 +38,7 @@ export function ArchiveList({ templates }: ArchiveListProps) {
     navigator.clipboard.writeText(text)
     toast({
       title: "Copied!",
-      description: "Template copied to clipboard",
+  description: "Email copied to clipboard",
     })
   }
 
@@ -46,7 +46,7 @@ export function ArchiveList({ templates }: ArchiveListProps) {
     if (!template.recipient_email) {
       toast({
         title: "No recipient email",
-        description: "This template doesn't have a recipient email",
+  description: "This email doesn't have a recipient email",
         variant: "destructive",
       })
       return

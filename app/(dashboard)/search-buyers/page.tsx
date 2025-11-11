@@ -53,7 +53,7 @@ export default async function SearchBuyersPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Search Contacts</h1>
-          <p className="mt-2 text-muted-foreground">Find contact prospects and add them directly into your template.</p>
+          <p className="mt-2 text-muted-foreground">Find contact prospects and add them directly into your email generator.</p>
         </div>
       </div>
 

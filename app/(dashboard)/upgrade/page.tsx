@@ -41,7 +41,7 @@ export default async function UpgradePage({
             </div>
             <CardTitle>Current Plan: {isUltra ? "Ultra" : isPro ? "Pro" : "Light"}</CardTitle>
             <CardDescription>
-              Enjoying {isUltra ? "1,500" : isPro ? "750" : "100"} templates per month and all premium strategies
+              Enjoying {isUltra ? "1,500" : isPro ? "750" : "100"} emails per month and all premium strategies
             </CardDescription>
           </CardHeader>
           <CardContent className="flex justify-center gap-4">
@@ -68,7 +68,7 @@ export default async function UpgradePage({
             <ul className="space-y-2">
               <li className="flex items-start gap-2">
                 <Check className="mt-0.5 h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">5 templates per month</span>
+                <span className="text-sm">5 emails per month</span>
               </li>
               <li className="flex items-start gap-2">
                 <Check className="mt-0.5 h-4 w-4 text-muted-foreground" />

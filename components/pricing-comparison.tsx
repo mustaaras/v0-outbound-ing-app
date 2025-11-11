@@ -20,7 +20,7 @@ interface FeatureRow {
 const featureRows: FeatureRow[] = [
   {
     key: "templates",
-    label: "Templates / month",
+  label: "Emails / month",
     render: (tier) => String(TIER_LIMITS[tier as keyof typeof TIER_LIMITS] || (tier === "free" ? 5 : "")),
   },
   {

@@ -15,7 +15,7 @@ export const PRODUCTS: Product[] = [
     priceInCents: 1500, // $15/month
     tier: "light",
     features: [
-      "100 templates per month",
+  "100 emails per month",
       "All 101 premium strategies",
       "All 9 industry categories",
       "Full customization options",
@@ -32,7 +32,7 @@ export const PRODUCTS: Product[] = [
     priceInCents: 3900, // $39/month
     tier: "pro",
     features: [
-      "750 templates per month",
+  "750 emails per month",
       "All 101 premium strategies",
       "All 9 industry categories",
       "Full customization options",
@@ -49,7 +49,7 @@ export const PRODUCTS: Product[] = [
     priceInCents: 6900, // $69/month
     tier: "ultra",
     features: [
-      "1,500 templates per month",
+  "1,500 emails per month",
       "All 101 premium strategies",
       "All 9 industry categories",
       "Full customization options",

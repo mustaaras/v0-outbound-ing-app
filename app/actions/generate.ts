@@ -33,7 +33,7 @@ export async function generateTemplate(input: GenerateTemplateInput) {
   // Check if user can generate
   const { canGenerate } = await canGenerateTemplate(input.userId, user.tier)
   if (!canGenerate) {
-    throw new Error("Monthly usage limit reached. Upgrade to Pro for unlimited templates.")
+    throw new Error("Monthly usage limit reached. Upgrade to Pro for unlimited emails.")
   }
 
   // Get selected strategies
@@ -53,7 +53,7 @@ export async function generateTemplate(input: GenerateTemplateInput) {
   const strategyDescriptions = strategies.map((s) => `- ${s.name}: ${s.prompt}`).join("\n")
 
   const lengthGuide =
-    input.emailLength === "Short" ? "~100 words" : input.emailLength === "Medium" ? "~150 words" : "~200 words"
+  input.emailLength === "Short" ? "2-3 sentences" : input.emailLength === "Medium" ? "4-6 sentences" : "a full paragraph (7-10 sentences)"
 
   const personalizationGuide =
     input.personalization === "Low"
@@ -121,6 +121,6 @@ Generate ONLY the email body text, no subject line. The sender's signature will 
     return { result: finalText }
   } catch (error) {
     errorLog("AI generation error:", error)
-    throw new Error("Failed to generate template. Please try again.")
+    throw new Error("Failed to generate email. Please try again.")
   }
 }

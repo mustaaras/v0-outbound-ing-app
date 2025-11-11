@@ -194,7 +194,7 @@ export default function LandingPage() {
                 <CardContent>
                   <ul className="space-y-3 text-left">
                     {[
-                      "5 templates per month",
+                      "5 emails per month",
                       "Access to free strategies",
                       "9 industry categories",
                       "Basic customization",

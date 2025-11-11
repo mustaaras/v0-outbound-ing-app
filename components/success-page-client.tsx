@@ -106,7 +106,7 @@ export function SuccessPageClient({
           </div>
           <CardTitle className="text-2xl">Welcome to {tierName}!</CardTitle>
           <CardDescription>
-            Your subscription is now active. Enjoy {product?.features[0] || "unlimited templates"} and all premium
+            Your subscription is now active. Enjoy {product?.features[0] || "unlimited emails"} and all premium
             features!
           </CardDescription>
         </CardHeader>
