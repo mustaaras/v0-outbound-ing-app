@@ -5,6 +5,12 @@ import { createClient } from "@/lib/supabase/server"
 import { SNOV_SEARCH_LIMITS } from "@/lib/types"
 import { SearchBuyersForm } from "@/components/search-buyers-form"
 import { PublicEmailFinderForm } from "@/components/public-email-finder-form"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Building2, Globe } from "lucide-react"
+import { SavedContactsList } from "@/components/saved-contacts-list"
+
+export const dynamic = "force-dynamic"
+export const revalidate = 0
 
 export default async function SearchBuyersPage() {
   const user = await getCurrentUser()
@@ -14,12 +20,13 @@ export default async function SearchBuyersPage() {
   }
 
   const searchesUsed = await getUserSearchCount((user as any).id)
-  // Fetch saved buyers for display
+  // Fetch saved buyers for display (exclude archived by default)
   const supabase = await createClient()
   const { data: savedBuyers } = await supabase
     .from("saved_buyers")
-    .select("id, email, first_name, last_name, company, title")
+    .select("id, email, first_name, last_name, company, title, archived, created_at")
     .eq("user_id", (user as any).id)
+    .eq("archived", false)
     .order("created_at", { ascending: false })
   const searchLimit = SNOV_SEARCH_LIMITS[user!.tier as keyof typeof SNOV_SEARCH_LIMITS] || 0
 
@@ -32,37 +39,36 @@ export default async function SearchBuyersPage() {
         </div>
       </div>
 
-      <SearchBuyersForm
-        userId={(user as any).id}
-        userTier={(user as any).tier}
-        searchesUsed={searchesUsed}
-        searchLimit={searchLimit}
-      />
+      <Tabs defaultValue="api" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="api">
+            <Building2 className="mr-2 h-4 w-4" />
+            Company Emails (API)
+          </TabsTrigger>
+          <TabsTrigger value="public">
+            <Globe className="mr-2 h-4 w-4" />
+            Public Emails
+          </TabsTrigger>
+        </TabsList>
 
-      <PublicEmailFinderForm userId={(user as any).id} />
+        <TabsContent value="api" className="space-y-6 mt-6">
+          <SearchBuyersForm
+            userId={(user as any).id}
+            userTier={(user as any).tier}
+            searchesUsed={searchesUsed}
+            searchLimit={searchLimit}
+          />
+        </TabsContent>
+
+        <TabsContent value="public" className="space-y-6 mt-6">
+          <PublicEmailFinderForm userId={(user as any).id} />
+        </TabsContent>
+      </Tabs>
 
       {savedBuyers && savedBuyers.length > 0 && (
         <div className="space-y-4">
           <h2 className="text-xl font-semibold">Saved Contacts</h2>
-          <div className="grid gap-3 max-h-[28rem] overflow-y-auto">
-            {savedBuyers.map((b) => (
-              <div
-                key={b.id}
-                className="rounded-lg border p-4 text-sm flex flex-col gap-1 bg-muted/40"
-              >
-                <div className="font-medium">
-                  {b.first_name || b.last_name ? (
-                    <>{b.first_name} {b.last_name}</>
-                  ) : (
-                    b.email
-                  )}
-                </div>
-                <div className="text-muted-foreground text-xs">{b.company || "Company N/A"}</div>
-                <div className="text-xs break-all">{b.email}</div>
-                {b.title && <div className="text-xs italic text-muted-foreground">{b.title}</div>}
-              </div>
-            ))}
-          </div>
+          <SavedContactsList contacts={savedBuyers as any} userId={(user as any).id} />
         </div>
       )}
     </div>

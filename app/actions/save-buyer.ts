@@ -32,25 +32,47 @@ export async function saveBuyer(input: SaveBuyerInput): Promise<SaveBuyerResult>
 
     if (existingErr) {
       errorLog("[v0] saveBuyer select error:", existingErr)
-      return { success: false, error: "Failed to save contact" }
+      return { success: false, error: "Failed to save contact (select)" }
     }
 
     let error: any = null
-    if (!existing) {
-      const { error: insertErr } = await supabase.from("saved_buyers").insert({
-        user_id: input.userId,
-        email,
-        first_name: input.buyer.first_name || null,
-        last_name: input.buyer.last_name || null,
-        company: input.buyer.company || null,
-        title: input.buyer.title || null,
-      })
-      error = insertErr
+    if (existing) {
+      devLog("[v0] Buyer already exists, treating as success", { email })
+      return { success: true }
     }
 
-    if (error) {
-      errorLog("[v0] saveBuyer error:", error)
-      return { success: false, error: "Failed to save contact" }
+    const { error: insertErr } = await supabase.from("saved_buyers").insert({
+      user_id: input.userId,
+      email,
+      first_name: input.buyer.first_name || null,
+      last_name: input.buyer.last_name || null,
+      company: input.buyer.company || null,
+      title: input.buyer.title || null,
+    })
+
+    if (insertErr) {
+      // If unique violation, treat as success
+      const code = (insertErr as any)?.code || (insertErr as any)?.details || ""
+      const message = (insertErr as any)?.message || ""
+      
+      errorLog("[v0] saveBuyer insert error details:", { 
+        code, 
+        message, 
+        hint: (insertErr as any)?.hint,
+        details: (insertErr as any)?.details,
+        full: insertErr 
+      })
+      
+      if (code && /duplicate|unique/i.test(String(code))) {
+        devLog("[v0] Duplicate on insert treated as success", { email })
+        return { success: true }
+      }
+      if (message && /duplicate|unique/i.test(String(message))) {
+        devLog("[v0] Duplicate (message) on insert treated as success", { email })
+        return { success: true }
+      }
+      
+      return { success: false, error: `Failed to save contact: ${message || code || "unknown error"}` }
     }
 
     devLog("[v0] Buyer saved:", { email, userId: input.userId })

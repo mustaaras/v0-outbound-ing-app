@@ -67,14 +67,41 @@ export function SearchBuyersForm({ userId, userTier, searchesUsed, searchLimit }
         return
       }
 
-  setResults(result.data.results)
-  setTotalResults(result.data.total)
+      setResults(result.data.results)
+      setTotalResults(result.data.total)
       setSearchesRemainingLocal(result.data.searchesRemaining)
 
-      toast({
-        title: "Search completed!",
-        description: `Found ${result.data.results.length} prospects. ${result.data.searchesRemaining} searches remaining.`,
-      })
+      // Auto-save all results
+      if (result.data.results.length > 0) {
+        let saved = 0
+        for (const buyer of result.data.results) {
+          try {
+            const saveRes = await saveBuyer({
+              userId,
+              buyer: {
+                email: buyer.email,
+                first_name: buyer.first_name,
+                last_name: buyer.last_name,
+                company: buyer.company,
+                title: buyer.title,
+              },
+            })
+            if (saveRes.success) saved++
+          } catch (e) {
+            // Continue with other contacts
+          }
+        }
+        
+        toast({
+          title: "Search completed!",
+          description: `Found ${result.data.results.length} prospects. ${saved} saved to contacts. ${result.data.searchesRemaining} searches remaining.`,
+        })
+      } else {
+        toast({
+          title: "Search completed!",
+          description: `Found ${result.data.results.length} prospects. ${result.data.searchesRemaining} searches remaining.`,
+        })
+      }
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : "An unexpected error occurred"
       setErrorMessage(errorMsg)
@@ -90,30 +117,6 @@ export function SearchBuyersForm({ userId, userTier, searchesUsed, searchLimit }
 
   const handleSelectBuyer = async (buyer: SnovBuyer) => {
     setSelectedBuyer(buyer)
-    // Save to DB immediately
-    try {
-      const res = await saveBuyer({
-        userId,
-        buyer: {
-          email: buyer.email,
-          first_name: buyer.first_name,
-          last_name: buyer.last_name,
-          company: buyer.company,
-          title: buyer.title,
-        },
-      })
-      if (!res.success) {
-        toast({ title: "Could not save contact", description: res.error || "", variant: "destructive" })
-      } else {
-        toast({
-          title: "Buyer saved",
-          description: `${buyer.first_name} ${buyer.last_name} (${buyer.email}) added to your contacts`,
-        })
-      }
-    } catch (e) {
-      // ignore save errors beyond toast
-      toast({ title: "Could not save contact", variant: "destructive" })
-    }
   }
 
   const handleProceedToGenerator = () => {

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { AlertCircle, Globe, Mail, Link as LinkIcon, Loader2 } from "lucide-react"
+import { AlertCircle, Globe, Link as LinkIcon, Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { findPublicEmails } from "@/app/actions/public-email-finder"
 import { saveBuyer } from "@/app/actions/save-buyer"
@@ -33,7 +33,31 @@ export function PublicEmailFinderForm({ userId }: Props) {
         return
       }
       setResults(res.data.results)
-      toast({ title: "Completed", description: `Found ${res.data.results.length} emails from public pages.` })
+      
+      // Auto-save all results
+      if (res.data.results.length > 0) {
+        let saved = 0
+        for (const r of res.data.results) {
+          try {
+            const saveRes = await saveBuyer({ 
+              userId, 
+              buyer: { 
+                email: r.email, 
+                first_name: null as any, 
+                last_name: null as any, 
+                company: r.domain, 
+                title: `Public email (${r.type})` 
+              } 
+            })
+            if (saveRes.success) saved++
+          } catch (e) {
+            // Continue with other contacts
+          }
+        }
+        toast({ title: "Completed", description: `Found ${res.data.results.length} emails from public pages. ${saved} saved to contacts.` })
+      } else {
+        toast({ title: "Completed", description: `Found ${res.data.results.length} emails from public pages.` })
+      }
     } catch (e) {
       toast({ title: "Error", description: e instanceof Error ? e.message : "Unexpected error", variant: "destructive" })
     } finally {
@@ -96,9 +120,6 @@ export function PublicEmailFinderForm({ userId }: Props) {
                       <LinkIcon className="h-3 w-3"/>View source
                     </a>
                   </div>
-                  <Button size="sm" variant="outline" onClick={() => onSave(r.domain, r.email)}>
-                    <Mail className="h-3 w-3 mr-1"/> Save
-                  </Button>
                 </div>
               ))}
             </div>
