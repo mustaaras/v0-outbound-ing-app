@@ -40,7 +40,7 @@ export function PublicEmailFinderForm({ userId }: Props) {
     setIsLoading(true)
     setResults([])
     try {
-      const res = await findPublicEmails({ userId, keyword: keyword || undefined, domains: domains || undefined })
+      const res = await findPublicEmails({ userId, keyword: keyword || undefined, domains: domains || undefined, perDomainCap: 3, totalCap: 50 })
       if (!res.success) {
         toast({ title: "Search failed", description: res.error || "Unknown error", variant: "destructive" })
         return
@@ -121,7 +121,7 @@ export function PublicEmailFinderForm({ userId }: Props) {
 
         {results.length > 0 ? (
           <div className="space-y-3">
-            <div className="text-sm text-muted-foreground">{results.length} results</div>
+            <div className="text-sm text-muted-foreground">{results.length} results from {new Set(results.map(r => r.domain)).size} domains</div>
             <div className="grid gap-2 max-h-96 overflow-y-auto">
               {results.map((r, idx) => (
                 <div

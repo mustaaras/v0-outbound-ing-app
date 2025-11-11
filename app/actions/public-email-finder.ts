@@ -8,6 +8,8 @@ export interface PublicEmailFinderInput {
   keyword?: string
   domains?: string // comma or newline separated domains
   pagesPerDomain?: number
+  perDomainCap?: number
+  totalCap?: number
 }
 
 export interface PublicEmailFinderResult {
@@ -34,6 +36,8 @@ export async function findPublicEmails(input: PublicEmailFinderInput): Promise<P
       keyword: input.keyword,
       domains: rawDomains,
       pagesPerDomain: input.pagesPerDomain ?? 8,
+      perDomainCap: input.perDomainCap ?? 3,
+      totalCap: input.totalCap ?? 50,
     })
 
     devLog("[public-email] found", results.length, "emails")

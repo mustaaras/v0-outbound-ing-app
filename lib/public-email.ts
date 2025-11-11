@@ -423,7 +423,7 @@ export function resolveDomainsFromKeyword(keyword?: string): string[] {
 }
 
 export async function publicEmailFinder(
-  params: { keyword?: string; domains?: string[]; pagesPerDomain?: number },
+  params: { keyword?: string; domains?: string[]; pagesPerDomain?: number; perDomainCap?: number; totalCap?: number },
 ): Promise<{ results: PublicEmailResult[] }> {
   const domains: string[] = []
   const fromKeyword = resolveDomainsFromKeyword(params.keyword)
@@ -432,9 +432,23 @@ export async function publicEmailFinder(
   const uniqueDomains = Array.from(new Set(domains.map(normalizeDomain))).slice(0, 10)
 
   const all: PublicEmailResult[] = []
+  const perDomainCap = Math.max(1, params.perDomainCap ?? 3)
+  const totalCap = Math.max(1, params.totalCap ?? 50)
+  const seen = new Set<string>()
   for (const d of uniqueDomains) {
+    if (all.length >= totalCap) break
     const res = await extractPublicEmailsForDomain(d, { pagesPerDomain: params.pagesPerDomain ?? 8 })
-    all.push(...res)
+    // Enforce per-domain cap and global cap, dedupe by email
+    let addedForDomain = 0
+    for (const r of res) {
+      if (all.length >= totalCap) break
+      if (addedForDomain >= perDomainCap) break
+      const key = `${r.email}`
+      if (seen.has(key)) continue
+      seen.add(key)
+      all.push(r)
+      addedForDomain++
+    }
   }
   return { results: all }
 }
