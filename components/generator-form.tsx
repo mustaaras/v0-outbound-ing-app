@@ -268,7 +268,7 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
           <TabsList className="grid w-full grid-cols-3 lg:grid-cols-9 h-auto gap-1">
             {categories.map((cat) => (
               <TabsTrigger key={cat} value={cat} className="text-xs">
-                {cat.split(" ")[0]}
+                {cat}
               </TabsTrigger>
             ))}
           </TabsList>
