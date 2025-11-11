@@ -120,7 +120,7 @@ export function PublicEmailFinderForm({ userId, userTier, searchesUsed, searchLi
       <CardHeader>
         <CardTitle>Public Email Finder (beta)</CardTitle>
         <CardDescription>
-         Extract publicly listed emails from company websites. Try keywords like: affiliate, marketing, saas, crm, ecommerce, payment, analytics, ai, blockchain, healthcare, education, hr, security, design, development, and 100+ more.
+         Extract publicly listed emails from company websites. Search from 3000+ industry keywords including: ai, crypto, blockchain, web3, nft, defi, saas, fintech, devops, machine learning, cloud, and hundreds more across tech, finance, marketing, and other industries.
         </CardDescription>
         <div className="text-sm text-muted-foreground pt-2">
           Searches remaining this month: <span className="font-bold">{searchesRemainingLocal}</span> / {searchLimit}
@@ -132,8 +132,8 @@ export function PublicEmailFinderForm({ userId, userTier, searchesUsed, searchLi
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="pef-keyword">Keyword (optional)</Label>
-              <Input id="pef-keyword" placeholder="affiliate, ecommerce, marketing..." value={keyword} onChange={(e) => setKeyword(e.target.value)} disabled={isLoading} />
-              <p className="text-xs text-muted-foreground">Predefined industry keywords</p>
+              <Input id="pef-keyword" placeholder="ai, crypto, web3, saas, fintech..." value={keyword} onChange={(e) => setKeyword(e.target.value)} disabled={isLoading} />
+              <p className="text-xs text-muted-foreground">3000+ tech, crypto, and industry keywords</p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="pef-domains">Domains (comma or newline)</Label>
