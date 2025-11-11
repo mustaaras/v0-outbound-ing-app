@@ -196,10 +196,16 @@ export function resolveDomainsFromKeyword(keyword?: string): string[] {
   if (!keyword) return []
   const k = keyword.trim().toLowerCase()
   const map: Record<string, string[]> = {
-    affiliate: ["impact.com", "cj.com", "awin.com", "rakutenadvertising.com", "partnerize.com", "refersion.com"],
-    ecommerce: ["shopify.com", "bigcommerce.com", "woocommerce.com", "magento.com", "wix.com"],
-    email: ["mailchimp.com", "klaviyo.com", "sendgrid.com", "hubspot.com"],
-    crm: ["salesforce.com", "hubspot.com", "pipedrive.com", "zoho.com"],
+    affiliate: ["impact.com", "cj.com", "awin.com", "rakutenadvertising.com", "partnerize.com", "refersion.com", "shareasale.com", "clickbank.com"],
+    ecommerce: ["shopify.com", "bigcommerce.com", "woocommerce.com", "magento.com", "wix.com", "squarespace.com", "amazon.com"],
+    email: ["mailchimp.com", "klaviyo.com", "sendgrid.com", "hubspot.com", "brevo.com", "activecampaign.com", "convertkit.com"],
+    crm: ["salesforce.com", "hubspot.com", "pipedrive.com", "zoho.com", "freshsales.com", "monday.com"],
+    marketing: ["hubspot.com", "marketo.com", "pardot.com", "mailchimp.com", "semrush.com", "moz.com"],
+    analytics: ["google.com", "adobe.com", "mixpanel.com", "amplitude.com", "segment.com"],
+    saas: ["salesforce.com", "hubspot.com", "slack.com", "asana.com", "notion.so", "atlassian.com"],
+    payment: ["stripe.com", "paypal.com", "square.com", "adyen.com", "checkout.com"],
+    hosting: ["aws.amazon.com", "digitalocean.com", "linode.com", "vultr.com", "cloudflare.com"],
+    design: ["figma.com", "adobe.com", "canva.com", "sketch.com", "invisionapp.com"],
   }
   return map[k] || []
 }

@@ -83,7 +83,7 @@ export function PublicEmailFinderForm({ userId }: Props) {
       <CardHeader>
         <CardTitle>Public Email Finder (beta)</CardTitle>
         <CardDescription>
-          Extract publicly listed emails from company websites. We don’t use third-party APIs here. Results are unverified and sourced from visible pages.
+          Extract publicly listed emails from company websites. Enter domains directly or use keywords like: affiliate, ecommerce, email, crm, marketing, analytics, saas, payment, hosting, design.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -91,11 +91,13 @@ export function PublicEmailFinderForm({ userId }: Props) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="pef-keyword">Keyword (optional)</Label>
-              <Input id="pef-keyword" placeholder="e.g., affiliate" value={keyword} onChange={(e) => setKeyword(e.target.value)} disabled={isLoading} />
+              <Input id="pef-keyword" placeholder="affiliate, ecommerce, marketing..." value={keyword} onChange={(e) => setKeyword(e.target.value)} disabled={isLoading} />
+              <p className="text-xs text-muted-foreground">Predefined industry keywords</p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="pef-domains">Domains (comma or newline)</Label>
-              <Input id="pef-domains" placeholder="acme.com, example.com" value={domains} onChange={(e) => setDomains(e.target.value)} disabled={isLoading} />
+              <Input id="pef-domains" placeholder="hubspot.com, salesforce.com" value={domains} onChange={(e) => setDomains(e.target.value)} disabled={isLoading} />
+              <p className="text-xs text-muted-foreground">Enter any company domains directly</p>
             </div>
           </div>
 
