@@ -34,7 +34,7 @@ export function MobileHeader({ user }: MobileHeaderProps) {
   const handleLogout = async () => {
     const supabase = createClient()
     await supabase.auth.signOut()
-    router.push("/auth/login")
+    router.push("/")
     router.refresh()
   }
 

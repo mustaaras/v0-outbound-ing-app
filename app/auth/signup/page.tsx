@@ -112,7 +112,7 @@ export default function SignupPage() {
           <Card>
             <CardHeader>
               <CardTitle className="text-2xl">Create an account</CardTitle>
-              <CardDescription>Get started with 5 free templates per month</CardDescription>
+              <CardDescription>Get started free, no credit card required</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSignUp}>
@@ -198,6 +198,9 @@ export default function SignupPage() {
                   <Link href="/auth/login" className="font-medium underline underline-offset-4">
                     Log in
                   </Link>
+                </div>
+                <div className="mt-2 text-center text-xs text-muted-foreground">
+                  <Link href="/" className="underline underline-offset-4">← Back to Home</Link>
                 </div>
               </form>
             </CardContent>

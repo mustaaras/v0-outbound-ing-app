@@ -77,6 +77,19 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
 
   const categories = Object.keys(categorizedStrategies).sort()
 
+  const getShortCategory = (cat: string) => {
+    if (cat.startsWith("SaaS")) return "SaaS"
+    if (cat.startsWith("Affiliate")) return "Affiliate"
+    if (cat.startsWith("B2B")) return "B2B"
+    if (cat.startsWith("Domain")) return "Domain"
+    if (cat.startsWith("E-commerce")) return "E-com"
+    if (cat.startsWith("Freelancers")) return "Freelance"
+    if (cat.startsWith("Investment")) return "Invest"
+    if (cat.startsWith("Real Estate")) return "Real Est."
+    if (cat.startsWith("Recruiting")) return "Recruit"
+    return cat.split(" ")[0]
+  }
+
   const handleStrategyToggle = (strategyId: string, tier: string) => {
     if (tier === "pro" && userTier === "free") {
       toast({
@@ -284,10 +297,15 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
     <div className="space-y-6">
       <form onSubmit={handleSubmit} className="rounded-lg border bg-card p-6 space-y-6">
         <Tabs value={activeCategory} onValueChange={setActiveCategory}>
-          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-9 h-auto gap-1">
+          <TabsList className="flex w-full gap-2 overflow-x-auto py-1">
             {categories.map((cat) => (
-              <TabsTrigger key={cat} value={cat} className="text-xs">
-                {cat}
+              <TabsTrigger
+                key={cat}
+                value={cat}
+                className="text-xs whitespace-nowrap px-3 py-2"
+              >
+                <span className="hidden sm:inline">{cat}</span>
+                <span className="sm:hidden">{getShortCategory(cat)}</span>
               </TabsTrigger>
             ))}
           </TabsList>

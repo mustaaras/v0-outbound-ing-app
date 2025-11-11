@@ -212,6 +212,9 @@ export default function LoginPage() {
                     Sign up
                   </Link>
                 </div>
+                <div className="mt-2 text-center text-xs text-muted-foreground">
+                  <Link href="/" className="underline underline-offset-4">← Back to Home</Link>
+                </div>
               </form>
             </CardContent>
           </Card>
