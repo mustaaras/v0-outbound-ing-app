@@ -18,6 +18,8 @@ interface GenerateTemplateInput {
   emailLength: string
   goal: string
   personalization: string
+  generateVariants?: boolean
+  generateMultiChannel?: boolean
 }
 
 export async function generateTemplate(input: GenerateTemplateInput) {
@@ -91,7 +93,131 @@ ${input.recipientName ? `- Address the recipient as ${input.recipientName}` : "-
 Generate ONLY the email body text, no subject line. The sender's signature will be added separately.`
 
   try {
-    // Generate with AI
+    // Check for premium features
+    const isPro = user.tier === "pro" || user.tier === "ultra"
+    const isUltra = user.tier === "ultra"
+    
+    if (input.generateVariants && !isPro) {
+      throw new Error("A/B Test Variants require Pro tier or higher")
+    }
+    
+    if (input.generateMultiChannel && !isUltra) {
+      throw new Error("Multi-Channel Variants require Ultra tier")
+    }
+
+    // Generate A/B Test Variants (Pro+)
+    if (input.generateVariants && isPro) {
+      const variantPrompts = [
+        { label: "Variant A: Original", modifier: "" },
+        { label: "Variant B: Direct CTA", modifier: "Make the call-to-action more direct and specific. Use action-oriented language." },
+        { label: "Variant C: Soft Approach", modifier: "Use a softer, more consultative tone. Focus on asking questions rather than making statements." },
+      ]
+
+      const variants = await Promise.all(
+        variantPrompts.map(async ({ label, modifier }) => {
+          const variantPrompt = modifier ? `${prompt}\n\nADDITIONAL INSTRUCTION: ${modifier}` : prompt
+          const { text } = await generateText({
+            model: "openai/gpt-4o-mini",
+            prompt: variantPrompt,
+            temperature: 0.8,
+          })
+          const finalText = input.sellerSignature ? `${text.trim()}\n\n${input.sellerSignature}` : text.trim()
+          return { label, content: finalText }
+        })
+      )
+
+      // Save first variant to database
+      const { error: insertError } = await supabase.from("templates").insert({
+        user_id: input.userId,
+        subject: input.subject,
+        category: input.category,
+        strategy_ids: input.strategyIds,
+        recipient: input.recipientName || null,
+        recipient_email: input.recipientEmail || null,
+        input_data: input.inputData,
+        result_text: variants[0].content,
+      })
+
+      if (insertError) {
+        errorLog("Failed to save template:", insertError)
+      }
+
+      await incrementUsage(input.userId)
+      return { result: variants[0].content, variants }
+    }
+
+    // Generate Multi-Channel Variants (Ultra)
+    if (input.generateMultiChannel && isUltra) {
+      const channels = [
+        {
+          name: "email",
+          label: "Email",
+          prompt: prompt,
+        },
+        {
+          name: "linkedin",
+          label: "LinkedIn Message",
+          prompt: `${prompt}\n\nADDITIONAL CONSTRAINTS: Keep to 500 characters max. LinkedIn InMail style - professional but conversational. No signature needed.`,
+        },
+        {
+          name: "linkedin_request",
+          label: "LinkedIn Connection Request",
+          prompt: `Generate a LinkedIn connection request message about "${input.subject}" ${recipientText}. STRICT LIMIT: 300 characters max. Be concise, mention mutual benefit, no fluff.`,
+        },
+        {
+          name: "twitter",
+          label: "Twitter/X DM",
+          prompt: `Generate a Twitter/X direct message about "${input.subject}" ${recipientText}. STRICT LIMIT: 280 characters. Casual, friendly tone. Use emojis sparingly if appropriate.`,
+        },
+        {
+          name: "sms",
+          label: "SMS",
+          prompt: `Generate an SMS text message about "${input.subject}" ${recipientText}. STRICT LIMIT: 160 characters. Ultra-concise, clear CTA, friendly tone.`,
+        },
+        {
+          name: "voicemail",
+          label: "Cold Call Voicemail Script",
+          prompt: `Generate a 30-second voicemail script about "${input.subject}" ${recipientText}. Conversational, spoken language. Include: greeting, reason for call, value prop, callback request. Write it as a script to be read aloud.`,
+        },
+      ]
+
+      const multiChannelResults: Record<string, string> = {}
+      
+      for (const channel of channels) {
+        const { text } = await generateText({
+          model: "openai/gpt-4o-mini",
+          prompt: channel.prompt,
+          temperature: 0.8,
+        })
+        
+        const finalText = channel.name === "email" && input.sellerSignature 
+          ? `${text.trim()}\n\n${input.sellerSignature}` 
+          : text.trim()
+        
+        multiChannelResults[channel.name] = finalText
+      }
+
+      // Save email version to database
+      const { error: insertError } = await supabase.from("templates").insert({
+        user_id: input.userId,
+        subject: input.subject,
+        category: input.category,
+        strategy_ids: input.strategyIds,
+        recipient: input.recipientName || null,
+        recipient_email: input.recipientEmail || null,
+        input_data: input.inputData,
+        result_text: multiChannelResults.email,
+      })
+
+      if (insertError) {
+        errorLog("Failed to save template:", insertError)
+      }
+
+      await incrementUsage(input.userId)
+      return { result: multiChannelResults.email, multiChannelResults }
+    }
+
+    // Standard single email generation
     const { text } = await generateText({
       model: "openai/gpt-4o-mini",
       prompt,

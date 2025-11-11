@@ -39,6 +39,12 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
   const [emailLength, setEmailLength] = useState<string>("Medium")
   const [goal, setGoal] = useState<string>("Get a reply")
   const [personalization, setPersonalization] = useState<string>("Medium")
+  
+  // Premium features
+  const [generateVariants, setGenerateVariants] = useState<boolean>(false)
+  const [generateMultiChannel, setGenerateMultiChannel] = useState<boolean>(false)
+  const [variants, setVariants] = useState<Array<{label: string, content: string}> | null>(null)
+  const [multiChannelResults, setMultiChannelResults] = useState<Record<string, string> | null>(null)
 
   const { toast } = useToast()
 
@@ -182,6 +188,8 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
 
     setIsLoading(true)
     setResult(null)
+    setVariants(null)
+    setMultiChannelResults(null)
 
     try {
       const data = await generateTemplate({
@@ -197,12 +205,23 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
         emailLength,
         goal,
         personalization,
+        generateVariants,
+        generateMultiChannel,
       })
 
       setResult(data.result)
+      
+      if (data.variants) {
+        setVariants(data.variants)
+      }
+      
+      if (data.multiChannelResults) {
+        setMultiChannelResults(data.multiChannelResults)
+      }
+      
       toast({
         title: "Email generated!",
-        description: "Your cold outreach email is ready",
+        description: data.variants ? "3 A/B test variants created" : data.multiChannelResults ? "Multi-channel variants created" : "Your cold outreach email is ready",
       })
     } catch (error) {
       toast({
@@ -483,6 +502,69 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
           </div>
         )}
 
+        {/* Premium Features */}
+        {(userTier === "pro" || userTier === "ultra") && selectedStrategies.length > 0 && (
+          <div className="space-y-4 rounded-lg border-2 border-purple-500/20 bg-purple-500/5 p-6">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Crown className="h-5 w-5 text-purple-500" />
+                <Label className="text-base font-semibold">Premium Features</Label>
+              </div>
+              <p className="text-sm text-muted-foreground">Unlock advanced generation options</p>
+            </div>
+
+            <div className="space-y-4">
+              {userTier === "pro" || userTier === "ultra" ? (
+                <div className="flex items-start gap-3 rounded-lg border bg-background p-4">
+                  <Checkbox
+                    id="generate-variants"
+                    checked={generateVariants}
+                    onCheckedChange={(checked) => setGenerateVariants(checked as boolean)}
+                  />
+                  <div className="flex-1 space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="generate-variants" className="cursor-pointer font-medium">
+                        A/B Test Variants
+                      </Label>
+                      <Badge variant="secondary" className="gap-1">
+                        <Crown className="h-3 w-3" />
+                        Pro
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Generate 3 different versions with varied subject lines, CTAs, and tones for testing
+                    </p>
+                  </div>
+                </div>
+              ) : null}
+
+              {userTier === "ultra" && (
+                <div className="flex items-start gap-3 rounded-lg border bg-background p-4">
+                  <Checkbox
+                    id="generate-multichannel"
+                    checked={generateMultiChannel}
+                    onCheckedChange={(checked) => setGenerateMultiChannel(checked as boolean)}
+                  />
+                  <div className="flex-1 space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="generate-multichannel" className="cursor-pointer font-medium">
+                        Multi-Channel Variants
+                      </Label>
+                      <Badge variant="secondary" className="gap-1">
+                        <Crown className="h-3 w-3" />
+                        Ultra
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Generate versions for Email, LinkedIn, Twitter DM, SMS, and Cold Call script
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         <Button type="submit" className="w-full" disabled={isLoading || !canGenerate}>
           {isLoading ? (
             <>
@@ -505,7 +587,7 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
         )}
       </form>
 
-      {result && (
+      {result && !variants && !multiChannelResults && (
         <div className="rounded-lg border bg-card p-6 space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold">Your Outreach Email</h3>
@@ -525,6 +607,90 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
           <div className="rounded-lg bg-muted p-4">
             <pre className="whitespace-pre-wrap text-sm font-mono">{result}</pre>
           </div>
+        </div>
+      )}
+
+      {/* A/B Test Variants Display */}
+      {variants && (
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Crown className="h-5 w-5 text-purple-500" />
+            <h3 className="text-lg font-semibold">A/B Test Variants</h3>
+            <Badge variant="secondary">Pro Feature</Badge>
+          </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            {variants.map((variant, index) => (
+              <div key={index} className="rounded-lg border bg-card p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-semibold text-sm">{variant.label}</h4>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => {
+                      navigator.clipboard.writeText(variant.content)
+                      toast({ title: "Copied!", description: `${variant.label} copied to clipboard` })
+                    }}
+                  >
+                    <Copy className="h-3 w-3" />
+                  </Button>
+                </div>
+                <div className="rounded-lg bg-muted p-3 max-h-96 overflow-y-auto">
+                  <pre className="whitespace-pre-wrap text-xs font-mono">{variant.content}</pre>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Multi-Channel Variants Display */}
+      {multiChannelResults && (
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Crown className="h-5 w-5 text-purple-500" />
+            <h3 className="text-lg font-semibold">Multi-Channel Variants</h3>
+            <Badge variant="secondary">Ultra Feature</Badge>
+          </div>
+          <Tabs defaultValue="email" className="w-full">
+            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">
+              <TabsTrigger value="email">Email</TabsTrigger>
+              <TabsTrigger value="linkedin">LinkedIn</TabsTrigger>
+              <TabsTrigger value="linkedin_request">Connection</TabsTrigger>
+              <TabsTrigger value="twitter">Twitter</TabsTrigger>
+              <TabsTrigger value="sms">SMS</TabsTrigger>
+              <TabsTrigger value="voicemail">Voicemail</TabsTrigger>
+            </TabsList>
+            {Object.entries(multiChannelResults).map(([channel, content]) => (
+              <div key={channel} className={channel === "email" ? "" : "hidden"} data-state={channel}>
+                <div className="rounded-lg border bg-card p-6 space-y-4 mt-4">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-semibold capitalize">{channel.replace("_", " ")}</h4>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => {
+                        navigator.clipboard.writeText(content)
+                        toast({ title: "Copied!", description: `${channel} version copied` })
+                      }}
+                    >
+                      <Copy className="mr-2 h-4 w-4" />
+                      Copy
+                    </Button>
+                  </div>
+                  <div className="rounded-lg bg-muted p-4">
+                    <pre className="whitespace-pre-wrap text-sm font-mono">{content}</pre>
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {channel === "linkedin" && "Max 500 characters for LinkedIn InMail"}
+                    {channel === "linkedin_request" && "Max 300 characters for connection requests"}
+                    {channel === "twitter" && "Max 280 characters for Twitter/X DMs"}
+                    {channel === "sms" && "Max 160 characters for SMS"}
+                    {channel === "voicemail" && "30-second script for cold call voicemail"}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </Tabs>
         </div>
       )}
     </div>
