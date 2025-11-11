@@ -156,27 +156,42 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
     const mailtoSubject = `Regarding ${subject}`
     const mailtoBody = result
 
-    // Create mailto URL with both subject and body
-    const mailtoUrl = `mailto:${recipientEmail}?subject=${encodeURIComponent(mailtoSubject)}&body=${encodeURIComponent(mailtoBody)}`
+    try {
+      // Create mailto URL with both subject and body
+      const mailtoUrl = `mailto:${recipientEmail}?subject=${encodeURIComponent(mailtoSubject)}&body=${encodeURIComponent(mailtoBody)}`
 
-    // Check URL length - mailto has practical limits around 2000-8000 chars depending on browser/OS
-    if (mailtoUrl.length > 2000) {
-      // If too long, just use subject and copy body to clipboard
-      const shortMailtoUrl = `mailto:${recipientEmail}?subject=${encodeURIComponent(mailtoSubject)}`
+      // Check URL length - mailto has practical limits around 2000 chars depending on browser/OS
+      // For non-English content, be more conservative with the limit
+      const urlLimit = /[^\x00-\x7F]/.test(mailtoBody) ? 1500 : 2000
+      
+      if (mailtoUrl.length > urlLimit) {
+        // If too long, copy to clipboard and open email client with just the recipient and subject
+        navigator.clipboard.writeText(result)
+        const shortMailtoUrl = `mailto:${recipientEmail}?subject=${encodeURIComponent(mailtoSubject)}`
+        window.location.href = shortMailtoUrl
+
+        toast({
+          title: "Email client opened",
+          description: "Email content copied to clipboard - paste it into the message body.",
+        })
+      } else {
+        // URL is short enough, include everything
+        window.location.href = mailtoUrl
+
+        toast({
+          title: "Email ready to send",
+          description: "Your email client opened with the message pre-filled.",
+        })
+      }
+    } catch (error) {
+      // Fallback: copy to clipboard if encoding fails
       navigator.clipboard.writeText(result)
-      window.location.href = shortMailtoUrl
-
+      const fallbackUrl = `mailto:${recipientEmail}?subject=${encodeURIComponent(mailtoSubject)}`
+      window.location.href = fallbackUrl
+      
       toast({
         title: "Email client opened",
-        description: "Email was too long for direct insert. Content copied - paste it into the message body.",
-      })
-    } else {
-      // URL is short enough, include everything
-      window.location.href = mailtoUrl
-
-      toast({
-        title: "Email ready to send",
-        description: "Your email client opened with the message pre-filled.",
+        description: "Email content copied to clipboard - paste it into the message body.",
       })
     }
   }
@@ -713,21 +728,36 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
                         onClick={() => {
                           const mailtoSubject = `Regarding ${subject}`
                           const mailtoBody = variant.content
-                          const mailtoUrl = `mailto:${recipientEmail}?subject=${encodeURIComponent(mailtoSubject)}&body=${encodeURIComponent(mailtoBody)}`
                           
-                          if (mailtoUrl.length > 2000) {
-                            const shortMailtoUrl = `mailto:${recipientEmail}?subject=${encodeURIComponent(mailtoSubject)}`
+                          try {
+                            const mailtoUrl = `mailto:${recipientEmail}?subject=${encodeURIComponent(mailtoSubject)}&body=${encodeURIComponent(mailtoBody)}`
+                            
+                            // Check for non-English content and adjust limit
+                            const urlLimit = /[^\x00-\x7F]/.test(mailtoBody) ? 1500 : 2000
+                            
+                            if (mailtoUrl.length > urlLimit) {
+                              navigator.clipboard.writeText(variant.content)
+                              const shortMailtoUrl = `mailto:${recipientEmail}?subject=${encodeURIComponent(mailtoSubject)}`
+                              window.location.href = shortMailtoUrl
+                              toast({
+                                title: "Email client opened",
+                                description: "Content copied to clipboard - paste it into the message body.",
+                              })
+                            } else {
+                              window.location.href = mailtoUrl
+                              toast({
+                                title: "Email ready to send",
+                                description: `${variant.label} loaded in your email client.`,
+                              })
+                            }
+                          } catch (error) {
+                            // Fallback
                             navigator.clipboard.writeText(variant.content)
-                            window.location.href = shortMailtoUrl
+                            const fallbackUrl = `mailto:${recipientEmail}?subject=${encodeURIComponent(mailtoSubject)}`
+                            window.location.href = fallbackUrl
                             toast({
                               title: "Email client opened",
-                              description: "Content copied - paste it into the message body.",
-                            })
-                          } else {
-                            window.location.href = mailtoUrl
-                            toast({
-                              title: "Email ready to send",
-                              description: `${variant.label} loaded in your email client.`,
+                              description: "Content copied to clipboard - paste it into the message body.",
                             })
                           }
                         }}
