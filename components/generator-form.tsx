@@ -157,22 +157,40 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
     const mailtoBody = result
 
     try {
-      // Create mailto URL with both subject and body
+      // Check if content has significant non-ASCII characters (like Chinese, Arabic, etc.)
+      const nonAsciiChars = (mailtoBody.match(/[^\x00-\x7F]/g) || []).length
+      const totalChars = mailtoBody.length
+      const nonAsciiRatio = totalChars > 0 ? nonAsciiChars / totalChars : 0
+      
+      // If more than 20% is non-ASCII (like Chinese), always use clipboard
+      // because mailto URLs can't reliably handle multi-byte characters
+      if (nonAsciiRatio > 0.2) {
+        navigator.clipboard.writeText(result)
+        const mailtoUrl = `mailto:${recipientEmail}?subject=${encodeURIComponent(mailtoSubject)}`
+        window.location.href = mailtoUrl
+
+        toast({
+          title: "Email content copied",
+          description: "Email body copied to clipboard. Paste it into the message body in your email client.",
+          duration: 5000,
+        })
+        return
+      }
+
+      // For English/ASCII content, try to include in mailto URL
       const mailtoUrl = `mailto:${recipientEmail}?subject=${encodeURIComponent(mailtoSubject)}&body=${encodeURIComponent(mailtoBody)}`
 
-      // Check URL length - mailto has practical limits around 2000 chars depending on browser/OS
-      // For non-English content, be more conservative with the limit
-      const urlLimit = /[^\x00-\x7F]/.test(mailtoBody) ? 1500 : 2000
-      
-      if (mailtoUrl.length > urlLimit) {
+      // Check URL length
+      if (mailtoUrl.length > 2000) {
         // If too long, copy to clipboard and open email client with just the recipient and subject
         navigator.clipboard.writeText(result)
         const shortMailtoUrl = `mailto:${recipientEmail}?subject=${encodeURIComponent(mailtoSubject)}`
         window.location.href = shortMailtoUrl
 
         toast({
-          title: "Email client opened",
-          description: "Email content copied to clipboard - paste it into the message body.",
+          title: "Email content copied",
+          description: "Email body copied to clipboard. Paste it into the message body.",
+          duration: 5000,
         })
       } else {
         // URL is short enough, include everything
@@ -190,8 +208,9 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
       window.location.href = fallbackUrl
       
       toast({
-        title: "Email client opened",
-        description: "Email content copied to clipboard - paste it into the message body.",
+        title: "Email content copied",
+        description: "Email body copied to clipboard. Paste it into the message body.",
+        duration: 5000,
       })
     }
   }
@@ -730,18 +749,35 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
                           const mailtoBody = variant.content
                           
                           try {
+                            // Check if content has significant non-ASCII characters
+                            const nonAsciiChars = (mailtoBody.match(/[^\x00-\x7F]/g) || []).length
+                            const totalChars = mailtoBody.length
+                            const nonAsciiRatio = totalChars > 0 ? nonAsciiChars / totalChars : 0
+                            
+                            // If more than 20% is non-ASCII, always use clipboard
+                            if (nonAsciiRatio > 0.2) {
+                              navigator.clipboard.writeText(variant.content)
+                              const mailtoUrl = `mailto:${recipientEmail}?subject=${encodeURIComponent(mailtoSubject)}`
+                              window.location.href = mailtoUrl
+                              toast({
+                                title: "Email content copied",
+                                description: "Email body copied to clipboard. Paste it into the message body.",
+                                duration: 5000,
+                              })
+                              return
+                            }
+                            
+                            // For English/ASCII content, try to include in mailto URL
                             const mailtoUrl = `mailto:${recipientEmail}?subject=${encodeURIComponent(mailtoSubject)}&body=${encodeURIComponent(mailtoBody)}`
                             
-                            // Check for non-English content and adjust limit
-                            const urlLimit = /[^\x00-\x7F]/.test(mailtoBody) ? 1500 : 2000
-                            
-                            if (mailtoUrl.length > urlLimit) {
+                            if (mailtoUrl.length > 2000) {
                               navigator.clipboard.writeText(variant.content)
                               const shortMailtoUrl = `mailto:${recipientEmail}?subject=${encodeURIComponent(mailtoSubject)}`
                               window.location.href = shortMailtoUrl
                               toast({
-                                title: "Email client opened",
-                                description: "Content copied to clipboard - paste it into the message body.",
+                                title: "Email content copied",
+                                description: "Email body copied to clipboard. Paste it into the message body.",
+                                duration: 5000,
                               })
                             } else {
                               window.location.href = mailtoUrl
@@ -756,8 +792,9 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
                             const fallbackUrl = `mailto:${recipientEmail}?subject=${encodeURIComponent(mailtoSubject)}`
                             window.location.href = fallbackUrl
                             toast({
-                              title: "Email client opened",
-                              description: "Content copied to clipboard - paste it into the message body.",
+                              title: "Email content copied",
+                              description: "Email body copied to clipboard. Paste it into the message body.",
+                              duration: 5000,
                             })
                           }
                         }}
