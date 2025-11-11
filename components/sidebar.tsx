@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { Home, Wand2, Archive, Crown, LogOut, Settings, Users } from "lucide-react"
+import { Home, Wand2, Archive, Crown, LogOut, Settings, Users, Coins, Rocket } from "lucide-react"
 import type { User } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -21,8 +21,8 @@ const navigation = [
   { name: "Search Buyers", href: "/search-buyers", icon: Users },
   { name: "Archive", href: "/archive", icon: Archive },
   { name: "Settings", href: "/settings", icon: Settings },
-  { name: "Upgrade", href: "/upgrade", icon: Crown },
-  { name: "Pricing", href: "/pricing", icon: Crown }, // Add Pricing to navigation
+  { name: "Upgrade", href: "/upgrade", icon: Rocket },
+  { name: "Pricing", href: "/pricing", icon: Coins }, // Use a different icon to distinguish from Upgrade
 ]
 
 export function Sidebar({ user }: SidebarProps) {

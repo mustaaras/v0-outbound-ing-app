@@ -9,6 +9,7 @@ import { Search } from "lucide-react"
 import { SearchBuyersForm } from "@/components/search-buyers-form"
 import { getCurrentUser } from "@/lib/auth-utils"
 import { redirect } from "next/navigation"
+import { PricingComparison } from "@/components/pricing-comparison"
 
 export default async function PricingPage() {
   const user = await getCurrentUser()
@@ -116,121 +117,7 @@ export default async function PricingPage() {
         ))}
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Plan Comparison</CardTitle>
-          <CardDescription>Compare features across all plans</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b">
-                  <th className="py-3 text-left font-medium">Feature</th>
-                  <th className="py-3 text-center font-medium">Free</th>
-                  <th className="py-3 text-center font-medium">Light</th>
-                  <th className="py-3 text-center font-medium">Pro</th>
-                  <th className="py-3 text-center font-medium">Ultra</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="border-b">
-                  <td className="py-3 text-sm">Templates per month</td>
-                  <td className="py-3 text-center text-sm">5</td>
-                  <td className="py-3 text-center text-sm">100</td>
-                  <td className="py-3 text-center text-sm">750</td>
-                  <td className="py-3 text-center text-sm">1,500</td>
-                </tr>
-                <tr className="border-b">
-                  <td className="py-3 text-sm">Premium strategies</td>
-                  <td className="py-3 text-center text-sm">Limited</td>
-                  <td className="py-3 text-center text-sm">
-                    <Check className="mx-auto h-4 w-4 text-primary" />
-                  </td>
-                  <td className="py-3 text-center text-sm">
-                    <Check className="mx-auto h-4 w-4 text-primary" />
-                  </td>
-                  <td className="py-3 text-center text-sm">
-                    <Check className="mx-auto h-4 w-4 text-primary" />
-                  </td>
-                </tr>
-                <tr className="border-b">
-                  <td className="py-3 text-sm">Strategy selection</td>
-                  <td className="py-3 text-center text-sm">1 at a time</td>
-                  <td className="py-3 text-center text-sm">Unlimited</td>
-                  <td className="py-3 text-center text-sm">Unlimited</td>
-                  <td className="py-3 text-center text-sm">Unlimited</td>
-                </tr>
-                <tr className="border-b">
-                  <td className="py-3 text-sm">Industry categories</td>
-                  <td className="py-3 text-center text-sm">
-                    <Check className="mx-auto h-4 w-4 text-primary" />
-                  </td>
-                  <td className="py-3 text-center text-sm">
-                    <Check className="mx-auto h-4 w-4 text-primary" />
-                  </td>
-                  <td className="py-3 text-center text-sm">
-                    <Check className="mx-auto h-4 w-4 text-primary" />
-                  </td>
-                  <td className="py-3 text-center text-sm">
-                    <Check className="mx-auto h-4 w-4 text-primary" />
-                  </td>
-                </tr>
-                <tr className="border-b">
-                  <td className="py-3 text-sm">Full customization</td>
-                  <td className="py-3 text-center text-sm">
-                    <Check className="mx-auto h-4 w-4 text-primary" />
-                  </td>
-                  <td className="py-3 text-center text-sm">
-                    <Check className="mx-auto h-4 w-4 text-primary" />
-                  </td>
-                  <td className="py-3 text-center text-sm">
-                    <Check className="mx-auto h-4 w-4 text-primary" />
-                  </td>
-                  <td className="py-3 text-center text-sm">
-                    <Check className="mx-auto h-4 w-4 text-primary" />
-                  </td>
-                </tr>
-                <tr className="border-b">
-                  <td className="py-3 text-sm">Email support</td>
-                  <td className="py-3 text-center text-sm">
-                    <Check className="mx-auto h-4 w-4 text-primary" />
-                  </td>
-                  <td className="py-3 text-center text-sm">
-                    <Check className="mx-auto h-4 w-4 text-primary" />
-                  </td>
-                  <td className="py-3 text-center text-sm">Priority</td>
-                  <td className="py-3 text-center text-sm">Premium</td>
-                </tr>
-                <tr className="border-b">
-                  <td className="py-3 text-sm">Archive access</td>
-                  <td className="py-3 text-center text-sm">
-                    <Check className="mx-auto h-4 w-4 text-primary" />
-                  </td>
-                  <td className="py-3 text-center text-sm">
-                    <Check className="mx-auto h-4 w-4 text-primary" />
-                  </td>
-                  <td className="py-3 text-center text-sm">
-                    <Check className="mx-auto h-4 w-4 text-primary" />
-                  </td>
-                  <td className="py-3 text-center text-sm">
-                    <Check className="mx-auto h-4 w-4 text-primary" />
-                  </td>
-                </tr>
-                <tr>
-                  <td className="py-3 text-sm">Early access to features</td>
-                  <td className="py-3 text-center text-sm">-</td>
-                  <td className="py-3 text-center text-sm">-</td>
-                  <td className="py-3 text-center text-sm">-</td>
-                  <td className="py-3 text-center text-sm">
-                    <Check className="mx-auto h-4 w-4 text-primary" />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
+      <PricingComparison currentTier={(user as any).tier} />
 
       {/* Removed redundant standalone Search Buyers section now that feature is highlighted in plan cards */}
     </div>
