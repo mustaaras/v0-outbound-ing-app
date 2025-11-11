@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { AlertCircle, Globe, Link as LinkIcon, Loader2 } from "lucide-react"
+import { AlertCircle, Globe, Link as LinkIcon, Loader2, Send } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { findPublicEmails } from "@/app/actions/public-email-finder"
 import { saveBuyer } from "@/app/actions/save-buyer"
@@ -21,6 +21,19 @@ export function PublicEmailFinderForm({ userId }: Props) {
   const [domains, setDomains] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [results, setResults] = useState<Array<{ domain: string; email: string; type: "generic" | "personal"; sourceUrl: string }>>([])
+  
+  const handleSendEmail = (r: { domain: string; email: string; type: "generic" | "personal"; sourceUrl: string }) => {
+    sessionStorage.setItem(
+      "selectedBuyer",
+      JSON.stringify({
+        name: r.email.split("@")[0], // fallback
+        email: r.email,
+        company: r.domain,
+        title: r.type === 'generic' ? 'Generic Inbox' : 'Public Email',
+      })
+    )
+    window.location.href = '/generator'
+  }
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -111,17 +124,33 @@ export function PublicEmailFinderForm({ userId }: Props) {
             <div className="text-sm text-muted-foreground">{results.length} results</div>
             <div className="grid gap-2 max-h-96 overflow-y-auto">
               {results.map((r, idx) => (
-                <div key={`${r.email}-${idx}`} className="rounded border p-3 flex items-center justify-between gap-3 bg-muted/30">
+                <div
+                  key={`${r.email}-${idx}`}
+                  className="rounded border p-3 flex items-center justify-between gap-3 bg-muted/30"
+                >
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <Badge variant={r.type === 'personal' ? 'default' : 'secondary'}>{r.type}</Badge>
                       <span className="font-medium truncate">{r.email}</span>
                       <span className="text-muted-foreground truncate">@ {r.domain}</span>
                     </div>
-                    <a href={r.sourceUrl} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex items-center gap-1 text-xs text-blue-600 hover:underline">
-                      <LinkIcon className="h-3 w-3"/>View source
+                    <a
+                      href={r.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-1 inline-flex items-center gap-1 text-xs text-blue-600 hover:underline"
+                    >
+                      <LinkIcon className="h-3 w-3" />View source
                     </a>
                   </div>
+                  <button
+                    type="button"
+                    className="inline-flex items-center rounded border border-transparent px-2 py-1 text-xs hover:bg-primary/10"
+                    title="Send email"
+                    onClick={() => handleSendEmail(r)}
+                  >
+                    <Send className="h-3.5 w-3.5 mr-1" /> Send
+                  </button>
                 </div>
               ))}
             </div>

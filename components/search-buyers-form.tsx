@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Loader2, Search, Mail, Briefcase, AlertCircle } from "lucide-react"
+import { Loader2, Search, Mail, Briefcase, AlertCircle, Send } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { searchBuyers } from "@/app/actions/search-buyers"
 import { saveBuyer } from "@/app/actions/save-buyer"
@@ -136,6 +136,20 @@ export function SearchBuyersForm({ userId, userTier, searchesUsed, searchLimit }
     window.location.href = "/generator"
   }
 
+  const handleSendEmail = (buyer: SnovBuyer) => {
+    // Prepare and navigate to generator with this buyer
+    sessionStorage.setItem(
+      "selectedBuyer",
+      JSON.stringify({
+        name: `${buyer.first_name || ""} ${buyer.last_name || ""}`.trim(),
+        email: buyer.email,
+        company: buyer.company,
+        title: buyer.title,
+      }),
+    )
+    window.location.href = "/generator"
+  }
+
   if (searchLimit === 0) {
     return (
       <Card className="border-yellow-500/50 bg-yellow-500/10">
@@ -248,9 +262,23 @@ export function SearchBuyersForm({ userId, userTier, searchesUsed, searchLimit }
                           {buyer.title}
                         </div>
                       </div>
-                      {selectedBuyer?.email === buyer.email && (
-                        <Badge className="bg-primary">Selected</Badge>
-                      )}
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          className="inline-flex items-center rounded border border-transparent px-2 py-1 text-xs hover:bg-primary/10"
+                          title="Send email"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleSendEmail(buyer)
+                          }}
+                        >
+                          <Send className="h-3.5 w-3.5 mr-1" />
+                          Send
+                        </button>
+                        {selectedBuyer?.email === buyer.email && (
+                          <Badge className="bg-primary">Selected</Badge>
+                        )}
+                      </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
