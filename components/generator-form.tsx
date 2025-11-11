@@ -35,10 +35,6 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
   const [isLoading, setIsLoading] = useState(false)
   const [result, setResult] = useState<string | null>(null)
   const [activeCategory, setActiveCategory] = useState<string>("SaaS & Startup")
-  const [activeTab, setActiveTab] = useState<string>("email-generator")
-  const [contactKeyword, setContactKeyword] = useState("")
-  const [contactResults, setContactResults] = useState<Array<{email: string, domain: string, type: string, sourceUrl: string}> | null>(null)
-  const [contactLoading, setContactLoading] = useState(false)
 
   const [tone, setTone] = useState<string>("Professional")
   const [emailLength, setEmailLength] = useState<string>("Medium")
@@ -336,76 +332,62 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
   }
 
   return (
-  <>
-  <div className="space-y-6">
-      <div className="mb-6">
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="flex gap-2">
-            <TabsTrigger value="email-generator" className="px-3 py-2 text-xs">Email Generator</TabsTrigger>
-            <TabsTrigger value="contact-generator" className="px-3 py-2 text-xs">Contact Generator <span className="ml-1 text-yellow-600 font-semibold">(beta)</span></TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div>
-
-      {activeTab === "email-generator" && (
-        <form onSubmit={handleSubmit} className="rounded-lg border bg-card p-6 space-y-6">
-          {/* ...existing code... */}
-        </form>
-      )}
-
-      {activeTab === "contact-generator" && (
-        <div className="rounded-lg border bg-card p-6 space-y-6">
-          <Label htmlFor="contact-keyword">Product or Domain Keyword</Label>
-          <Input
-            id="contact-keyword"
-            placeholder="e.g. treegpt"
-            value={contactKeyword}
-            onChange={e => setContactKeyword(e.target.value)}
-            disabled={contactLoading}
-          />
-          <Button
-            type="button"
-            className="w-full"
-            disabled={contactLoading || !contactKeyword.trim()}
-            onClick={async () => {
-              setContactLoading(true)
-              setContactResults(null)
-              try {
-                const res = await fetch("/api/contact-generator", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ keyword: contactKeyword.trim() })
-                })
-                const data = await res.json()
-                setContactResults(data.results || [])
-              } catch (e) {
-                setContactResults([])
-              } finally {
-                setContactLoading(false)
-              }
-            }}
-          >
-            {contactLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Find Contacts"}
-          </Button>
-          {contactResults && (
-            <div className="space-y-2 mt-4">
-              {contactResults.length === 0 ? (
-                <div className="text-xs text-muted-foreground">No public contacts found for this keyword.</div>
-              ) : (
-                <div className="space-y-2">
-                  {contactResults.map((r, idx) => (
-                    <div key={r.email + idx} className="rounded border p-3 flex flex-col gap-1 bg-muted/30">
-                      <div className="font-medium text-sm">{r.email}</div>
-                      <div className="text-xs text-muted-foreground">@ {r.domain} <span className="ml-2">({r.type})</span></div>
-                      <a href={r.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline">View source</a>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
+    <div className="space-y-6">
+      <form onSubmit={handleSubmit} className="rounded-lg border bg-card p-6 space-y-6">
+        <div className="mb-6">
+          <Tabs value={activeCategory} onValueChange={setActiveCategory}>
+            <TabsList
+              className="grid grid-rows-2 grid-flow-col auto-cols-fr gap-2 h-auto w-full p-1 sm:flex sm:flex-wrap sm:gap-2 sm:h-9"
+            >
+              {categories.map((cat) => (
+                <TabsTrigger
+                  key={cat}
+                  value={cat}
+                  className="h-auto text-xs whitespace-nowrap px-3 py-2"
+                >
+                  <span className="hidden sm:inline">{cat}</span>
+                  <span className="sm:hidden">{getShortCategory(cat)}</span>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+          {/* Add margin below tabs to prevent overlap */}
+          <div className="mt-4" />
         </div>
-      )}
+
+        <div className="space-y-2">
+          <Label htmlFor="subject">{getSubjectLabel()} *</Label>
+          <Input
+            id="subject"
+            placeholder={getSubjectPlaceholder()}
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="recipient-name">Recipient Name</Label>
+          <Input
+            id="recipient-name"
+            placeholder="John Smith"
+            value={recipientName}
+            onChange={(e) => setRecipientName(e.target.value)}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="recipient-email">Recipient Email</Label>
+          <Input
+            id="recipient-email"
+            type="email"
+            placeholder="john@company.com"
+            value={recipientEmail}
+            onChange={(e) => setRecipientEmail(e.target.value)}
+          />
+        </div>
+
+        <div className="space-y-2">
           <Label htmlFor="signature">Your Signature</Label>
           <Input
             id="signature"
@@ -884,6 +866,5 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
         </div>
       )}
     </div>
-    </>
   )
 }
