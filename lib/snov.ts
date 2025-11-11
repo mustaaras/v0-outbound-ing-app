@@ -229,6 +229,14 @@ class SnovClient {
       
       if (!resp.ok) {
         errorLog(`[v0] startDomainProspects error ${resp.status}:`, text)
+        // Parse error message for better user feedback
+        try {
+          const errorData = JSON.parse(text)
+          if (errorData.errors) {
+            const errorMsg = errorData.errors.map((e: any) => Object.values(e).join(': ')).join(', ')
+            errorLog(`[v0] Snov API validation error:`, errorMsg)
+          }
+        } catch {}
         return null
       }
       
@@ -259,6 +267,9 @@ class SnovClient {
     await this.ensureAccessToken()
     const authHeader = this.accessToken ? `Bearer ${this.accessToken}` : `Bearer ${this.apiKey}`
     const url = `${this.apiUrl}/domain-search/prospects/result/${encodeURIComponent(taskHash)}`
+    
+    devLog("[v0] Fetching results for task:", taskHash)
+    
     let resp = await fetch(url, { headers: { Authorization: authHeader } })
     if ((resp.status === 401 || resp.status === 403) && this.clientId && this.clientSecret) {
       devLog("[v0] getDomainProspectsResult auth error; refreshing token")
@@ -266,15 +277,20 @@ class SnovClient {
       const retryAuth = this.accessToken ? `Bearer ${this.accessToken}` : `Bearer ${this.apiKey}`
       resp = await fetch(url, { headers: { Authorization: retryAuth } })
     }
+    
+    const text = await resp.text()
+    devLog(`[v0] getDomainProspectsResult response ${resp.status}:`, text.substring(0, 500))
+    
     if (!resp.ok) {
-      const text = await resp.text()
-      errorLog(`[v0] getDomainProspectsResult error ${resp.status}`, text)
+      errorLog(`[v0] getDomainProspectsResult error ${resp.status}:`, text)
       return null
     }
     try {
-      return await resp.json()
+      const json = JSON.parse(text)
+      devLog("[v0] Result data keys:", Object.keys(json))
+      return json
     } catch (e) {
-      errorLog("[v0] getDomainProspectsResult parse error", e)
+      errorLog("[v0] getDomainProspectsResult parse error:", e)
       return null
     }
   }
@@ -308,20 +324,48 @@ class SnovClient {
       
       const start = await this.startDomainProspects(cleanDomain, positions, page)
       if (!start?.task_hash) {
-        return { success: false, data: { total: 0, results: [] }, error: "Failed to start search. Please check the domain is valid and accessible." }
+        return { success: false, data: { total: 0, results: [] }, error: "Failed to start search. Please use a valid company domain (e.g., hubspot.com, not gmail.com)." }
       }
       
-      const delays = [400, 700, 1100, 1600, 2200]
+      devLog("[v0] Polling for results, task_hash:", start.task_hash)
+      
+      // Poll for results - Snov tasks can take a few seconds
+      const delays = [1000, 2000, 3000, 4000, 5000] // Longer delays for API processing
       let result: any | null = null
+      
       for (let i = 0; i < delays.length; i++) {
-        result = await this.getDomainProspectsResult(start.task_hash)
-        if (result && (result.prospects || result.results || result.data?.prospects)) break
         await new Promise((r) => setTimeout(r, delays[i]))
+        result = await this.getDomainProspectsResult(start.task_hash)
+        
+        if (!result) {
+          devLog(`[v0] Poll attempt ${i + 1}: No result yet`)
+          continue
+        }
+        
+        // Check if we have actual prospect data
+        const prospects = result.prospects || result.data?.prospects || result.data || []
+        if (Array.isArray(prospects) && prospects.length > 0) {
+          devLog(`[v0] Poll attempt ${i + 1}: Got ${prospects.length} prospects`)
+          break
+        }
+        
+        devLog(`[v0] Poll attempt ${i + 1}: Task not ready, waiting...`)
       }
+      
       if (!result) {
-        return { success: false, data: { total: 0, results: [] }, error: "Timed out waiting for results" }
+        return { success: false, data: { total: 0, results: [] }, error: "Search timed out. Please try again." }
       }
-      const prospects = result.prospects || result.results || result.data?.prospects || []
+      
+      const prospects = result.prospects || result.data?.prospects || result.data || []
+      
+      if (!Array.isArray(prospects) || prospects.length === 0) {
+        devLog("[v0] No prospects found in result:", result)
+        return { 
+          success: true, 
+          data: { total: 0, results: [] }
+        }
+      }
+      
       const total = result.total || result.count || prospects.length || 0
       const mapped: SnovBuyer[] = prospects.map((p: any) => ({
         email: p.email || p.emails?.[0] || "",
@@ -336,7 +380,7 @@ class SnovClient {
       }))
       const limit = params.limit && params.limit > 0 ? params.limit : mapped.length
       const sliced = mapped.slice(0, limit)
-      devLog("[v0] domain search", { domain: cleanDomain, total, returned: sliced.length, positions })
+      devLog("[v0] domain search completed:", { domain: cleanDomain, total, returned: sliced.length, positions })
       return { success: true, data: { total, results: sliced } }
     } catch (error) {
       errorLog("[v0] domain search error", error)
