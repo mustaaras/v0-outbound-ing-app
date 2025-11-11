@@ -6,7 +6,7 @@ import { PRODUCTS } from "@/lib/products"
 import { getUserSearchCount } from "@/app/actions/search-buyers"
 import { SNOV_SEARCH_LIMITS } from "@/lib/types"
 import { Search } from "lucide-react"
-import { SearchBuyersForm } from "@/components/search-buyers-form"
+import { SearchContactsForm } from "@/components/search-buyers-form"
 import { getCurrentUser } from "@/lib/auth-utils"
 import { redirect } from "next/navigation"
 import { PricingComparison } from "@/components/pricing-comparison"
@@ -83,7 +83,7 @@ export default async function PricingPage() {
               <ul className="space-y-3">
                 {plan.features.map((feature, index) => {
                   const lower = feature.toLowerCase()
-                  const isSearch = lower.startsWith("search buyers") || lower.includes("buyer searches") || lower.includes("saved buyer emails")
+                  const isSearch = lower.startsWith("search contacts") || lower.includes("contact searches") || lower.includes("saved contact emails")
                   return (
                     <li key={index} className="flex items-start gap-2">
                       {isSearch ? (
@@ -119,7 +119,7 @@ export default async function PricingPage() {
 
       <PricingComparison currentTier={(user as any).tier} />
 
-      {/* Removed redundant standalone Search Buyers section now that feature is highlighted in plan cards */}
+      {/* Removed redundant standalone Search Contacts section now that feature is highlighted in plan cards */}
     </div>
   )
 }

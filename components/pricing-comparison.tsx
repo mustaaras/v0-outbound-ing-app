@@ -49,8 +49,8 @@ const featureRows: FeatureRow[] = [
     render: () => <Check className="mx-auto h-4 w-4 text-primary" />,
   },
   {
-    key: "searchBuyers",
-    label: "Search Buyers saved emails / month",
+    key: "searchContacts",
+    label: "Search Contacts saved emails / month",
     render: (tier) => {
       if (tier === "free") return "Not included"
       return String(SNOV_SEARCH_LIMITS[tier as keyof typeof SNOV_SEARCH_LIMITS])

@@ -262,11 +262,11 @@ export default function LandingPage() {
                   </ul>
                 </div>
                 <div className="text-left">
-                  <h3 className="font-semibold">Search Buyers</h3>
+                  <h3 className="font-semibold">Search Contacts</h3>
                   <ul className="mt-2 space-y-2 text-sm text-muted-foreground">
-                    <li>Light: No buyer searches</li>
-                    <li>Pro: 150 buyer searches per month</li>
-                    <li>Ultra: 300 buyer searches per month</li>
+                    <li>Light: No contact searches</li>
+                    <li>Pro: 150 contact searches per month</li>
+                    <li>Ultra: 300 contact searches per month</li>
                   </ul>
                 </div>
               </div>

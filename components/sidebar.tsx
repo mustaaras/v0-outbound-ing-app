@@ -18,7 +18,7 @@ interface SidebarProps {
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
   { name: "Generator", href: "/generator", icon: Wand2 },
-  { name: "Search Buyers", href: "/search-buyers", icon: Users },
+  { name: "Search Contacts", href: "/search-buyers", icon: Users },
   { name: "Archive", href: "/archive", icon: Archive },
   { name: "Settings", href: "/settings", icon: Settings },
   { name: "Upgrade", href: "/upgrade", icon: Rocket },
@@ -49,8 +49,8 @@ export function Sidebar({ user }: SidebarProps) {
 
       <nav className="flex-1 space-y-1 p-4">
         {navigation.map((item) => {
-          // Restrict Search Buyers to pro/ultra users
-          if (item.name === "Search Buyers" && !(user.tier === "pro" || user.tier === "ultra")) {
+          // Restrict Search Contacts to pro/ultra users
+          if (item.name === "Search Contacts" && !(user.tier === "pro" || user.tier === "ultra")) {
             return null
           }
 

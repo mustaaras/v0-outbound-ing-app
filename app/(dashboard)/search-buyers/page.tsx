@@ -4,7 +4,7 @@ import { getUserSearchCount } from "@/app/actions/search-buyers"
 import { getPublicEmailSearchCount } from "@/app/actions/public-email-finder"
 import { createClient } from "@/lib/supabase/server"
 import { SNOV_SEARCH_LIMITS, PUBLIC_EMAIL_SEARCH_LIMITS } from "@/lib/types"
-import { SearchBuyersForm } from "@/components/search-buyers-form"
+import { SearchContactsForm } from "@/components/search-buyers-form"
 import { PublicEmailFinderForm } from "@/components/public-email-finder-form"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Building2, Globe } from "lucide-react"
@@ -52,8 +52,8 @@ export default async function SearchBuyersPage() {
     <div className="mx-auto max-w-4xl space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Search Buyers</h1>
-          <p className="mt-2 text-muted-foreground">Find buyer prospects and add them directly into your template.</p>
+          <h1 className="text-3xl font-bold tracking-tight">Search Contacts</h1>
+          <p className="mt-2 text-muted-foreground">Find contact prospects and add them directly into your template.</p>
         </div>
       </div>
 
@@ -70,7 +70,7 @@ export default async function SearchBuyersPage() {
         </TabsList>
 
         <TabsContent value="api" className="space-y-6 mt-6">
-          <SearchBuyersForm
+          <SearchContactsForm
             userId={(user as any).id}
             userTier={(user as any).tier}
             searchesUsed={searchesUsed}

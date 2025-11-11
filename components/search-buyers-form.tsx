@@ -14,19 +14,19 @@ import { saveBuyer } from "@/app/actions/save-buyer"
 import type { SnovBuyer } from "@/lib/snov"
 import Link from "next/link"
 
-interface SearchBuyersFormProps {
+interface SearchContactsFormProps {
   userId: string
   userTier: string
   searchesUsed: number
   searchLimit: number
 }
 
-export function SearchBuyersForm({ userId, userTier, searchesUsed, searchLimit }: SearchBuyersFormProps) {
+export function SearchContactsForm({ userId, userTier, searchesUsed, searchLimit }: SearchContactsFormProps) {
   const [domain, setDomain] = useState("")
   const [title, setTitle] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [results, setResults] = useState<SnovBuyer[]>([])
-  const [selectedBuyer, setSelectedBuyer] = useState<SnovBuyer | null>(null)
+  const [selectedContact, setSelectedContact] = useState<SnovBuyer | null>(null)
   const [searchesRemainingLocal, setSearchesRemainingLocal] = useState(searchLimit - searchesUsed)
   const [requestedCount, setRequestedCount] = useState<number>(1)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -38,7 +38,7 @@ export function SearchBuyersForm({ userId, userTier, searchesUsed, searchLimit }
     e.preventDefault()
     setErrorMessage(null)
     setResults([])
-    setSelectedBuyer(null)
+    setSelectedContact(null)
 
     if (!domain) {
       toast({ title: 'Domain required', description: 'Enter a company domain (e.g. example.com)', variant: 'destructive' })
@@ -116,21 +116,21 @@ export function SearchBuyersForm({ userId, userTier, searchesUsed, searchLimit }
   }
 
   const handleSelectBuyer = async (buyer: SnovBuyer) => {
-    setSelectedBuyer(buyer)
+    setSelectedContact(buyer)
   }
 
   const handleProceedToGenerator = () => {
-    if (!selectedBuyer) return
+    if (!selectedContact) return
 
     // Store buyer info in session storage for generator page to access
     sessionStorage.setItem(
       "selectedBuyer",
       JSON.stringify({
-        name: `${selectedBuyer.first_name} ${selectedBuyer.last_name}`,
-        email: selectedBuyer.email,
-        company: selectedBuyer.company,
-        title: selectedBuyer.title,
-      }),
+        name: `${selectedContact.first_name} ${selectedContact.last_name}`,
+        email: selectedContact.email,
+        company: selectedContact.company,
+        title: selectedContact.title,
+      })
     )
 
     window.location.href = "/generator"
@@ -156,9 +156,9 @@ export function SearchBuyersForm({ userId, userTier, searchesUsed, searchLimit }
         <CardContent className="p-4 flex items-start gap-3">
           <AlertCircle className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
           <div className="space-y-1">
-            <p className="text-sm font-semibold text-yellow-600">Search Buyers Unavailable</p>
+            <p className="text-sm font-semibold text-yellow-600">Search Contacts Unavailable</p>
             <p className="text-sm text-yellow-600">
-              Search Buyers is available on Light, Pro, and Ultra plans.{" "}
+              Search Contacts is available on Light, Pro, and Ultra plans.{" "}
               <Link href="/upgrade" className="font-semibold underline underline-offset-2">
                 Upgrade now
               </Link>
@@ -194,7 +194,7 @@ export function SearchBuyersForm({ userId, userTier, searchesUsed, searchLimit }
 
         <div className="flex items-center gap-4">
           <div className="flex-1 max-w-xs">
-            <Label htmlFor="count">Number of buyers</Label>
+            <Label htmlFor="count">Number of contacts</Label>
             <Input
               id="count"
               type="number"
@@ -244,7 +244,7 @@ export function SearchBuyersForm({ userId, userTier, searchesUsed, searchLimit }
               <Card
                 key={index}
                 className={`cursor-pointer transition-all ${
-                  selectedBuyer?.email === buyer.email
+                  selectedContact?.email === buyer.email
                     ? "border-primary ring-2 ring-primary/20 bg-primary/5"
                     : "hover:border-primary/50"
                 }`}
@@ -275,7 +275,7 @@ export function SearchBuyersForm({ userId, userTier, searchesUsed, searchLimit }
                           <Send className="h-3.5 w-3.5 mr-1" />
                           Send
                         </button>
-                        {selectedBuyer?.email === buyer.email && (
+                        {selectedContact?.email === buyer.email && (
                           <Badge className="bg-primary">Selected</Badge>
                         )}
                       </div>
@@ -312,7 +312,7 @@ export function SearchBuyersForm({ userId, userTier, searchesUsed, searchLimit }
             ))}
           </div>
 
-          {selectedBuyer && (
+          {selectedContact && (
             <div className="flex gap-2">
               <Button asChild variant="outline" className="flex-1">
                 <Link href="/generator">Cancel & Go Back</Link>
