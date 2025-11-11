@@ -20,6 +20,7 @@ interface GenerateTemplateInput {
   personalization: string
   generateVariants?: boolean
   generateMultiChannel?: boolean
+  additionalNotes?: string
 }
 
 export async function generateTemplate(input: GenerateTemplateInput) {
@@ -74,7 +75,7 @@ export async function generateTemplate(input: GenerateTemplateInput) {
 Combine and blend the following strategies into one cohesive, compelling email:
 
 ${strategyDescriptions}
-
+${input.additionalNotes ? `\n**Additional Instructions from User:**\n${input.additionalNotes}\n` : ""}
 Requirements:
 - Adopt a ${input.tone.toLowerCase()} tone throughout
 - Keep the email to approximately ${lengthGuide}

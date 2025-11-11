@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Textarea } from "@/components/ui/textarea"
 import type { Strategy } from "@/lib/types"
 import { generateTemplate } from "@/app/actions/generate"
 import { Loader2, Copy, Crown, Mail } from "lucide-react"
@@ -45,6 +46,7 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
   const [generateMultiChannel, setGenerateMultiChannel] = useState<boolean>(false)
   const [variants, setVariants] = useState<Array<{label: string, content: string}> | null>(null)
   const [multiChannelResults, setMultiChannelResults] = useState<Record<string, string> | null>(null)
+  const [additionalNotes, setAdditionalNotes] = useState<string>("")
 
   const { toast } = useToast()
 
@@ -220,6 +222,7 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
         personalization,
         generateVariants,
         generateMultiChannel,
+        additionalNotes: additionalNotes || undefined,
       })
 
       setResult(data.result)
@@ -582,6 +585,33 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
                 </div>
               )}
             </div>
+          </div>
+        )}
+
+        {/* Additional Notes - Pro/Ultra Only */}
+        {(userTier === "pro" || userTier === "ultra") && selectedStrategies.length > 0 && (
+          <div className="space-y-4 rounded-lg border-2 border-blue-500/20 bg-blue-500/5 p-6">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Crown className="h-5 w-5 text-blue-500" />
+                <Label htmlFor="additional-notes" className="text-base font-semibold">Additional Instructions</Label>
+                <Badge variant="secondary" className="gap-1">
+                  <Crown className="h-3 w-3" />
+                  Pro
+                </Badge>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Can&apos;t find what you&apos;re looking for? Add custom instructions and our AI will incorporate them into your email
+              </p>
+            </div>
+            <Textarea
+              id="additional-notes"
+              placeholder="E.g., Mention our recent partnership with X company, focus on cost savings, include a specific statistic about ROI..."
+              value={additionalNotes}
+              onChange={(e) => setAdditionalNotes(e.target.value)}
+              rows={4}
+              className="resize-none"
+            />
           </div>
         )}
 
