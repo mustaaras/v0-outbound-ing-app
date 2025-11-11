@@ -554,7 +554,7 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
                 </div>
               </div>
 
-              {(userTier === "pro" || userTier === "ultra") && (
+              {userTier === "pro" && (
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <Label className="text-sm font-medium">Language</Label>
@@ -627,8 +627,8 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
           </div>
         )}
 
-        {/* Additional Notes - Pro/Ultra Only */}
-  {(userTier === "pro") && selectedStrategies.length > 0 && (
+        {/* Additional Notes - Light & Pro */}
+  {(userTier === "light" || userTier === "pro") && selectedStrategies.length > 0 && (
           <div className="space-y-4 rounded-lg border-2 border-blue-500/20 bg-blue-500/5 p-6">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
@@ -636,11 +636,13 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
                 <Label htmlFor="additional-notes" className="text-base font-semibold">Additional Instructions</Label>
                 <Badge variant="secondary" className="gap-1">
                   <Crown className="h-3 w-3" />
-                  Pro
+                  {userTier === "light" ? "Light" : "Pro"}
                 </Badge>
               </div>
               <p className="text-sm text-muted-foreground">
                 Can&apos;t find what you&apos;re looking for? Add custom instructions and our AI will incorporate them into your email
+                {userTier === "light" && " (200 character limit)"}
+                {userTier === "pro" && " (300 character limit)"}
               </p>
             </div>
             <Textarea
@@ -648,9 +650,13 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
               placeholder="E.g., Mention our recent partnership with X company, focus on cost savings, include a specific statistic about ROI..."
               value={additionalNotes}
               onChange={(e) => setAdditionalNotes(e.target.value)}
+              maxLength={userTier === "light" ? 200 : 300}
               rows={4}
               className="resize-none"
             />
+            <p className="text-xs text-muted-foreground text-right">
+              {additionalNotes.length} / {userTier === "light" ? 200 : 300} characters
+            </p>
           </div>
         )}
 

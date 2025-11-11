@@ -45,19 +45,19 @@ export interface Usage {
 }
 
 export const TIER_LIMITS = {
-  free: 25,
-  light: 100,
-  pro: 750,
+  free: 30,
+  light: 300,
+  pro: 999999,
 } as const
 
 export const SNOV_SEARCH_LIMITS = {
   free: 0,
-  light: 50,
-  pro: 150,
+  light: 0,
+  pro: 100,
 } as const
 
 export const PUBLIC_EMAIL_SEARCH_LIMITS = {
-  free: 30,
+  free: 60,
   light: 999999,
   pro: 999999,
 } as const

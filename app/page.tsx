@@ -50,7 +50,7 @@ export default function LandingPage() {
               <Button asChild size="lg" className="gap-2">
                 <Link href="/auth/signup">
                   <Wand2 className="h-4 w-4" />
-                  Start Free - 25 Emails/Month
+                  Start Free - 30 Emails/Month
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg">
@@ -142,10 +142,10 @@ export default function LandingPage() {
                   <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
                     <Crown className="h-6 w-6 text-primary" />
                   </div>
-                  <h3 className="text-xl font-semibold">Flexible Pricing Plans</h3>
+                                    <h3 className="text-xl font-semibold">Flexible Pricing Plans</h3>
                   <p className="text-sm text-muted-foreground">
-                    Start free with 25 emails/month. Upgrade to Light for 100 emails at $9.99/month, Pro for 750 emails
-                    at $29/month, or Ultra for 1,500 emails at $49/month
+                    Start free with 30 emails/month. Upgrade to Light for 300 emails at $15/month, Pro for unlimited emails
+                    at $39/month. 20% off annual billing.
                   </p>
                 </div>
               </div>
@@ -180,7 +180,7 @@ export default function LandingPage() {
               <p className="text-muted-foreground">Compare plans and pick what fits your outreach needs</p>
             </div>
 
-            <div className="mt-10 grid gap-6 lg:grid-cols-4">
+            <div className="mt-10 grid gap-6 lg:grid-cols-3">
               {/* Free Plan */}
               <Card>
                 <CardHeader>
@@ -194,11 +194,12 @@ export default function LandingPage() {
                 <CardContent>
                   <ul className="space-y-3 text-left">
                     {[
-                      "25 emails per month",
-                      "Access to free strategies",
+                      "30 emails per month",
+                      "Pick 1 strategy at a time",
                       "9 industry categories",
                       "Basic customization",
                       "Email support",
+                      "Email Finder – 60 searches/month",
                     ].map((f) => (
                       <li key={f} className="flex items-start gap-2">
                         <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
@@ -214,7 +215,7 @@ export default function LandingPage() {
                 </CardFooter>
               </Card>
 
-              {PRODUCTS.map((product) => (
+              {PRODUCTS.filter(p => p.billingCycle === "monthly").map((product) => (
                 <Card key={product.id} className={product.tier === "pro" ? "border-primary shadow-lg" : ""}>
                   <CardHeader>
                     <div className="flex items-center justify-between">
@@ -227,8 +228,10 @@ export default function LandingPage() {
                     </div>
                     <CardDescription>{product.description}</CardDescription>
                     <div className="mt-4">
-                      <span className="text-4xl font-bold">${(product.priceInCents / 100).toFixed(2)}</span>
-                      <span className="text-muted-foreground">/month</span>
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-4xl font-bold">{product.priceLabel}</span>
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-1">or save 20% with annual billing</p>
                     </div>
                   </CardHeader>
                   <CardContent>
