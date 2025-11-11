@@ -385,6 +385,59 @@ class SnovClient {
   }
 
   /**
+   * Start email search for a specific prospect using the provided start URL.
+   */
+  private async startProspectEmailSearch(startUrl: string): Promise<string | null> {
+    await this.ensureAccessToken()
+    const authHeader = this.accessToken ? `Bearer ${this.accessToken}` : `Bearer ${this.apiKey}`
+    let resp = await fetch(startUrl, { method: 'POST', headers: { Authorization: authHeader } })
+    if ((resp.status === 401 || resp.status === 403) && this.clientId && this.clientSecret) {
+      await this.fetchAccessToken()
+      const retryAuth = this.accessToken ? `Bearer ${this.accessToken}` : `Bearer ${this.apiKey}`
+      resp = await fetch(startUrl, { method: 'POST', headers: { Authorization: retryAuth } })
+    }
+    const text = await resp.text()
+    devLog('[v0] startProspectEmailSearch', resp.status, text.substring(0, 300))
+    if (!resp.ok) return null
+    try {
+      const json = JSON.parse(text)
+      const taskHash = json?.meta?.task_hash || json?.task_hash
+      return taskHash || null
+    } catch {
+      return null
+    }
+  }
+
+  /**
+   * Fetch result for prospect email search task; return first acceptable email.
+   */
+  private async getProspectEmailResult(taskHash: string): Promise<string | null> {
+    await this.ensureAccessToken()
+    const authHeader = this.accessToken ? `Bearer ${this.accessToken}` : `Bearer ${this.apiKey}`
+    const url = `${this.apiUrl}/domain-search/prospects/search-emails/result/${encodeURIComponent(taskHash)}`
+    let resp = await fetch(url, { headers: { Authorization: authHeader } })
+    if ((resp.status === 401 || resp.status === 403) && this.clientId && this.clientSecret) {
+      await this.fetchAccessToken()
+      const retryAuth = this.accessToken ? `Bearer ${this.accessToken}` : `Bearer ${this.apiKey}`
+      resp = await fetch(url, { headers: { Authorization: retryAuth } })
+    }
+    const text = await resp.text()
+    devLog('[v0] getProspectEmailResult', resp.status, text.substring(0, 300))
+    if (!resp.ok) return null
+    try {
+      const json = JSON.parse(text)
+      const emails: any[] = json?.data?.emails || []
+      // Prefer valid, then unknown
+      const valid = emails.find((e: any) => e?.smtp_status === 'valid')?.email
+      if (valid) return valid
+      const unknown = emails.find((e: any) => e?.smtp_status === 'unknown')?.email
+      return unknown || null
+    } catch {
+      return null
+    }
+  }
+
+  /**
    * Public search method: start task, poll for results, map, slice.
    */
   async searchBuyers(params: SnovSearchParams): Promise<SnovSearchResponse> {
@@ -464,25 +517,36 @@ class SnovClient {
         if (!result) continue
         const prospects = result.prospects || result.data?.prospects || result.data || []
         if (!Array.isArray(prospects) || prospects.length === 0) continue
-        const mapped: SnovBuyer[] = prospects.map((p: any) => ({
-          email: p.email || p.emails?.[0] || "",
-          first_name: p.first_name || p.firstname || "",
-          last_name: p.last_name || p.lastname || "",
-          company: p.company_name || p.company || d || "",
-          title: p.position || p.title || "",
-          linkedin_url: p.linkedin || p.linkedin_url || p.social_linkedin,
-          phone: p.phone || p.phones?.[0],
-          industry: p.industry || p.company_industry,
-          company_size: p.company_size || p.company_size_range,
-        })).filter((b: SnovBuyer) => b.email && b.email.trim() !== "")
-        // Deduplicate by email
-        const existingEmails = new Set(collected.map(c => c.email.toLowerCase()))
-        for (const m of mapped) {
-          if (!existingEmails.has(m.email.toLowerCase())) {
-            collected.push(m)
-            existingEmails.add(m.email.toLowerCase())
-          }
+        // Attempt to enrich each prospect with a verified email if not already present
+        for (const p of prospects) {
           if (collected.length >= limit) break
+          let email: string = p.email || p.emails?.[0] || ''
+          // If no direct email but we have a search_emails_start link try enrichment
+          if (!email && p.search_emails_start) {
+            const taskHash = await this.startProspectEmailSearch(p.search_emails_start)
+            if (taskHash) {
+              const emailDelays = [800, 1600, 2500]
+              for (let i = 0; i < emailDelays.length && !email; i++) {
+                await new Promise(r => setTimeout(r, emailDelays[i]))
+                email = (await this.getProspectEmailResult(taskHash)) || ''
+              }
+            }
+          }
+          if (!email) continue
+          const normEmail = email.toLowerCase()
+          if (collected.some(c => c.email.toLowerCase() === normEmail)) continue
+          const buyer: SnovBuyer = {
+            email,
+            first_name: p.first_name || p.firstname || '',
+            last_name: p.last_name || p.lastname || '',
+            company: p.company_name || p.company || d || '',
+            title: p.position || p.title || '',
+            linkedin_url: p.linkedin || p.linkedin_url || p.social_linkedin,
+            phone: p.phone || p.phones?.[0],
+            industry: p.industry || p.company_industry,
+            company_size: p.company_size || p.company_size_range,
+          }
+            collected.push(buyer)
         }
         if (collected.length >= limit) break
       }
