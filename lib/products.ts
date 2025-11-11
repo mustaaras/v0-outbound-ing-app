@@ -21,6 +21,7 @@ export const PRODUCTS: Product[] = [
       "Full customization options",
       "Email support",
       "Full archive access",
+      "No buyer searches (upgrade for Search Buyers)",
     ],
   },
   {
@@ -36,6 +37,7 @@ export const PRODUCTS: Product[] = [
       "Full customization options",
       "Priority email support",
       "Full archive access",
+      "Search Buyers – 150 buyer searches/month",
     ],
   },
   {
@@ -52,6 +54,7 @@ export const PRODUCTS: Product[] = [
       "Premium priority support",
       "Full archive access",
       "Early access to new features",
+      "Search Buyers – 300 buyer searches/month",
     ],
   },
 ]

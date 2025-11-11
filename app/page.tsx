@@ -1,6 +1,8 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Wand2, Zap, Crown, Sparkles, Target, Users } from "lucide-react"
+import { Wand2, Zap, Crown, Sparkles, Target, Users, Check } from "lucide-react"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { PRODUCTS } from "@/lib/products"
 
 export default function LandingPage() {
   return (
@@ -164,6 +166,108 @@ export default function LandingPage() {
                 Get Started Free
               </Link>
             </Button>
+          </div>
+        </section>
+
+        {/* Public Pricing Section */}
+        <section className="border-t bg-muted/50 py-20">
+          <div className="container">
+            <div className="mx-auto max-w-5xl space-y-8 text-center">
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Simple, transparent pricing</h2>
+              <p className="text-muted-foreground">Compare plans and pick what fits your outreach needs</p>
+            </div>
+
+            <div className="mt-10 grid gap-6 lg:grid-cols-4">
+              {/* Free Plan */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Free</CardTitle>
+                  <CardDescription>Perfect for trying out Outbound.ing</CardDescription>
+                  <div className="mt-4">
+                    <span className="text-4xl font-bold">$0</span>
+                    <span className="text-muted-foreground">/month</span>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-3 text-left">
+                    {[
+                      "5 templates per month",
+                      "Access to free strategies",
+                      "9 industry categories",
+                      "Basic customization",
+                      "Email support",
+                    ].map((f) => (
+                      <li key={f} className="flex items-start gap-2">
+                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                        <span className="text-sm">{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+                <CardFooter>
+                  <Button asChild className="w-full">
+                    <Link href="/auth/signup">Start Free</Link>
+                  </Button>
+                </CardFooter>
+              </Card>
+
+              {PRODUCTS.map((product) => (
+                <Card key={product.id} className={product.tier === "pro" ? "border-primary shadow-lg" : ""}>
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle>{product.name}</CardTitle>
+                      {product.tier === "pro" && (
+                        <span className="rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">
+                          Popular
+                        </span>
+                      )}
+                    </div>
+                    <CardDescription>{product.description}</CardDescription>
+                    <div className="mt-4">
+                      <span className="text-4xl font-bold">${(product.priceInCents / 100).toFixed(2)}</span>
+                      <span className="text-muted-foreground">/month</span>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-3 text-left">
+                      {product.features.map((feature) => (
+                        <li key={feature} className="flex items-start gap-2">
+                          <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                          <span className="text-sm">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                  <CardFooter>
+                    <Button asChild className="w-full">
+                      <Link href="/auth/signup">Get Started</Link>
+                    </Button>
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+
+            {/* Quick comparison bullets */}
+            <div className="mx-auto mt-10 max-w-4xl rounded-lg border bg-card p-6">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="text-left">
+                  <h3 className="font-semibold">What’s included</h3>
+                  <ul className="mt-2 space-y-2 text-sm text-muted-foreground">
+                    <li>101 premium strategies across 9 industries</li>
+                    <li>Archive access and full customization</li>
+                    <li>Direct email handoff—ready to send</li>
+                  </ul>
+                </div>
+                <div className="text-left">
+                  <h3 className="font-semibold">Search Buyers</h3>
+                  <ul className="mt-2 space-y-2 text-sm text-muted-foreground">
+                    <li>Light: No buyer searches</li>
+                    <li>Pro: 150 buyer searches per month</li>
+                    <li>Ultra: 300 buyer searches per month</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
       </main>
