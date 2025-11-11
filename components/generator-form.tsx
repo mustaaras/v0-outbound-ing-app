@@ -299,22 +299,24 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
   return (
     <div className="space-y-6">
       <form onSubmit={handleSubmit} className="rounded-lg border bg-card p-6 space-y-6">
-        <Tabs value={activeCategory} onValueChange={setActiveCategory}>
-          <TabsList
-            className="grid grid-rows-2 grid-flow-col auto-cols-fr gap-2 h-auto w-full p-1 sm:flex sm:flex-wrap sm:gap-2 sm:h-9"
-          >
-            {categories.map((cat) => (
-              <TabsTrigger
-                key={cat}
-                value={cat}
-                className="h-auto text-xs whitespace-nowrap px-3 py-2"
-              >
-                <span className="hidden sm:inline">{cat}</span>
-                <span className="sm:hidden">{getShortCategory(cat)}</span>
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
+        <div className="mb-6">
+          <Tabs value={activeCategory} onValueChange={setActiveCategory}>
+            <TabsList
+              className="grid grid-rows-2 grid-flow-col auto-cols-fr gap-2 h-auto w-full p-1 sm:flex sm:flex-wrap sm:gap-2 sm:h-9"
+            >
+              {categories.map((cat) => (
+                <TabsTrigger
+                  key={cat}
+                  value={cat}
+                  className="h-auto text-xs whitespace-nowrap px-3 py-2"
+                >
+                  <span className="hidden sm:inline">{cat}</span>
+                  <span className="sm:hidden">{getShortCategory(cat)}</span>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+        </div>
 
         <div className="space-y-2">
           <Label htmlFor="subject">{getSubjectLabel()} *</Label>
