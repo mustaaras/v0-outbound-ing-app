@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Textarea } from "@/components/ui/textarea"
 import type { Strategy } from "@/lib/types"
 import { generateTemplate } from "@/app/actions/generate"
-import { Loader2, Copy, Crown, Mail } from "lucide-react"
+import { Loader2, Copy, Crown, Mail, ChevronDown } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
@@ -40,6 +40,7 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
   const [emailLength, setEmailLength] = useState<string>("Medium")
   const [goal, setGoal] = useState<string>("Get a reply")
   const [personalization, setPersonalization] = useState<string>("Medium")
+  const [showAdvancedOptions, setShowAdvancedOptions] = useState<boolean>(false)
   
   // Premium features
   const [generateVariants, setGenerateVariants] = useState<boolean>(false)
@@ -431,16 +432,29 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
 
         {selectedStrategies.length > 0 && (
           <div className="space-y-4 rounded-lg border-2 border-primary/20 bg-primary/5 p-6">
-            <div className="space-y-2">
-              <Label className="text-base font-semibold">🎯 Customize Your Email</Label>
-              <p className="text-sm text-muted-foreground">Fine-tune how your email is generated for better results</p>
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <Label className="text-base font-semibold">🎯 Customize Your Email</Label>
+                <p className="text-sm text-muted-foreground">Fine-tune how your email is generated</p>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowAdvancedOptions(!showAdvancedOptions)}
+                className="text-xs gap-1"
+              >
+                {showAdvancedOptions ? "Hide Options" : "Show Advanced"}
+                <ChevronDown className={`h-4 w-4 transition-transform ${showAdvancedOptions ? "rotate-180" : ""}`} />
+              </Button>
             </div>
 
-            <div className="space-y-4">
+            {showAdvancedOptions && (
+              <div className="space-y-4 pt-2">
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Tone</Label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-                  {["Professional", "Friendly", "Persuasive", "Casual", "Enthusiastic", "Consultative", "Direct", "Empathetic"].map((option) => (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+                  {["Professional", "Friendly", "Persuasive", "Casual", "Direct"].map((option) => (
                     <button
                       key={option}
                       type="button"
@@ -483,8 +497,8 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Goal</Label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                  {["Book a call", "Get a reply", "Make a sale", "Introduce product", "Schedule demo", "Request feedback", "Propose partnership", "Follow-up"].map((option) => (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+                  {["Book a call", "Get a reply", "Schedule demo", "Make a sale", "Follow-up"].map((option) => (
                     <button
                       key={option}
                       type="button"
@@ -504,26 +518,29 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Personalization Level</Label>
                 <div className="grid grid-cols-3 gap-2">
-                  {["Low", "Medium", "High"].map((option) => (
+                  {[
+                    { value: "Low", label: "Minimal", desc: "Generic message" },
+                    { value: "Medium", label: "Balanced", desc: "Some personalization" },
+                    { value: "High", label: "Highly Personal", desc: "Maximum details" }
+                  ].map(({ value, label, desc }) => (
                     <button
-                      key={option}
+                      key={value}
                       type="button"
-                      onClick={() => setPersonalization(option)}
-                      className={`px-4 py-2 text-sm rounded-md border transition-colors ${
-                        personalization === option
+                      onClick={() => setPersonalization(value)}
+                      className={`px-4 py-3 text-sm rounded-md border transition-colors ${
+                        personalization === value
                           ? "bg-primary text-primary-foreground border-primary"
                           : "bg-background hover:bg-muted border-border"
                       }`}
                     >
-                      {option}
+                      <div className="font-medium">{label}</div>
+                      <div className="text-xs opacity-75 mt-1">{desc}</div>
                     </button>
                   ))}
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Higher personalization uses more recipient details in the email
-                </p>
               </div>
             </div>
+            )}
           </div>
         )}
 
