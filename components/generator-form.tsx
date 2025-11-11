@@ -623,16 +623,47 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
               <div key={index} className="rounded-lg border bg-card p-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <h4 className="font-semibold text-sm">{variant.label}</h4>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => {
-                      navigator.clipboard.writeText(variant.content)
-                      toast({ title: "Copied!", description: `${variant.label} copied to clipboard` })
-                    }}
-                  >
-                    <Copy className="h-3 w-3" />
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => {
+                        navigator.clipboard.writeText(variant.content)
+                        toast({ title: "Copied!", description: `${variant.label} copied to clipboard` })
+                      }}
+                    >
+                      <Copy className="h-3 w-3" />
+                    </Button>
+                    {recipientEmail && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const mailtoSubject = `Regarding ${subject}`
+                          const mailtoBody = variant.content
+                          const mailtoUrl = `mailto:${recipientEmail}?subject=${encodeURIComponent(mailtoSubject)}&body=${encodeURIComponent(mailtoBody)}`
+                          
+                          if (mailtoUrl.length > 2000) {
+                            const shortMailtoUrl = `mailto:${recipientEmail}?subject=${encodeURIComponent(mailtoSubject)}`
+                            navigator.clipboard.writeText(variant.content)
+                            window.location.href = shortMailtoUrl
+                            toast({
+                              title: "Email client opened",
+                              description: "Content copied - paste it into the message body.",
+                            })
+                          } else {
+                            window.location.href = mailtoUrl
+                            toast({
+                              title: "Email ready to send",
+                              description: `${variant.label} loaded in your email client.`,
+                            })
+                          }
+                        }}
+                      >
+                        <Mail className="h-3 w-3" />
+                      </Button>
+                    )}
+                  </div>
                 </div>
                 <div className="rounded-lg bg-muted p-3 max-h-96 overflow-y-auto">
                   <pre className="whitespace-pre-wrap text-xs font-mono">{variant.content}</pre>
