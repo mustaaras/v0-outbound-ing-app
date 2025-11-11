@@ -37,36 +37,53 @@ export async function findContactEmails({ keyword, maxResults = 5 }: { keyword: 
   const uniqueDomains = Array.from(new Set(candidates))
   devLog("[contact-gen] Checking", uniqueDomains.length, "candidate domains")
 
-  // Try domains in parallel batches
+  // Try domains in parallel batches with global timeout
   const results: PublicEmailResult[] = []
   const BATCH_SIZE = 5
+  const MAX_BATCHES = 6 // Check at most 30 domains
+  let timedOut = false
   
-  for (let i = 0; i < uniqueDomains.length && results.length < maxResults; i += BATCH_SIZE) {
-    const batch = uniqueDomains.slice(i, i + BATCH_SIZE)
-    const promises = batch.map(async domain => {
-      try {
-        devLog("[contact-gen] Trying domain:", domain)
-        const found = await extractPublicEmailsForDomain(domain, { pagesPerDomain: 6, timeoutMs: 3000 })
-        if (found.length > 0) {
-          devLog("[contact-gen] Found", found.length, "emails on", domain)
+  const searchPromise = (async () => {
+    for (let i = 0; i < Math.min(uniqueDomains.length, MAX_BATCHES * BATCH_SIZE) && results.length < maxResults; i += BATCH_SIZE) {
+      const batch = uniqueDomains.slice(i, i + BATCH_SIZE)
+      const promises = batch.map(async domain => {
+        try {
+          devLog("[contact-gen] Trying domain:", domain)
+          const found = await extractPublicEmailsForDomain(domain, { pagesPerDomain: 6, timeoutMs: 3000 })
+          if (found.length > 0) {
+            devLog("[contact-gen] Found", found.length, "emails on", domain)
+          }
+          return found
+        } catch (e) {
+          return []
         }
-        return found
-      } catch (e) {
-        return []
-      }
-    })
-    
-    const batchResults = await Promise.all(promises)
-    for (const domainResults of batchResults) {
-      for (const r of domainResults) {
+      })
+      
+      const batchResults = await Promise.all(promises)
+      for (const domainResults of batchResults) {
+        for (const r of domainResults) {
+          if (results.length >= maxResults) break
+          results.push(r)
+        }
         if (results.length >= maxResults) break
-        results.push(r)
       }
+      
+      // Early exit if we found enough
       if (results.length >= maxResults) break
     }
-  }
+  })()
   
-  devLog("[contact-gen] Final results:", results.length, "emails found")
+  // Global timeout of 20 seconds
+  await Promise.race([
+    searchPromise,
+    new Promise((resolve) => setTimeout(() => {
+      timedOut = true
+      devLog("[contact-gen] Search timed out after 20s")
+      resolve(null)
+    }, 20000))
+  ])
+  
+  devLog("[contact-gen] Final results:", results.length, "emails found", timedOut ? "(timed out)" : "")
   return results
 }
 import "server-only"
