@@ -18,8 +18,8 @@ interface MobileHeaderProps {
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
-  { name: "Email Generator", href: "/generator", icon: Wand2 },
   { name: "Search Contacts", href: "/search-buyers", icon: Users },
+  { name: "Email Generator", href: "/generator", icon: Wand2 },
   { name: "Archive", href: "/archive", icon: Archive },
   { name: "Settings", href: "/settings", icon: Settings },
   { name: "Upgrade", href: "/upgrade", icon: Rocket },
