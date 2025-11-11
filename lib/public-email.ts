@@ -218,18 +218,44 @@ function isAllowedByRobots(robots: string | null, path: string): boolean {
   return true
 }
 
+function decodeHtmlEntities(text: string): string {
+  // Decode common HTML entities and Unicode escapes
+  return text
+    .replace(/&#x([0-9A-Fa-f]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
+    .replace(/&#(\d+);/g, (_, dec) => String.fromCharCode(parseInt(dec, 10)))
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+    // Unicode escape sequences like \u003c
+    .replace(/\\u([0-9A-Fa-f]{4})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
+}
+
 function extractEmailsFromHtml(html: string): Set<string> {
   const emails = new Set<string>()
+  
+  // Decode HTML entities first
+  const decoded = decodeHtmlEntities(html)
+  
   // mailto links
   const mailtoRegex = /mailto:([A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,})/gi
   let m
-  while ((m = mailtoRegex.exec(html))) {
-    emails.add(m[1].toLowerCase())
+  while ((m = mailtoRegex.exec(decoded))) {
+    const email = m[1].toLowerCase()
+    // Filter out emails that still contain encoded characters or invalid chars
+    if (/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(email)) {
+      emails.add(email)
+    }
   }
   // plain text
   const textEmailRegex = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi
-  while ((m = textEmailRegex.exec(html))) {
-    emails.add(m[0].toLowerCase())
+  while ((m = textEmailRegex.exec(decoded))) {
+    const email = m[0].toLowerCase()
+    // Filter out emails that still contain encoded characters or invalid chars
+    if (/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(email)) {
+      emails.add(email)
+    }
   }
   return emails
 }
