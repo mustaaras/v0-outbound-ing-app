@@ -22,6 +22,25 @@ interface SearchContactsFormProps {
 }
 
 export function SearchContactsForm({ userId, userTier, searchesUsed, searchLimit }: SearchContactsFormProps) {
+  // Contact Generator state
+  const [contactKeyword, setContactKeyword] = useState("")
+  const [contactResults, setContactResults] = useState<Array<{email: string, domain: string, type: string, sourceUrl: string}> | null>(null)
+  const [contactLoading, setContactLoading] = useState(false)
+
+  async function handleContactGenerator(keyword: string) {
+    setContactLoading(true)
+    setContactResults(null)
+    try {
+      // @ts-ignore
+      const { findContactEmails } = await import("@/lib/public-email")
+      const results = await findContactEmails({ keyword, maxResults: 5 })
+      setContactResults(results)
+    } catch (e) {
+      setContactResults([])
+    } finally {
+      setContactLoading(false)
+    }
+  }
   const [domain, setDomain] = useState("")
   const [title, setTitle] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -171,6 +190,51 @@ export function SearchContactsForm({ userId, userTier, searchesUsed, searchLimit
 
   return (
     <div className="space-y-6">
+      <Card className="border-yellow-500/50 bg-yellow-500/10">
+        <CardHeader>
+          <CardTitle>Contact Generator <span className="ml-1 text-yellow-600 font-semibold">(beta)</span></CardTitle>
+          <CardDescription>
+            Enter a product or domain keyword (e.g. treegpt) and get up to 5 public contact emails from matching domains.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="contact-keyword">Product or Domain Keyword</Label>
+            <Input
+              id="contact-keyword"
+              placeholder="e.g. treegpt"
+              value={contactKeyword}
+              onChange={e => setContactKeyword(e.target.value)}
+              disabled={contactLoading}
+            />
+          </div>
+          <Button
+            type="button"
+            className="w-full"
+            disabled={contactLoading || !contactKeyword.trim()}
+            onClick={() => handleContactGenerator(contactKeyword.trim())}
+          >
+            {contactLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Find Contacts"}
+          </Button>
+          {contactResults && (
+            <div className="space-y-2 mt-4">
+              {contactResults.length === 0 ? (
+                <div className="text-xs text-muted-foreground">No public contacts found for this keyword.</div>
+              ) : (
+                <div className="space-y-2">
+                  {contactResults.map((r, idx) => (
+                    <div key={r.email + idx} className="rounded border p-3 flex flex-col gap-1 bg-muted/30">
+                      <div className="font-medium text-sm">{r.email}</div>
+                      <div className="text-xs text-muted-foreground">@ {r.domain} <span className="ml-2">({r.type})</span></div>
+                      <a href={r.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline">View source</a>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
       <form onSubmit={handleSearch} className="rounded-lg border bg-card p-6 space-y-6">
         <div>
           <h3 className="text-lg font-semibold mb-2">Search for Prospects</h3>
