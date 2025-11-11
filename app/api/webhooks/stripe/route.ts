@@ -4,6 +4,7 @@ import { createClient } from "@supabase/supabase-js"
 import type Stripe from "stripe"
 import { PRODUCTS } from "@/lib/products"
 import { devLog, errorLog } from "@/lib/logger"
+import { sendSubscriptionConfirmationEmail, sendSubscriptionCancelledEmail } from "@/lib/email/send"
 
 
 // Create the admin supabase client lazily inside the handler to avoid
@@ -76,6 +77,28 @@ export async function POST(req: NextRequest) {
             errorLog("[v0] Error updating user in webhook:", error)
           } else {
             devLog("[v0] Successfully updated user in webhook:", data)
+            
+            // Send subscription confirmation email
+            if (data && data[0]) {
+              const user = data[0]
+              const emailLimit = tier === "pro" ? "Unlimited" : tier === "light" ? "300 emails/month" : "30 emails/month"
+              const planPrice = product?.priceLabel || ""
+              const billingCycle = product?.billingCycle || "monthly"
+              
+              try {
+                await sendSubscriptionConfirmationEmail(
+                  user.email,
+                  user.first_name || "there",
+                  product?.name || tier.charAt(0).toUpperCase() + tier.slice(1),
+                  planPrice,
+                  billingCycle,
+                  emailLimit
+                )
+              } catch (emailError) {
+                errorLog("[v0] Failed to send subscription confirmation email:", emailError)
+                // Don't fail the webhook if email fails
+              }
+            }
           }
         }
         break
