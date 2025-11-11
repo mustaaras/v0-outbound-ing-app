@@ -44,7 +44,7 @@ export function PublicEmailFinderForm({ userId, userTier, searchesUsed, searchLi
     setIsLoading(true)
     setResults([])
     try {
-      const res = await findPublicEmails({ userId, userTier, keyword: keyword || undefined, domains: domains || undefined, perDomainCap: 3, totalCap: 50 })
+      const res = await findPublicEmails({ userId, userTier, keyword: keyword || undefined, domains: domains || undefined, perDomainCap: 5, totalCap: 50 })
       if (!res.success) {
         toast({ title: "Search failed", description: res.error || "Unknown error", variant: "destructive" })
         return

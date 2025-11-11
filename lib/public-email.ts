@@ -429,15 +429,18 @@ export async function publicEmailFinder(
   const fromKeyword = resolveDomainsFromKeyword(params.keyword)
   domains.push(...fromKeyword)
   if (params.domains) domains.push(...params.domains)
-  const uniqueDomains = Array.from(new Set(domains.map(normalizeDomain))).slice(0, 10)
+  // Increase unique domains to check more companies
+  const uniqueDomains = Array.from(new Set(domains.map(normalizeDomain))).slice(0, 20)
 
   const all: PublicEmailResult[] = []
-  const perDomainCap = Math.max(1, params.perDomainCap ?? 3)
-  const totalCap = Math.max(1, params.totalCap ?? 50)
+  // Increase per-domain cap to get more results per company
+  const perDomainCap = Math.max(1, params.perDomainCap ?? 5)
+  const totalCap = Math.max(10, params.totalCap ?? 50)
   const seen = new Set<string>()
   for (const d of uniqueDomains) {
     if (all.length >= totalCap) break
-    const res = await extractPublicEmailsForDomain(d, { pagesPerDomain: params.pagesPerDomain ?? 8 })
+    // Increase pages per domain to scrape more pages per company
+    const res = await extractPublicEmailsForDomain(d, { pagesPerDomain: params.pagesPerDomain ?? 12 })
     // Enforce per-domain cap and global cap, dedupe by email
     let addedForDomain = 0
     for (const r of res) {
@@ -450,5 +453,7 @@ export async function publicEmailFinder(
       addedForDomain++
     }
   }
+  // If we still don't have enough results, ensure we return at least what we found
+  devLog("[public-email] Final results:", all.length, "from", uniqueDomains.length, "domains")
   return { results: all }
 }
