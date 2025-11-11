@@ -122,6 +122,7 @@ const DEFAULT_PAGES = [
   "/affiliates",
 ]
 
+// Priority generic emails for outbound contact
 const GENERIC_LOCALPARTS = new Set([
   "info",
   "contact",
@@ -130,15 +131,42 @@ const GENERIC_LOCALPARTS = new Set([
   "hi",
   "team",
   "sales",
+  "business",
+  "inquiry",
+  "inquiries",
+  "general",
   "partners",
   "partnerships",
   "affiliate",
   "affiliates",
   "marketing",
   "press",
+  "media",
   "help",
   "careers",
   "jobs",
+  "admin",
+  "office",
+  "service",
+  "customers",
+  "customerservice",
+])
+
+// Emails to filter out (not useful for outreach)
+const BLOCKED_LOCALPARTS = new Set([
+  "noreply",
+  "no-reply",
+  "donotreply",
+  "do-not-reply",
+  "bounce",
+  "mailer-daemon",
+  "postmaster",
+  "abuse",
+  "security",
+  "privacy",
+  "legal",
+  "dmca",
+  "unsubscribe",
 ])
 
 function normalizeDomain(input: string): string {
@@ -245,7 +273,11 @@ function extractEmailsFromHtml(html: string): Set<string> {
     const email = m[1].toLowerCase()
     // Filter out emails that still contain encoded characters or invalid chars
     if (/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(email)) {
-      emails.add(email)
+      // Filter out blocked emails
+      const localPart = email.split("@")[0]
+      if (!BLOCKED_LOCALPARTS.has(localPart)) {
+        emails.add(email)
+      }
     }
   }
   // plain text
@@ -254,7 +286,11 @@ function extractEmailsFromHtml(html: string): Set<string> {
     const email = m[0].toLowerCase()
     // Filter out emails that still contain encoded characters or invalid chars
     if (/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(email)) {
-      emails.add(email)
+      // Filter out blocked emails
+      const localPart = email.split("@")[0]
+      if (!BLOCKED_LOCALPARTS.has(localPart)) {
+        emails.add(email)
+      }
     }
   }
   return emails
@@ -303,7 +339,13 @@ export async function extractPublicEmailsForDomain(
       devLog("[public-email] page fetch error", domain, path, e)
     }
   }
-  return results
+  
+  // Sort results: generic emails (info@, contact@, etc.) first, then personal
+  return results.sort((a, b) => {
+    if (a.type === "generic" && b.type === "personal") return -1
+    if (a.type === "personal" && b.type === "generic") return 1
+    return 0
+  })
 }
 
 export function resolveDomainsFromKeyword(keyword?: string): string[] {
