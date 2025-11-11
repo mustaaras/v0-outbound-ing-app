@@ -196,8 +196,11 @@ export async function searchBuyers(input: SearchBuyersInput): Promise<SearchBuye
       }
     }
 
-    // Charge only for successful results returned (cap by remaining)
-    const resultsCount = (searchResponse.data.results || []).length
+    // Filter to email-only results, as requested
+    const emailResults = (searchResponse.data.results || []).filter((r) => r.email && r.email.trim() !== "")
+
+    // Charge only for successful results returned with an email (cap by remaining)
+    const resultsCount = emailResults.length
     const chargeAmount = Math.min(resultsCount, searchesRemaining)
 
     if (chargeAmount > 0) {
@@ -218,7 +221,7 @@ export async function searchBuyers(input: SearchBuyersInput): Promise<SearchBuye
       success: true,
       data: {
         total: searchResponse.data.total,
-        results: searchResponse.data.results,
+        results: emailResults,
         searchesUsed: newSearchesUsed,
         searchLimit,
         searchesRemaining: newSearchesRemaining,
