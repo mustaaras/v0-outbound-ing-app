@@ -40,6 +40,24 @@ class SnovClient {
   private tokenUrl: string
   private accessToken: string | null = null
   private tokenExpiresAt: number | null = null
+  // Simple curated expansion from generic keywords to well-known company names
+  private keywordHints: Record<string, string[]> = {
+    affiliate: [
+      "Impact",
+      "CJ",
+      "Awin",
+      "ShareASale",
+      "Rakuten Advertising",
+      "Partnerize",
+      "ClickBank",
+      "Refersion",
+      "Tapfiliate",
+      "Saasquatch",
+    ],
+    ecommerce: ["Shopify", "BigCommerce", "WooCommerce", "Magento", "Wix"],
+    email: ["Mailchimp", "Klaviyo", "SendGrid", "Brevo", "HubSpot"],
+    crm: ["Salesforce", "HubSpot", "Pipedrive", "Zoho", "Freshsales"],
+  }
 
   constructor() {
     const key = process.env.SNOV_API_KEY
@@ -159,7 +177,13 @@ class SnovClient {
       await this.ensureAccessToken()
       const authHeader = this.accessToken ? `Bearer ${this.accessToken}` : `Bearer ${this.apiKey}`
       const url = `${this.apiUrl}/company-domain-by-name/start`
-      const names = [keyword.trim()].filter(Boolean)
+      const base = keyword.trim()
+      // Expand generic keywords to a broader set of candidate company names
+      const lower = base.toLowerCase()
+      const hints = this.keywordHints[lower] || []
+      // Also try some simple variants (Title Case, lowercase)
+      const titleCase = base.replace(/\b\w/g, (c) => c.toUpperCase())
+      const names = Array.from(new Set([base, titleCase, ...hints])).filter(Boolean)
       const payload = { names }
       devLog('[v0] Starting company-domain-by-name search', names)
       let resp = await fetch(url, {
