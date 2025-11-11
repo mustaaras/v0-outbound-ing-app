@@ -1,4 +1,4 @@
-export type UserTier = "free" | "light" | "pro" | "ultra"
+export type UserTier = "free" | "light" | "pro" // removed "ultra" tier
 
 export interface User {
   id: string
@@ -48,21 +48,18 @@ export const TIER_LIMITS = {
   free: 25,
   light: 100,
   pro: 750,
-  ultra: 1500,
 } as const
 
 export const SNOV_SEARCH_LIMITS = {
   free: 0,
   light: 50,
   pro: 150,
-  ultra: 300,
 } as const
 
 export const PUBLIC_EMAIL_SEARCH_LIMITS = {
   free: 30,
   light: 999999,
   pro: 999999,
-  ultra: 999999,
 } as const
 
 export interface SnovSearch {

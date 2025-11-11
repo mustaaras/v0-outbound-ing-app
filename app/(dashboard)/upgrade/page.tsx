@@ -19,8 +19,7 @@ export default async function UpgradePage({
 
   const isLight = user.tier === "light"
   const isPro = user.tier === "pro"
-  const isUltra = user.tier === "ultra"
-  const isPaid = isLight || isPro || isUltra
+  const isPaid = isLight || isPro
   const hasStripeCustomer = !!user.stripe_customer_id
 
   const params = await searchParams
@@ -39,16 +38,16 @@ export default async function UpgradePage({
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
               <Crown className="h-6 w-6 text-primary" />
             </div>
-            <CardTitle>Current Plan: {isUltra ? "Ultra" : isPro ? "Pro" : "Light"}</CardTitle>
+            <CardTitle>Current Plan: {isPro ? "Pro" : "Light"}</CardTitle>
             <CardDescription>
-              Enjoying {isUltra ? "1,500" : isPro ? "750" : "100"} emails per month and all premium strategies
+              Enjoying {isPro ? "750" : "100"} emails per month and all premium strategies
             </CardDescription>
           </CardHeader>
           <CardContent className="flex justify-center gap-4">
             {hasStripeCustomer ? (
               <>
                 <ManageSubscription />
-                {!isUltra && <p className="text-sm text-muted-foreground">Want to upgrade? Choose a plan below</p>}
+                <p className="text-sm text-muted-foreground">Want to upgrade? Choose a plan below</p>
               </>
             ) : (
               <p className="text-sm text-muted-foreground">Your subscription is being set up...</p>
@@ -133,7 +132,7 @@ export default async function UpgradePage({
         </Card>
 
         <Card className={isPro ? "border-primary bg-primary/5" : "relative border-primary"}>
-          {!isPro && !isUltra && (
+          {!isPro && (
             <div className="absolute -top-3 left-1/2 -translate-x-1/2">
               <div className="flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">
                 <Sparkles className="h-3 w-3" />
@@ -183,56 +182,7 @@ export default async function UpgradePage({
           </CardContent>
         </Card>
 
-        <Card className={isUltra ? "border-purple-500 bg-purple-500/5" : "relative border-2 border-purple-500"}>
-          {!isUltra && (
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-              <div className="flex items-center gap-1 rounded-full bg-purple-500 px-3 py-1 text-xs font-medium text-white">
-                <Crown className="h-3 w-3" />
-                Maximum Power
-              </div>
-            </div>
-          )}
-          {isUltra && (
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-              <div className="flex items-center gap-1 rounded-full bg-purple-500 px-3 py-1 text-xs font-medium text-white">
-                <Check className="h-3 w-3" />
-                Current Plan
-              </div>
-            </div>
-          )}
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Crown className="h-5 w-5 text-purple-500" />
-              {PRODUCTS[2].name}
-            </CardTitle>
-            <CardDescription>{PRODUCTS[2].description}</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <div className="text-3xl font-bold">${(PRODUCTS[2].priceInCents / 100).toFixed(0)}</div>
-              <div className="text-sm text-muted-foreground">per month</div>
-            </div>
-            <ul className="space-y-2">
-              {PRODUCTS[2].features.map((feature, index) => (
-                <li key={index} className="flex items-start gap-2">
-                  <Check className="mt-0.5 h-4 w-4 text-purple-500" />
-                  <span className="text-sm">{feature}</span>
-                </li>
-              ))}
-            </ul>
-            {isUltra ? (
-              <Button disabled className="w-full bg-transparent" variant="outline">
-                Current Plan
-              </Button>
-            ) : (
-              <UpgradeForm
-                productId={PRODUCTS[2].id}
-                buttonLabel={isLight || isPro ? "Upgrade to Ultra" : "Get Ultra"}
-                autoOpen={selectedProductId === PRODUCTS[2].id}
-              />
-            )}
-          </CardContent>
-        </Card>
+        {/* Ultra plan removed */}
       </div>
     </div>
   )

@@ -86,8 +86,10 @@ export async function canGenerateTemplate(
   userId: string,
   tier: string,
 ): Promise<{ canGenerate: boolean; usage: number; limit: number }> {
+  // Fallback: treat any legacy 'ultra' tier value as 'pro'
+  const effectiveTier = tier === "ultra" ? "pro" : tier
   const usage = await getUserUsage(userId)
-  const limit = tier === "ultra" ? 1500 : tier === "pro" ? 750 : tier === "light" ? 100 : 5
+  const limit = effectiveTier === "pro" ? 750 : effectiveTier === "light" ? 100 : 25
 
   return {
     canGenerate: usage < limit,

@@ -152,13 +152,7 @@ export function SettingsForm({ user, hasPassword }: SettingsFormProps) {
           variant: "default" as const,
           icon: <Crown className="mr-1 h-4 w-4" />,
         }
-      case "ultra":
-        return {
-          label: "Ultra Plan",
-          description: `${limit} templates/month`,
-          variant: "default" as const,
-          icon: <Crown className="mr-1 h-4 w-4" />,
-        }
+      // removed ultra tier
       default:
         return {
           label: "Unknown Plan",

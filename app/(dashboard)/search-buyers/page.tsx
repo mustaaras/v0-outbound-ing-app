@@ -36,8 +36,9 @@ export default async function SearchBuyersPage() {
     .eq("user_id", (user as any).id)
     .eq("archived", true)
     .order("created_at", { ascending: false })
-  const searchLimit = SNOV_SEARCH_LIMITS[user!.tier as keyof typeof SNOV_SEARCH_LIMITS] || 0
-  const publicEmailSearchLimit = PUBLIC_EMAIL_SEARCH_LIMITS[user!.tier as keyof typeof PUBLIC_EMAIL_SEARCH_LIMITS] || 30
+  const userTier = (user as any).tier === "ultra" ? "pro" : (user as any).tier
+  const searchLimit = SNOV_SEARCH_LIMITS[userTier as keyof typeof SNOV_SEARCH_LIMITS] || 0
+  const publicEmailSearchLimit = PUBLIC_EMAIL_SEARCH_LIMITS[userTier as keyof typeof PUBLIC_EMAIL_SEARCH_LIMITS] || 30
 
   // Domain summary for active contacts
   const domainSummary = (savedBuyers || []).reduce<Record<string, number>>((acc, c: any) => {

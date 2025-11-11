@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { Check, Zap, Crown, Rocket, Coins } from "lucide-react"
+import { Check, Zap, Crown, Coins } from "lucide-react"
 import { PRODUCTS } from "@/lib/products"
 import { PUBLIC_EMAIL_SEARCH_LIMITS, SNOV_SEARCH_LIMITS, TIER_LIMITS } from "@/lib/types"
 import { cn } from "@/lib/utils"
@@ -64,12 +64,7 @@ const featureRows: FeatureRow[] = [
   {
     key: "support",
     label: "Support level",
-    render: (tier) => (tier === "ultra" ? "Premium" : tier === "pro" ? "Priority" : "Standard"),
-  },
-  {
-    key: "earlyAccess",
-    label: "Early access to new features",
-    render: (tier) => (tier === "ultra" ? <Check className="mx-auto h-4 w-4 text-primary" /> : "-"),
+    render: (tier) => (tier === "pro" ? "Priority" : "Standard"),
   },
 ]
 
@@ -81,7 +76,7 @@ export function PricingComparison({ currentTier }: PricingComparisonProps) {
 
   return (
     <div className="rounded-xl border bg-card overflow-hidden">
-      <div className="grid grid-cols-1 md:grid-cols-[240px_repeat(4,1fr)]">
+  <div className="grid grid-cols-1 md:grid-cols-[240px_repeat(3,1fr)]">
         <div className="p-4 md:p-6 border-b md:border-b-0 md:border-r bg-muted/40">
           <h3 className="text-sm font-semibold">Compare Plans</h3>
           <p className="mt-1 text-xs text-muted-foreground">Everything scales with your outreach volume.</p>
@@ -95,9 +90,7 @@ export function PricingComparison({ currentTier }: PricingComparisonProps) {
             )}
           >
             <div className="text-sm font-semibold flex items-center justify-center gap-1">
-              {t.tier === "ultra" ? (
-                <Rocket className="h-4 w-4 text-purple-500" />
-              ) : t.tier === "pro" ? (
+              {t.tier === "pro" ? (
                 <Crown className="h-4 w-4 text-primary" />
               ) : t.tier === "light" ? (
                 <Zap className="h-4 w-4 text-green-600" />
@@ -119,7 +112,7 @@ export function PricingComparison({ currentTier }: PricingComparisonProps) {
 
       <div className="divide-y">
         {featureRows.map((row) => (
-          <div key={row.key} className="grid grid-cols-1 md:grid-cols-[240px_repeat(4,1fr)]">
+          <div key={row.key} className="grid grid-cols-1 md:grid-cols-[240px_repeat(3,1fr)]">
             <div className="p-3 md:p-4 text-sm font-medium bg-muted/30 flex items-center">{row.label}</div>
             {tiers.map((t) => (
               <div

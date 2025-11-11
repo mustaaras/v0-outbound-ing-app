@@ -46,7 +46,7 @@ export function SearchContactsForm({ userId, userTier, searchesUsed, searchLimit
     if (searchLimit === 0) {
       toast({
         title: "Upgrade Required",
-        description: "Verified Contacts is only available for paid users. Upgrade to Light, Pro, or Ultra to access this feature.",
+        description: "Verified Contacts is only available for paid users. Upgrade to Light or Pro to access this feature.",
         variant: "destructive",
       })
       return

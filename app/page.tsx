@@ -264,9 +264,9 @@ export default function LandingPage() {
                 <div className="text-left">
                   <h3 className="font-semibold">Search Contacts</h3>
                   <ul className="mt-2 space-y-2 text-sm text-muted-foreground">
-                    <li>Light: No contact searches</li>
-                    <li>Pro: 150 contact searches per month</li>
-                    <li>Ultra: 300 contact searches per month</li>
+                    <li>Free: Not included</li>
+                    <li>Light: 50 saved emails per month</li>
+                    <li>Pro: 150 saved emails per month</li>
                   </ul>
                 </div>
               </div>

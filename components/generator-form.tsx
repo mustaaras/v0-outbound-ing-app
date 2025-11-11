@@ -46,6 +46,7 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
   const [generateVariants, setGenerateVariants] = useState<boolean>(false)
   const [generateMultiChannel, setGenerateMultiChannel] = useState<boolean>(false)
   const [variants, setVariants] = useState<Array<{label: string, content: string}> | null>(null)
+  // Multi-channel feature removed with Ultra tier
   const [multiChannelResults, setMultiChannelResults] = useState<Record<string, string> | null>(null)
   const [additionalNotes, setAdditionalNotes] = useState<string>("")
 
@@ -256,7 +257,7 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
         goal,
         language,
         generateVariants,
-        generateMultiChannel,
+  // multi-channel removed
         additionalNotes: additionalNotes || undefined,
       })
 
@@ -586,7 +587,7 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
         )}
 
         {/* Premium Features */}
-        {(userTier === "pro" || userTier === "ultra") && selectedStrategies.length > 0 && (
+  {(userTier === "pro") && selectedStrategies.length > 0 && (
           <div className="space-y-4 rounded-lg border-2 border-purple-500/20 bg-purple-500/5 p-6">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
@@ -597,7 +598,7 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
             </div>
 
             <div className="space-y-4">
-              {userTier === "pro" || userTier === "ultra" ? (
+              {userTier === "pro" ? (
                 <div className="flex items-start gap-3 rounded-lg border bg-background p-4">
                   <Checkbox
                     id="generate-variants"
@@ -621,35 +622,13 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
                 </div>
               ) : null}
 
-              {userTier === "ultra" && (
-                <div className="flex items-start gap-3 rounded-lg border bg-background p-4">
-                  <Checkbox
-                    id="generate-multichannel"
-                    checked={generateMultiChannel}
-                    onCheckedChange={(checked) => setGenerateMultiChannel(checked as boolean)}
-                  />
-                  <div className="flex-1 space-y-1">
-                    <div className="flex items-center gap-2">
-                      <Label htmlFor="generate-multichannel" className="cursor-pointer font-medium">
-                        Multi-Channel Variants
-                      </Label>
-                      <Badge variant="secondary" className="gap-1">
-                        <Crown className="h-3 w-3" />
-                        Ultra
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      Generate versions for Email, LinkedIn, Twitter DM, SMS, and Cold Call script
-                    </p>
-                  </div>
-                </div>
-              )}
+              {/* Multi-Channel Variants removed with Ultra tier */}
             </div>
           </div>
         )}
 
         {/* Additional Notes - Pro/Ultra Only */}
-        {(userTier === "pro" || userTier === "ultra") && selectedStrategies.length > 0 && (
+  {(userTier === "pro") && selectedStrategies.length > 0 && (
           <div className="space-y-4 rounded-lg border-2 border-blue-500/20 bg-blue-500/5 p-6">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
@@ -818,55 +797,7 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
       )}
 
       {/* Multi-Channel Variants Display */}
-      {multiChannelResults && (
-        <div className="space-y-4">
-          <div className="flex items-center gap-2">
-            <Crown className="h-5 w-5 text-purple-500" />
-            <h3 className="text-lg font-semibold">Multi-Channel Variants</h3>
-            <Badge variant="secondary">Ultra Feature</Badge>
-          </div>
-          <Tabs defaultValue="email" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">
-              <TabsTrigger value="email">Email</TabsTrigger>
-              <TabsTrigger value="linkedin">LinkedIn</TabsTrigger>
-              <TabsTrigger value="linkedin_request">Connection</TabsTrigger>
-              <TabsTrigger value="twitter">Twitter</TabsTrigger>
-              <TabsTrigger value="sms">SMS</TabsTrigger>
-              <TabsTrigger value="voicemail">Voicemail</TabsTrigger>
-            </TabsList>
-            {Object.entries(multiChannelResults).map(([channel, content]) => (
-              <div key={channel} className={channel === "email" ? "" : "hidden"} data-state={channel}>
-                <div className="rounded-lg border bg-card p-6 space-y-4 mt-4">
-                  <div className="flex items-center justify-between">
-                    <h4 className="font-semibold capitalize">{channel.replace("_", " ")}</h4>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => {
-                        navigator.clipboard.writeText(content)
-                        toast({ title: "Copied!", description: `${channel} version copied` })
-                      }}
-                    >
-                      <Copy className="mr-2 h-4 w-4" />
-                      Copy
-                    </Button>
-                  </div>
-                  <div className="rounded-lg bg-muted p-4">
-                    <pre className="whitespace-pre-wrap text-sm font-mono">{content}</pre>
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    {channel === "linkedin" && "Max 500 characters for LinkedIn InMail"}
-                    {channel === "linkedin_request" && "Max 300 characters for connection requests"}
-                    {channel === "twitter" && "Max 280 characters for Twitter/X DMs"}
-                    {channel === "sms" && "Max 160 characters for SMS"}
-                    {channel === "voicemail" && "30-second script for cold call voicemail"}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </Tabs>
-        </div>
-      )}
+      {/* Multi-channel results section removed */}
     </div>
   )
 }

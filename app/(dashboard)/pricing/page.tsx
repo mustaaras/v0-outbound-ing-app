@@ -17,12 +17,13 @@ export default async function PricingPage() {
     redirect("/auth/login")
   }
 
-  const isEligibleForSearch = user.tier === "light" || user.tier === "pro" || user.tier === "ultra"
+  const isEligibleForSearch = user.tier === "light" || user.tier === "pro"
   let searchesUsed: number | null = null
   let searchLimit: number | null = null
   if (isEligibleForSearch) {
-    searchesUsed = await getUserSearchCount((user as any).id)
-    searchLimit = SNOV_SEARCH_LIMITS[user!.tier as keyof typeof SNOV_SEARCH_LIMITS] || 0
+  searchesUsed = await getUserSearchCount((user as any).id)
+  const tier = (user as any).tier === "ultra" ? "pro" : (user as any).tier
+  searchLimit = SNOV_SEARCH_LIMITS[tier as keyof typeof SNOV_SEARCH_LIMITS] || 0
   }
 
   const plans = [
