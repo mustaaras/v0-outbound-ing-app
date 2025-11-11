@@ -5,6 +5,7 @@ import Link from "next/link"
 import { PRODUCTS } from "@/lib/products"
 import { getUserSearchCount } from "@/app/actions/search-buyers"
 import { SNOV_SEARCH_LIMITS } from "@/lib/types"
+import { Search } from "lucide-react"
 import { SearchBuyersForm } from "@/components/search-buyers-form"
 import { getCurrentUser } from "@/lib/auth-utils"
 import { redirect } from "next/navigation"
@@ -79,12 +80,24 @@ export default async function PricingPage() {
             </CardHeader>
             <CardContent>
               <ul className="space-y-3">
-                {plan.features.map((feature, index) => (
-                  <li key={index} className="flex items-start gap-2">
-                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                    <span className="text-sm">{feature}</span>
-                  </li>
-                ))}
+                {plan.features.map((feature, index) => {
+                  const isSearch = feature.toLowerCase().startsWith("search buyers") || feature.toLowerCase().includes("buyer searches")
+                  return (
+                    <li key={index} className="flex items-start gap-2">
+                      {isSearch ? (
+                        <Search className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                      ) : (
+                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                      )}
+                      <span className="text-sm flex items-center gap-2">
+                        {feature}
+                        {isSearch && (
+                          <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">New</span>
+                        )}
+                      </span>
+                    </li>
+                  )
+                })}
               </ul>
             </CardContent>
             <CardFooter>
@@ -218,39 +231,7 @@ export default async function PricingPage() {
         </CardContent>
       </Card>
 
-      {/* Search Buyers section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Search Buyers</CardTitle>
-          <CardDescription>
-            Find and add buyer prospects directly to your templates. Available on Pro and Ultra.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {isEligibleForSearch && searchesUsed !== null && searchLimit !== null ? (
-            <div className="max-w-4xl">
-              <SearchBuyersForm
-                userId={(user as any).id}
-                userTier={(user as any).tier}
-                searchesUsed={searchesUsed}
-                searchLimit={searchLimit}
-              />
-            </div>
-          ) : (
-            <div className="rounded-lg border bg-muted/30 p-6">
-              <p className="text-sm text-muted-foreground">
-                Search Buyers is a Pro and Ultra feature. Upgrade to unlock monthly buyer searches and add prospects
-                to your templates in one click.
-              </p>
-              <div className="mt-4">
-                <Button asChild>
-                  <Link href="/upgrade">Upgrade to Pro or Ultra</Link>
-                </Button>
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      {/* Removed redundant standalone Search Buyers section now that feature is highlighted in plan cards */}
     </div>
   )
 }

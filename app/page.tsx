@@ -166,11 +166,14 @@ export default function LandingPage() {
                 Get Started Free
               </Link>
             </Button>
+            <Button asChild variant="outline" size="lg">
+              <Link href="#pricing">See Pricing</Link>
+            </Button>
           </div>
         </section>
 
         {/* Public Pricing Section */}
-        <section className="border-t bg-muted/50 py-20">
+  <section id="pricing" className="border-t bg-muted/50 py-20">
           <div className="container">
             <div className="mx-auto max-w-5xl space-y-8 text-center">
               <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Simple, transparent pricing</h2>
