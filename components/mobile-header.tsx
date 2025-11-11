@@ -56,11 +56,6 @@ export function MobileHeader({ user }: MobileHeaderProps) {
         <div className="absolute left-0 right-0 top-16 border-b bg-background p-4 shadow-lg">
           <nav className="space-y-1">
             {navigation.map((item) => {
-              // Restrict Search Contacts to pro/ultra users
-              if (item.name === "Search Contacts" && !(user.tier === "pro" || user.tier === "ultra")) {
-                return null
-              }
-
               const isActive = pathname === item.href
               const Icon = item.icon
 
