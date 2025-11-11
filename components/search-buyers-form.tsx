@@ -44,7 +44,7 @@ export function SearchContactsForm({ userId, userTier, searchesUsed, searchLimit
     if (searchLimit === 0) {
       toast({
         title: "Upgrade Required",
-        description: "Company Email Search (API) is only available for paid users. Upgrade to Light, Pro, or Ultra to access this feature.",
+        description: "Verified Contacts is only available for paid users. Upgrade to Light, Pro, or Ultra to access this feature.",
         variant: "destructive",
       })
       return
@@ -169,7 +169,7 @@ export function SearchContactsForm({ userId, userTier, searchesUsed, searchLimit
             <div className="space-y-1">
               <p className="text-sm font-semibold text-blue-600">Upgrade Required</p>
               <p className="text-sm text-blue-600">
-                Company Email Search (API) is available on Light, Pro, and Ultra plans.{" "}
+                Verified Contacts is available on Light, Pro, and Ultra plans.{" "}
                 <Link href="/upgrade" className="font-semibold underline underline-offset-2">
                   Upgrade now
                 </Link>{" "}

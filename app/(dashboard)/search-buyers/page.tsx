@@ -61,11 +61,11 @@ export default async function SearchBuyersPage() {
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="api">
             <Building2 className="mr-2 h-4 w-4" />
-            Company Emails (API)
+            Verified Contacts
           </TabsTrigger>
           <TabsTrigger value="public">
             <Globe className="mr-2 h-4 w-4" />
-            Public Emails
+            Email Finder
           </TabsTrigger>
         </TabsList>
 
