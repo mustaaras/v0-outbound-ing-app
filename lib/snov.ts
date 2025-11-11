@@ -391,6 +391,7 @@ class SnovClient {
     try {
       const mode = params.mode || (params.keyword ? 'keyword' : 'domain')
       let workingDomain = params.domain
+      let resolvedDomains: string[] | null = null
       if (mode === 'keyword') {
         if (!params.keyword) {
           return { success: false, data: { total: 0, results: [] }, error: 'Keyword is required' }
@@ -400,7 +401,7 @@ class SnovClient {
         if (!domains || domains.length === 0) {
           return { success: true, data: { total: 0, results: [] } }
         }
-        // just use first domain for now (future: iterate until enough prospects)
+        resolvedDomains = domains
         workingDomain = domains[0]
         devLog('[v0] keyword resolved to domain', workingDomain, 'from', domains)
       }
@@ -409,7 +410,7 @@ class SnovClient {
       }
       
       // Clean domain - remove protocol and paths if present
-  let cleanDomain = workingDomain.trim().toLowerCase()
+      let cleanDomain = workingDomain.trim().toLowerCase()
       cleanDomain = cleanDomain.replace(/^https?:\/\//, '') // remove http:// or https://
       cleanDomain = cleanDomain.replace(/^www\./, '') // remove www.
       cleanDomain = cleanDomain.split('/')[0] // remove any paths
@@ -417,76 +418,77 @@ class SnovClient {
       devLog("[v0] Cleaned domain:", cleanDomain, "from:", params.domain)
       
       const page = params.page || 1
-      const positions: string[] = []
+      let positions: string[] = []
       if (params.title) {
         const tokens = params.title.split(/[^A-Za-z0-9]+/).filter((t) => t.length > 2)
         tokens.forEach((t) => positions.push(t))
       }
+      // If no explicit title, inject domain/keyword-based defaults
       if (positions.length === 0) {
-        positions.push("manager", "director", "lead", "head")
+        const kw = (params.keyword || '').toLowerCase()
+        if (mode === 'keyword' && (/affiliate|partner|partnership/.test(kw))) {
+          positions = [
+            'Affiliate Manager',
+            'Affiliate Marketing',
+            'Partnerships Manager',
+            'Partner Manager',
+            'Head of Partnerships',
+          ]
+        } else {
+          positions = ["manager", "director", "lead", "head"]
+        }
       }
       
-      const start = await this.startDomainProspects(cleanDomain, positions, page)
-      if (!start?.task_hash) {
-        return { success: false, data: { total: 0, results: [] }, error: "Failed to start search. Please use a valid company domain (e.g., hubspot.com, not gmail.com)." }
-      }
-      
-      devLog("[v0] Polling for results, task_hash:", start.task_hash)
-      
-      // Poll for results - Snov tasks can take a few seconds
-      const delays = [1000, 2000, 3000, 4000, 5000] // Longer delays for API processing
-      let result: any | null = null
-      
-      for (let i = 0; i < delays.length; i++) {
-        await new Promise((r) => setTimeout(r, delays[i]))
-        result = await this.getDomainProspectsResult(start.task_hash)
-        
-        if (!result) {
-          devLog(`[v0] Poll attempt ${i + 1}: No result yet`)
+      const limit = params.limit && params.limit > 0 ? params.limit : Number.MAX_SAFE_INTEGER
+      const collected: SnovBuyer[] = []
+      const tried: string[] = []
+
+      const domainsToTry = resolvedDomains ? resolvedDomains.slice(0, 3) : [cleanDomain]
+      for (const dom of domainsToTry) {
+        const d = dom.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0]
+        tried.push(d)
+        const start = await this.startDomainProspects(d, positions, page)
+        if (!start?.task_hash) {
           continue
         }
-        
-        // Check if we have actual prospect data
+        devLog("[v0] Polling for results (domain):", d, 'task', start.task_hash)
+        const delays = [1000, 2000, 3000, 4000, 5000]
+        let result: any | null = null
+        for (let i = 0; i < delays.length; i++) {
+          await new Promise((r) => setTimeout(r, delays[i]))
+          result = await this.getDomainProspectsResult(start.task_hash)
+          if (!result) continue
+          const ps = result.prospects || result.data?.prospects || result.data || []
+          if (Array.isArray(ps) && ps.length > 0) break
+        }
+        if (!result) continue
         const prospects = result.prospects || result.data?.prospects || result.data || []
-        if (Array.isArray(prospects) && prospects.length > 0) {
-          devLog(`[v0] Poll attempt ${i + 1}: Got ${prospects.length} prospects`)
-          break
+        if (!Array.isArray(prospects) || prospects.length === 0) continue
+        const mapped: SnovBuyer[] = prospects.map((p: any) => ({
+          email: p.email || p.emails?.[0] || "",
+          first_name: p.first_name || p.firstname || "",
+          last_name: p.last_name || p.lastname || "",
+          company: p.company_name || p.company || d || "",
+          title: p.position || p.title || "",
+          linkedin_url: p.linkedin || p.linkedin_url || p.social_linkedin,
+          phone: p.phone || p.phones?.[0],
+          industry: p.industry || p.company_industry,
+          company_size: p.company_size || p.company_size_range,
+        })).filter((b: SnovBuyer) => b.email && b.email.trim() !== "")
+        // Deduplicate by email
+        const existingEmails = new Set(collected.map(c => c.email.toLowerCase()))
+        for (const m of mapped) {
+          if (!existingEmails.has(m.email.toLowerCase())) {
+            collected.push(m)
+            existingEmails.add(m.email.toLowerCase())
+          }
+          if (collected.length >= limit) break
         }
-        
-        devLog(`[v0] Poll attempt ${i + 1}: Task not ready, waiting...`)
+        if (collected.length >= limit) break
       }
-      
-      if (!result) {
-        return { success: false, data: { total: 0, results: [] }, error: "Search timed out. Please try again." }
-      }
-      
-      const prospects = result.prospects || result.data?.prospects || result.data || []
-      
-      if (!Array.isArray(prospects) || prospects.length === 0) {
-        devLog("[v0] No prospects found in result:", result)
-        return { 
-          success: true, 
-          data: { total: 0, results: [] }
-        }
-      }
-      
-      const total = result.total || result.count || prospects.length || 0
-      // Map and filter to only those with an email
-      const mapped: SnovBuyer[] = prospects.map((p: any) => ({
-        email: p.email || p.emails?.[0] || "",
-        first_name: p.first_name || p.firstname || "",
-        last_name: p.last_name || p.lastname || "",
-        company: p.company_name || p.company || cleanDomain || "",
-        title: p.position || p.title || "",
-        linkedin_url: p.linkedin || p.linkedin_url || p.social_linkedin,
-        phone: p.phone || p.phones?.[0],
-        industry: p.industry || p.company_industry,
-        company_size: p.company_size || p.company_size_range,
-      })).filter((b: SnovBuyer) => b.email && b.email.trim() !== "")
-      const limit = params.limit && params.limit > 0 ? params.limit : mapped.length
-      const sliced = mapped.slice(0, limit)
-      devLog("[v0] domain search completed:", { domain: cleanDomain, total, returned: sliced.length, positions })
-      return { success: true, data: { total, results: sliced } }
+
+      devLog('[v0] search summary', { triedDomains: tried, returned: collected.length, positions })
+      return { success: true, data: { total: collected.length, results: collected.slice(0, limit) } }
     } catch (error) {
       errorLog("[v0] domain search error", error)
       return { success: false, data: { total: 0, results: [] }, error: error instanceof Error ? error.message : "Failed to search prospects" }

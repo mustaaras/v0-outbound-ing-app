@@ -74,8 +74,8 @@ export function SearchBuyersForm({ userId, userTier, searchesUsed, searchLimit }
         return
       }
 
-      setResults(result.data.results)
-      setTotalResults(result.data.total)
+  setResults(result.data.results)
+  setTotalResults(result.data.total)
       setSearchesRemainingLocal(result.data.searchesRemaining)
 
       toast({
@@ -307,6 +307,19 @@ export function SearchBuyersForm({ userId, userTier, searchesUsed, searchLimit }
             </div>
           )}
         </div>
+      )}
+
+      {!isLoading && !errorMessage && results.length === 0 && totalResults === 0 && (
+        <Card className="border-muted-foreground/30 bg-muted/10">
+          <CardContent className="p-4 text-sm text-muted-foreground space-y-2">
+            <div className="font-medium text-foreground">No prospects found</div>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>Try switching to Domain mode and enter a specific company domain.</li>
+              <li>Add a Job Title like “Affiliate Manager”, “Partnerships Manager”, or “Head of Partnerships”.</li>
+              <li>Use a more specific keyword (e.g., a company name instead of a broad term).</li>
+            </ul>
+          </CardContent>
+        </Card>
       )}
     </div>
   )
