@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Menu, X, Home, Wand2, Archive, Crown, LogOut, Settings } from "lucide-react"
+import { Menu, X, Home, Wand2, Archive, Settings, Users, Coins, Rocket, Crown, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import type { User } from "@/lib/types"
@@ -19,10 +19,11 @@ interface MobileHeaderProps {
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
   { name: "Generator", href: "/generator", icon: Wand2 },
+  { name: "Search Contacts", href: "/search-buyers", icon: Users },
   { name: "Archive", href: "/archive", icon: Archive },
   { name: "Settings", href: "/settings", icon: Settings },
-  { name: "Pricing", href: "/pricing", icon: Crown },
-  { name: "Upgrade", href: "/upgrade", icon: Crown },
+  { name: "Upgrade", href: "/upgrade", icon: Rocket },
+  { name: "Pricing", href: "/pricing", icon: Coins },
 ]
 
 export function MobileHeader({ user }: MobileHeaderProps) {
@@ -55,6 +56,11 @@ export function MobileHeader({ user }: MobileHeaderProps) {
         <div className="absolute left-0 right-0 top-16 border-b bg-background p-4 shadow-lg">
           <nav className="space-y-1">
             {navigation.map((item) => {
+              // Restrict Search Contacts to pro/ultra users
+              if (item.name === "Search Contacts" && !(user.tier === "pro" || user.tier === "ultra")) {
+                return null
+              }
+
               const isActive = pathname === item.href
               const Icon = item.icon
 
