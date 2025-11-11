@@ -107,7 +107,7 @@ export default async function UpgradePage({
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <div className="text-3xl font-bold">$9.99</div>
+              <div className="text-3xl font-bold">${(PRODUCTS[0].priceInCents / 100).toFixed(0)}</div>
               <div className="text-sm text-muted-foreground">per month</div>
             </div>
             <ul className="space-y-2">
@@ -158,7 +158,7 @@ export default async function UpgradePage({
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <div className="text-3xl font-bold">$29</div>
+              <div className="text-3xl font-bold">${(PRODUCTS[1].priceInCents / 100).toFixed(0)}</div>
               <div className="text-sm text-muted-foreground">per month</div>
             </div>
             <ul className="space-y-2">
@@ -209,7 +209,7 @@ export default async function UpgradePage({
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <div className="text-3xl font-bold">$49</div>
+              <div className="text-3xl font-bold">${(PRODUCTS[2].priceInCents / 100).toFixed(0)}</div>
               <div className="text-sm text-muted-foreground">per month</div>
             </div>
             <ul className="space-y-2">
