@@ -153,40 +153,56 @@ class SnovClient {
    * Start a domain prospect search task (task-based flow per Snov docs)
    */
   private async startDomainProspects(domain: string, positions: string[], page: number): Promise<{ task_hash: string } | null> {
-    await this.ensureAccessToken()
-    const authHeader = this.accessToken ? `Bearer ${this.accessToken}` : `Bearer ${this.apiKey}`
-    const body = new URLSearchParams()
-    body.append("domain", domain)
-    body.append("page", String(page))
-    positions.forEach((p) => body.append("positions[]", p))
-    const url = `${this.apiUrl}/domain-search/prospects/start`
-    let resp = await fetch(url, {
-      method: "POST",
-      headers: { Authorization: authHeader, "Content-Type": "application/x-www-form-urlencoded" },
-      body: body.toString(),
-    })
-    if ((resp.status === 401 || resp.status === 403) && this.clientId && this.clientSecret) {
-      devLog("[v0] startDomainProspects auth error; refreshing token")
-      await this.fetchAccessToken()
-      const retryAuth = this.accessToken ? `Bearer ${this.accessToken}` : `Bearer ${this.apiKey}`
-      resp = await fetch(url, {
+    try {
+      await this.ensureAccessToken()
+      const authHeader = this.accessToken ? `Bearer ${this.accessToken}` : `Bearer ${this.apiKey}`
+      const body = new URLSearchParams()
+      body.append("domain", domain)
+      body.append("page", String(page))
+      positions.forEach((p) => body.append("positions[]", p))
+      const url = `${this.apiUrl}/domain-search/prospects/start`
+      
+      devLog("[v0] Starting domain search:", { domain, positions, page, url })
+      
+      let resp = await fetch(url, {
         method: "POST",
-        headers: { Authorization: retryAuth, "Content-Type": "application/x-www-form-urlencoded" },
+        headers: { Authorization: authHeader, "Content-Type": "application/x-www-form-urlencoded" },
         body: body.toString(),
       })
-    }
-    if (!resp.ok) {
+      
+      if ((resp.status === 401 || resp.status === 403) && this.clientId && this.clientSecret) {
+        devLog("[v0] startDomainProspects auth error; refreshing token")
+        await this.fetchAccessToken()
+        const retryAuth = this.accessToken ? `Bearer ${this.accessToken}` : `Bearer ${this.apiKey}`
+        resp = await fetch(url, {
+          method: "POST",
+          headers: { Authorization: retryAuth, "Content-Type": "application/x-www-form-urlencoded" },
+          body: body.toString(),
+        })
+      }
+      
       const text = await resp.text()
-      errorLog(`[v0] startDomainProspects error ${resp.status}`, text)
-      return null
-    }
-    try {
-      const json = await resp.json()
-      if (json?.task_hash) return { task_hash: json.task_hash }
-      errorLog("[v0] startDomainProspects missing task_hash", json)
-      return null
-    } catch (e) {
-      errorLog("[v0] startDomainProspects parse error", e)
+      devLog(`[v0] startDomainProspects response ${resp.status}:`, text)
+      
+      if (!resp.ok) {
+        errorLog(`[v0] startDomainProspects error ${resp.status}:`, text)
+        return null
+      }
+      
+      try {
+        const json = JSON.parse(text)
+        if (json?.task_hash) {
+          devLog("[v0] Got task_hash:", json.task_hash)
+          return { task_hash: json.task_hash }
+        }
+        errorLog("[v0] startDomainProspects missing task_hash:", json)
+        return null
+      } catch (e) {
+        errorLog("[v0] startDomainProspects parse error:", e, "Text:", text)
+        return null
+      }
+    } catch (error) {
+      errorLog("[v0] startDomainProspects exception:", error)
       return null
     }
   }
@@ -226,6 +242,15 @@ class SnovClient {
       if (!params.domain) {
         return { success: false, data: { total: 0, results: [] }, error: "Domain is required" }
       }
+      
+      // Clean domain - remove protocol and paths if present
+      let cleanDomain = params.domain.trim().toLowerCase()
+      cleanDomain = cleanDomain.replace(/^https?:\/\//, '') // remove http:// or https://
+      cleanDomain = cleanDomain.replace(/^www\./, '') // remove www.
+      cleanDomain = cleanDomain.split('/')[0] // remove any paths
+      
+      devLog("[v0] Cleaned domain:", cleanDomain, "from:", params.domain)
+      
       const page = params.page || 1
       const positions: string[] = []
       if (params.title) {
@@ -235,10 +260,12 @@ class SnovClient {
       if (positions.length === 0) {
         positions.push("manager", "director", "lead", "head")
       }
-      const start = await this.startDomainProspects(params.domain, positions, page)
+      
+      const start = await this.startDomainProspects(cleanDomain, positions, page)
       if (!start?.task_hash) {
-        return { success: false, data: { total: 0, results: [] }, error: "Failed to start search" }
+        return { success: false, data: { total: 0, results: [] }, error: "Failed to start search. Please check the domain is valid and accessible." }
       }
+      
       const delays = [400, 700, 1100, 1600, 2200]
       let result: any | null = null
       for (let i = 0; i < delays.length; i++) {
@@ -255,7 +282,7 @@ class SnovClient {
         email: p.email || p.emails?.[0] || "",
         first_name: p.first_name || p.firstname || "",
         last_name: p.last_name || p.lastname || "",
-        company: p.company_name || p.company || params.domain || "",
+        company: p.company_name || p.company || cleanDomain || "",
         title: p.position || p.title || "",
         linkedin_url: p.linkedin || p.linkedin_url || p.social_linkedin,
         phone: p.phone || p.phones?.[0],
@@ -264,7 +291,7 @@ class SnovClient {
       }))
       const limit = params.limit && params.limit > 0 ? params.limit : mapped.length
       const sliced = mapped.slice(0, limit)
-      devLog("[v0] domain search", { domain: params.domain, total, returned: sliced.length, positions })
+      devLog("[v0] domain search", { domain: cleanDomain, total, returned: sliced.length, positions })
       return { success: true, data: { total, results: sliced } }
     } catch (error) {
       errorLog("[v0] domain search error", error)
