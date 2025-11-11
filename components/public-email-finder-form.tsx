@@ -83,7 +83,7 @@ export function PublicEmailFinderForm({ userId }: Props) {
       <CardHeader>
         <CardTitle>Public Email Finder (beta)</CardTitle>
         <CardDescription>
-          Extract publicly listed emails from company websites. Enter domains directly or use keywords like: affiliate, ecommerce, email, crm, marketing, analytics, saas, payment, hosting, design.
+         Extract publicly listed emails from company websites. Try keywords like: affiliate, marketing, saas, crm, ecommerce, payment, analytics, ai, blockchain, healthcare, education, hr, security, design, development, and 100+ more.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
