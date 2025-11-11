@@ -156,29 +156,72 @@ class SnovClient {
     try {
       await this.ensureAccessToken()
       const authHeader = this.accessToken ? `Bearer ${this.accessToken}` : `Bearer ${this.apiKey}`
-      const body = new URLSearchParams()
-      body.append("domain", domain)
-      body.append("page", String(page))
-      positions.forEach((p) => body.append("positions[]", p))
+      
+      // Try both JSON and form-encoded formats
+      const jsonPayload = {
+        domain: domain,
+        page: page,
+        positions: positions,
+      }
+      
+      const formPayload = new URLSearchParams()
+      formPayload.append("domain", domain)
+      formPayload.append("page", String(page))
+      positions.forEach((p) => formPayload.append("positions[]", p))
+      
       const url = `${this.apiUrl}/domain-search/prospects/start`
       
       devLog("[v0] Starting domain search:", { domain, positions, page, url })
       
+      // Try JSON format first (more common in modern APIs)
       let resp = await fetch(url, {
         method: "POST",
-        headers: { Authorization: authHeader, "Content-Type": "application/x-www-form-urlencoded" },
-        body: body.toString(),
+        headers: { 
+          Authorization: authHeader, 
+          "Content-Type": "application/json" 
+        },
+        body: JSON.stringify(jsonPayload),
       })
+      
+      // If that fails with 400/415, try form-encoded
+      if (resp.status === 400 || resp.status === 415) {
+        devLog("[v0] JSON format failed, trying form-encoded")
+        resp = await fetch(url, {
+          method: "POST",
+          headers: { 
+            Authorization: authHeader, 
+            "Content-Type": "application/x-www-form-urlencoded" 
+          },
+          body: formPayload.toString(),
+        })
+      }
       
       if ((resp.status === 401 || resp.status === 403) && this.clientId && this.clientSecret) {
         devLog("[v0] startDomainProspects auth error; refreshing token")
         await this.fetchAccessToken()
         const retryAuth = this.accessToken ? `Bearer ${this.accessToken}` : `Bearer ${this.apiKey}`
+        
+        // Retry with JSON first
         resp = await fetch(url, {
           method: "POST",
-          headers: { Authorization: retryAuth, "Content-Type": "application/x-www-form-urlencoded" },
-          body: body.toString(),
+          headers: { 
+            Authorization: retryAuth, 
+            "Content-Type": "application/json" 
+          },
+          body: JSON.stringify(jsonPayload),
         })
+        
+        // If still fails, try form
+        if (resp.status === 400 || resp.status === 415) {
+          resp = await fetch(url, {
+            method: "POST",
+            headers: { 
+              Authorization: retryAuth, 
+              "Content-Type": "application/x-www-form-urlencoded" 
+            },
+            body: formPayload.toString(),
+          })
+        }
       }
       
       const text = await resp.text()
