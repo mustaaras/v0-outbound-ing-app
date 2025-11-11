@@ -135,8 +135,8 @@ export async function canPerformSearch(
 export async function searchBuyers(input: SearchBuyersInput): Promise<SearchBuyersResult> {
   devLog("[v0] searchBuyers called:", { userId: input.userId, tier: input.userTier })
 
-  // Check if user is Pro or Ultra
-  if (input.userTier !== "pro" && input.userTier !== "ultra") {
+  // Disallow Free tier; Light and above are eligible
+  if (input.userTier === "free") {
     return {
       success: false,
       data: {
@@ -146,7 +146,7 @@ export async function searchBuyers(input: SearchBuyersInput): Promise<SearchBuye
         searchLimit: 0,
         searchesRemaining: 0,
       },
-      error: "Search Buyers is only available for Pro and Ultra plans",
+      error: "Search Buyers is unavailable on the Free plan. Upgrade to Light, Pro, or Ultra to continue.",
     }
   }
 

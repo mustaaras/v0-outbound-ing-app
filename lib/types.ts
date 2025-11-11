@@ -51,7 +51,7 @@ export const TIER_LIMITS = {
 
 export const SNOV_SEARCH_LIMITS = {
   free: 0,
-  light: 0,
+  light: 50,
   pro: 150,
   ultra: 300,
 } as const

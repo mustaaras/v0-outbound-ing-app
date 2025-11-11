@@ -12,7 +12,7 @@ export const PRODUCTS: Product[] = [
     id: "light-monthly",
     name: "Light",
     description: "Great starter plan for small teams and side projects",
-    priceInCents: 999, // $9.99/month
+    priceInCents: 1500, // $15/month
     tier: "light",
     features: [
       "100 templates per month",
@@ -21,14 +21,14 @@ export const PRODUCTS: Product[] = [
       "Full customization options",
       "Email support",
       "Full archive access",
-      "No buyer searches (upgrade for Search Buyers)",
+      "Search Buyers – up to 50 saved buyer emails/month (email-only billing)",
     ],
   },
   {
     id: "pro-monthly",
     name: "Pro",
     description: "Perfect for growing businesses and active sales teams",
-    priceInCents: 2900, // $29/month
+    priceInCents: 3900, // $39/month
     tier: "pro",
     features: [
       "750 templates per month",
@@ -37,14 +37,14 @@ export const PRODUCTS: Product[] = [
       "Full customization options",
       "Priority email support",
       "Full archive access",
-      "Search Buyers – 150 buyer searches/month",
+      "Search Buyers – up to 150 saved buyer emails/month (email-only billing)",
     ],
   },
   {
     id: "ultra-monthly",
     name: "Ultra",
     description: "Maximum capacity for high-volume outreach campaigns",
-    priceInCents: 4900, // $49/month
+    priceInCents: 6900, // $69/month
     tier: "ultra",
     features: [
       "1,500 templates per month",
@@ -54,7 +54,7 @@ export const PRODUCTS: Product[] = [
       "Premium priority support",
       "Full archive access",
       "Early access to new features",
-      "Search Buyers – 300 buyer searches/month",
+      "Search Buyers – up to 300 saved buyer emails/month (email-only billing)",
     ],
   },
 ]

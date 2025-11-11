@@ -16,7 +16,7 @@ export default async function PricingPage() {
     redirect("/auth/login")
   }
 
-  const isEligibleForSearch = user.tier === "pro" || user.tier === "ultra"
+  const isEligibleForSearch = user.tier === "light" || user.tier === "pro" || user.tier === "ultra"
   let searchesUsed: number | null = null
   let searchLimit: number | null = null
   if (isEligibleForSearch) {
@@ -81,7 +81,8 @@ export default async function PricingPage() {
             <CardContent>
               <ul className="space-y-3">
                 {plan.features.map((feature, index) => {
-                  const isSearch = feature.toLowerCase().startsWith("search buyers") || feature.toLowerCase().includes("buyer searches")
+                  const lower = feature.toLowerCase()
+                  const isSearch = lower.startsWith("search buyers") || lower.includes("buyer searches") || lower.includes("saved buyer emails")
                   return (
                     <li key={index} className="flex items-start gap-2">
                       {isSearch ? (
@@ -92,7 +93,7 @@ export default async function PricingPage() {
                       <span className="text-sm flex items-center gap-2">
                         {feature}
                         {isSearch && (
-                          <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">New</span>
+                          <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">Email-only</span>
                         )}
                       </span>
                     </li>
