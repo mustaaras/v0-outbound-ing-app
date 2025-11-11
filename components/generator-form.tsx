@@ -351,6 +351,8 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
               ))}
             </TabsList>
           </Tabs>
+          {/* Add margin below tabs to prevent overlap */}
+          <div className="mt-4" />
         </div>
 
         <div className="space-y-2">
