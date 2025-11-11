@@ -496,7 +496,7 @@ class SnovClient {
       const collected: SnovBuyer[] = []
       const tried: string[] = []
 
-      const domainsToTry = resolvedDomains ? resolvedDomains.slice(0, 3) : [cleanDomain]
+  const domainsToTry = resolvedDomains ? resolvedDomains.slice(0, 3) : [cleanDomain]
       for (const dom of domainsToTry) {
         const d = dom.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0]
         tried.push(d)
@@ -546,7 +546,8 @@ class SnovClient {
             industry: p.industry || p.company_industry,
             company_size: p.company_size || p.company_size_range,
           }
-            collected.push(buyer)
+          collected.push(buyer)
+          devLog('[v0] collected prospect', { email: buyer.email, company: buyer.company })
         }
         if (collected.length >= limit) break
       }

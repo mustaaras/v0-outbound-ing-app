@@ -22,22 +22,31 @@ export async function saveBuyer(input: SaveBuyerInput): Promise<SaveBuyerResult>
       return { success: false, error: "Email is required" }
     }
 
-    const { error } = await supabase
+    // Upsert fallback: because expression-based unique index may differ in environments, do manual check then insert
+    const { data: existing, error: existingErr } = await supabase
       .from("saved_buyers")
-      .upsert(
-        {
-          user_id: input.userId,
-          email,
-          first_name: input.buyer.first_name || null,
-          last_name: input.buyer.last_name || null,
-          company: input.buyer.company || null,
-          title: input.buyer.title || null,
-        },
-        {
-          onConflict: "user_id, email",
-          ignoreDuplicates: true,
-        },
-      )
+      .select("id")
+      .eq("user_id", input.userId)
+      .eq("email", email)
+      .maybeSingle()
+
+    if (existingErr) {
+      errorLog("[v0] saveBuyer select error:", existingErr)
+      return { success: false, error: "Failed to save contact" }
+    }
+
+    let error: any = null
+    if (!existing) {
+      const { error: insertErr } = await supabase.from("saved_buyers").insert({
+        user_id: input.userId,
+        email,
+        first_name: input.buyer.first_name || null,
+        last_name: input.buyer.last_name || null,
+        company: input.buyer.company || null,
+        title: input.buyer.title || null,
+      })
+      error = insertErr
+    }
 
     if (error) {
       errorLog("[v0] saveBuyer error:", error)
