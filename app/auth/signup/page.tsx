@@ -13,6 +13,8 @@ import { useState } from "react"
 import { devLog, errorLog } from "@/lib/logger"
 
 export default function SignupPage() {
+  const [firstName, setFirstName] = useState("")
+  const [lastName, setLastName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [repeatPassword, setRepeatPassword] = useState("")
@@ -25,6 +27,12 @@ export default function SignupPage() {
     const supabase = createClient()
     setIsLoading(true)
     setError(null)
+
+    if (!firstName.trim() || !lastName.trim()) {
+      setError("Please enter your first and last name")
+      setIsLoading(false)
+      return
+    }
 
     if (password !== repeatPassword) {
       setError("Passwords do not match")
@@ -44,6 +52,12 @@ export default function SignupPage() {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            first_name: firstName.trim(),
+            last_name: lastName.trim(),
+          }
+        }
       })
 
   devLog("[v0] Signup response:", { data, error })
@@ -150,6 +164,31 @@ export default function SignupPage() {
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
                       <span className="bg-background px-2 text-muted-foreground">Or continue with email</span>
+                    </div>
+                  </div>
+
+                  <div className="grid gap-2 sm:grid-cols-2 sm:gap-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="first-name">First Name</Label>
+                      <Input
+                        id="first-name"
+                        type="text"
+                        placeholder="John"
+                        required
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="last-name">Last Name</Label>
+                      <Input
+                        id="last-name"
+                        type="text"
+                        placeholder="Smith"
+                        required
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                      />
                     </div>
                   </div>
 

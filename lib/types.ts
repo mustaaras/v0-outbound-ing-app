@@ -4,6 +4,8 @@ export interface User {
   id: string
   email: string
   tier: UserTier
+  first_name?: string
+  last_name?: string
   stripe_customer_id?: string
   stripe_subscription_id?: string
   created_at: string
