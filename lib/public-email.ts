@@ -1,45 +1,73 @@
 // Contact Generator: Smart domain matching for product keywords
 export async function findContactEmails({ keyword, maxResults = 5 }: { keyword: string; maxResults?: number }) {
-  if (!keyword || keyword.length < 2) return [];
-  const candidates: string[] = [];
-  const base = keyword.toLowerCase();
-  // 1. Exact match .com
-  candidates.push(`${base}.com`);
-  // 2. keyword + gpt extensions
-  [".com", ".ai", ".io", ".net", ".org"].forEach(ext => {
-    candidates.push(`${base}gpt${ext}`);
-    candidates.push(`${base}${ext}`);
-  });
-  // 3. tree + keyword extensions
-  [".com", ".ai", ".io", ".net", ".org"].forEach(ext => {
-    candidates.push(`tree${base}${ext}`);
-    candidates.push(`${base}tree${ext}`);
-  });
-  // 4. keyword + ai extensions
-  [".com", ".ai", ".io", ".net", ".org"].forEach(ext => {
-    candidates.push(`${base}ai${ext}`);
-  });
-  // 5. gpt + keyword extensions
-  [".com", ".ai", ".io", ".net", ".org"].forEach(ext => {
-    candidates.push(`gpt${base}${ext}`);
-  });
-
-  // Remove duplicates
-  const uniqueDomains = Array.from(new Set(candidates));
-
-  // Try each domain until we get maxResults
-  const results: PublicEmailResult[] = [];
-  for (const domain of uniqueDomains) {
-    if (results.length >= maxResults) break;
-    try {
-      const found = await extractPublicEmailsForDomain(domain, { pagesPerDomain: 8, timeoutMs: 4000 });
-      for (const r of found) {
-        if (results.length >= maxResults) break;
-        results.push(r);
-      }
-    } catch {}
+  if (!keyword || keyword.length < 2) return []
+  
+  const candidates: string[] = []
+  const base = keyword.toLowerCase().replace(/[^a-z0-9]/g, "") // Remove special chars
+  
+  devLog("[contact-gen] Searching for keyword:", keyword, "base:", base)
+  
+  // Build comprehensive candidate list
+  const extensions = [".com", ".ai", ".io", ".net", ".org", ".app", ".co"]
+  
+  // 1. Exact match
+  extensions.forEach(ext => candidates.push(`${base}${ext}`))
+  
+  // 2. keyword + gpt
+  extensions.forEach(ext => candidates.push(`${base}gpt${ext}`))
+  
+  // 3. gpt + keyword
+  extensions.forEach(ext => candidates.push(`gpt${base}${ext}`))
+  
+  // 4. keyword + ai
+  extensions.forEach(ext => candidates.push(`${base}ai${ext}`))
+  
+  // 5. ai + keyword
+  extensions.forEach(ext => candidates.push(`ai${base}${ext}`))
+  
+  // 6. If keyword contains multiple parts, try variations
+  if (base.length > 4) {
+    const parts = [base.slice(0, 4), base.slice(4)]
+    extensions.forEach(ext => {
+      candidates.push(`${parts[0]}${parts[1]}${ext}`)
+      candidates.push(`${parts[1]}${parts[0]}${ext}`)
+    })
   }
-  return results;
+
+  const uniqueDomains = Array.from(new Set(candidates))
+  devLog("[contact-gen] Checking", uniqueDomains.length, "candidate domains")
+
+  // Try domains in parallel batches
+  const results: PublicEmailResult[] = []
+  const BATCH_SIZE = 5
+  
+  for (let i = 0; i < uniqueDomains.length && results.length < maxResults; i += BATCH_SIZE) {
+    const batch = uniqueDomains.slice(i, i + BATCH_SIZE)
+    const promises = batch.map(async domain => {
+      try {
+        devLog("[contact-gen] Trying domain:", domain)
+        const found = await extractPublicEmailsForDomain(domain, { pagesPerDomain: 6, timeoutMs: 3000 })
+        if (found.length > 0) {
+          devLog("[contact-gen] Found", found.length, "emails on", domain)
+        }
+        return found
+      } catch (e) {
+        return []
+      }
+    })
+    
+    const batchResults = await Promise.all(promises)
+    for (const domainResults of batchResults) {
+      for (const r of domainResults) {
+        if (results.length >= maxResults) break
+        results.push(r)
+      }
+      if (results.length >= maxResults) break
+    }
+  }
+  
+  devLog("[contact-gen] Final results:", results.length, "emails found")
+  return results
 }
 import "server-only"
 
