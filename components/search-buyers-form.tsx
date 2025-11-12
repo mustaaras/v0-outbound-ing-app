@@ -83,37 +83,11 @@ export function SearchContactsForm({ userId, userTier, searchesUsed, searchLimit
       setTotalResults(result.data.total)
       setSearchesRemainingLocal(result.data.searchesRemaining)
 
-      // Auto-save all results
-      if (result.data.results.length > 0) {
-        let saved = 0
-        for (const buyer of result.data.results) {
-          try {
-            const saveRes = await saveBuyer({
-              userId,
-              buyer: {
-                email: buyer.email,
-                first_name: buyer.first_name,
-                last_name: buyer.last_name,
-                company: buyer.company,
-                title: buyer.title,
-              },
-            })
-            if (saveRes.success) saved++
-          } catch (e) {
-            // Continue with other contacts
-          }
-        }
-        
-        toast({
-          title: "Search completed!",
-          description: `Found ${result.data.results.length} prospects. ${saved} saved to contacts. ${result.data.searchesRemaining} searches remaining.`,
-        })
-      } else {
-        toast({
-          title: "Search completed!",
-          description: `Found ${result.data.results.length} prospects. ${result.data.searchesRemaining} searches remaining.`,
-        })
-      }
+      // Do not auto-save results. Only show toast with results count.
+      toast({
+        title: "Search completed!",
+        description: `Found ${result.data.results.length} prospects. ${result.data.searchesRemaining} searches remaining.`,
+      })
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : "An unexpected error occurred"
       setErrorMessage(errorMsg)
@@ -129,6 +103,39 @@ export function SearchContactsForm({ userId, userTier, searchesUsed, searchLimit
 
   const handleSelectBuyer = async (buyer: SnovBuyer) => {
     setSelectedContact(buyer)
+  }
+
+  const handleSaveBuyer = async (buyer: SnovBuyer) => {
+    try {
+      const saveRes = await saveBuyer({
+        userId,
+        buyer: {
+          email: buyer.email,
+          first_name: buyer.first_name,
+          last_name: buyer.last_name,
+          company: buyer.company,
+          title: buyer.title,
+        },
+      })
+      if (saveRes.success) {
+        toast({
+          title: "Contact saved!",
+          description: `${buyer.first_name} ${buyer.last_name} saved to contacts.`,
+        })
+      } else {
+        toast({
+          title: "Save failed",
+          description: saveRes.error || "Could not save contact.",
+          variant: "destructive",
+        })
+      }
+    } catch (e) {
+      toast({
+        title: "Save failed",
+        description: e instanceof Error ? e.message : "Could not save contact.",
+        variant: "destructive",
+      })
+    }
   }
 
   const handleProceedToGenerator = () => {
@@ -315,6 +322,17 @@ export function SearchContactsForm({ userId, userTier, searchesUsed, searchLimit
                         >
                           <Send className="h-3.5 w-3.5 mr-1" />
                           Send
+                        </button>
+                        <button
+                          type="button"
+                          className="inline-flex items-center rounded border border-transparent px-2 py-1 text-xs hover:bg-green-100"
+                          title="Save contact"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleSaveBuyer(buyer)
+                          }}
+                        >
+                          Save
                         </button>
                         {selectedContact?.email === buyer.email && (
                           <Badge className="bg-primary">Selected</Badge>

@@ -80,15 +80,8 @@ const featureRows: FeatureRow[] = [
       return String(limit || 60)
     },
   },
-  {
-    key: "searchContacts",
-    label: "Verified Emails / month",
-    render: (tier) => {
-      const limit = SNOV_SEARCH_LIMITS[tier as keyof typeof SNOV_SEARCH_LIMITS]
-      if (limit === 0) return "—"
-      return String(limit)
-    },
-  },
+  // Removed Verified Contacts feature row
+
   {
     key: "support",
     label: "Support level",

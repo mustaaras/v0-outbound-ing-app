@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   description: "Generate personalized, high-converting cold email templates using AI and proven strategies",
   icons: {
     icon: [
-      { url: "/favicon.ico" },
+      { url: "/favicon.svg" },
       { url: "/icon-light-32x32.png", media: "(prefers-color-scheme: light)" },
       { url: "/icon-dark-32x32.png", media: "(prefers-color-scheme: dark)" },
     ],
@@ -28,6 +28,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Google tag (gtag.js) */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-7C86NQPQLZ"></script>
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-7C86NQPQLZ');
+          `,
+        }} />
+      </head>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           {children}

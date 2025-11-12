@@ -134,21 +134,21 @@ export function SettingsForm({ user, hasPassword }: SettingsFormProps) {
       case "free":
         return {
           label: "Free Plan",
-          description: `${limit} templates/month`,
+          description: `${limit} emails/month`,
           variant: "secondary" as const,
           icon: null,
         }
       case "light":
         return {
           label: "Light Plan",
-          description: `${limit} templates/month`,
+          description: `${limit} emails/month`,
           variant: "default" as const,
           icon: <Crown className="mr-1 h-4 w-4" />,
         }
       case "pro":
         return {
           label: "Pro Plan",
-          description: `${limit} templates/month`,
+          description: `${limit} emails/month`,
           variant: "default" as const,
           icon: <Crown className="mr-1 h-4 w-4" />,
         }
@@ -260,7 +260,7 @@ export function SettingsForm({ user, hasPassword }: SettingsFormProps) {
                 <AlertDialogTrigger asChild>
                   <Button variant="destructive" className="w-full sm:w-auto" disabled={isCancellingSubscription}>
                     <AlertTriangle className="mr-2 h-4 w-4" />
-                    Cancel Subscription
+                    Cancel my subscription
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
