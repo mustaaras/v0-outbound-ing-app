@@ -76,7 +76,7 @@ export async function findPublicEmails(input: PublicEmailFinderInput): Promise<P
     const { results } = await extractPublicEmailsEnhanced({
       keyword: input.keyword,
       domains: rawDomains.join(','),
-      pagesPerDomain: input.pagesPerDomain ?? 6,
+      pagesPerDomain: input.pagesPerDomain ?? 8,
       perDomainCap: input.perDomainCap ?? 10,
       totalCap: input.totalCap ?? 50,
     })

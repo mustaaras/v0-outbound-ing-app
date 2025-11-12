@@ -929,7 +929,7 @@ export async function publicEmailFinder(
     const d = uniqueDomains[idx++]
     active++
     try {
-      const res = await extractPublicEmailsForDomain(d, { pagesPerDomain: params.pagesPerDomain ?? 12, timeoutMs: 4000 })
+      const res = await extractPublicEmailsForDomain(d, { pagesPerDomain: params.pagesPerDomain ?? 8, timeoutMs: 4000 })
       let addedForDomain = 0
       for (const r of res) {
         if (all.length >= totalCap) break
@@ -1091,8 +1091,8 @@ export async function extractPublicEmailsEnhanced(params: {
       // Run all methods in parallel
       const [scrapedEmails, dnsEmails, patternEmails] = await Promise.all([
         extractPublicEmailsForDomain(domain, { 
-          pagesPerDomain: params.pagesPerDomain ?? 6, 
-          timeoutMs: 3000 
+          pagesPerDomain: params.pagesPerDomain ?? 8, 
+          timeoutMs: 4000 
         }).catch(() => []),
         getDnsEmails(domain).catch(() => []),
         checkCommonEmailPatterns(domain).catch(() => [])
