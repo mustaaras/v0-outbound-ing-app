@@ -26,7 +26,6 @@ export function PublicEmailFinderForm({ userId, userTier, searchesUsed, searchLi
   const [domains, setDomains] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [loadingMessage, setLoadingMessage] = useState("")
-  const [loadingStats, setLoadingStats] = useState({ domains: 0, emails: 0 })
   const [results, setResults] = useState<Array<{ domain: string; email: string; type: "generic" | "personal"; sourceUrl: string }>>([])
   const [searchesRemainingLocal, setSearchesRemainingLocal] = useState(searchLimit - searchesUsed)
   const [showSuggestions, setShowSuggestions] = useState(false)
@@ -86,12 +85,9 @@ export function PublicEmailFinderForm({ userId, userTier, searchesUsed, searchLi
     setIsLoading(true)
     setResults([])
     setLoadingMessage("🔍 Searching domains...")
-    setLoadingStats({ domains: 0, emails: 0 })
     
     try {
-      // Show realistic progressive counter
-      let domainsChecked = 0
-      let emailsFound = 0
+      // Show rotating messages during search
       const progressInterval = setInterval(() => {
         const messages = [
           "🔍 Scanning company websites...",
@@ -102,23 +98,15 @@ export function PublicEmailFinderForm({ userId, userTier, searchesUsed, searchLi
           "📋 Analyzing results..."
         ]
         setLoadingMessage(messages[Math.floor(Math.random() * messages.length)])
-        
-        // More conservative counter - max 30 domains, realistic email finds
-        domainsChecked = Math.min(domainsChecked + Math.floor(Math.random() * 2) + 1, 30)
-        // Emails found more sporadically (not every domain has emails)
-        if (Math.random() > 0.4) { // 60% chance to find emails
-          emailsFound = Math.min(emailsFound + Math.floor(Math.random() * 3) + 1, 100)
-        }
-        setLoadingStats({ domains: domainsChecked, emails: emailsFound })
-      }, 2500) // Slower updates for more realistic feel
+      }, 2500)
 
       const res = await findPublicEmails({ 
         userId, 
         userTier, 
         keyword: keyword || undefined, 
         domains: domains || undefined, 
-        perDomainCap: 15, // Increased from 5 to get more emails per domain
-        totalCap: 150 // Increased from 50 to get more total results
+        perDomainCap: 3, // Reduced to 3 emails per domain
+        totalCap: 150
       })
       
       clearInterval(progressInterval)
@@ -159,7 +147,6 @@ export function PublicEmailFinderForm({ userId, userTier, searchesUsed, searchLi
     } finally {
       setIsLoading(false)
       setLoadingMessage("")
-      setLoadingStats({ domains: 0, emails: 0 })
     }
   }
 
@@ -251,15 +238,10 @@ export function PublicEmailFinderForm({ userId, userTier, searchesUsed, searchLi
 
           <Button type="submit" disabled={isLoading} className="w-full">
             {isLoading ? (
-              <div className="flex flex-col items-center gap-1 w-full">
-                <div className="flex items-center">
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
-                  {loadingMessage || "Searching..."}
-                </div>
-                <div className="text-xs font-normal opacity-90">
-                  {loadingStats.domains} domains checked • {loadingStats.emails} emails found
-                </div>
-              </div>
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
+                {loadingMessage || "Searching..."}
+              </>
             ) : (
               <>
                 <Globe className="mr-2 h-4 w-4"/>
@@ -284,14 +266,20 @@ export function PublicEmailFinderForm({ userId, userTier, searchesUsed, searchLi
                       <span className="font-medium truncate">{r.email}</span>
                       <span className="text-muted-foreground truncate">@ {r.domain}</span>
                     </div>
-                    <a
-                      href={r.sourceUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-1 inline-flex items-center gap-1 text-xs text-blue-600 hover:underline"
-                    >
-                      <LinkIcon className="h-3 w-3" />View source
-                    </a>
+                    {r.sourceUrl.startsWith('http') ? (
+                      <a
+                        href={r.sourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-1 inline-flex items-center gap-1 text-xs text-blue-600 hover:underline"
+                      >
+                        <LinkIcon className="h-3 w-3" />View source
+                      </a>
+                    ) : (
+                      <span className="mt-1 inline-flex items-center gap-1 text-xs text-muted-foreground">
+                        <LinkIcon className="h-3 w-3" />{r.sourceUrl}
+                      </span>
+                    )}
                   </div>
                   <button
                     type="button"
