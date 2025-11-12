@@ -7,7 +7,9 @@ import PasswordResetEmail from "@/emails/password-reset"
 import UsageWarningEmail from "@/emails/usage-warning"
 import { devLog, errorLog } from "@/lib/logger"
 
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "Outbounding <noreply@outbound.ing>"
+// Use the verified Resend subdomain. If you verified `noreply.outbound.ing`,
+// the From address must be something@noreply.outbound.ing to pass DMARC.
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "Outbounding <noreply@noreply.outbound.ing>"
 
 export async function sendWelcomeEmail(email: string, firstName: string) {
   try {
