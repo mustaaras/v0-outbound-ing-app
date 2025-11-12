@@ -23,6 +23,19 @@ export default function ResetPasswordPage() {
     // Check if user has a valid session (came from reset link)
     const checkSession = async () => {
       const supabase = createClient()
+      
+      // First, check if there's a recovery token in the URL
+      const hashParams = new URLSearchParams(window.location.hash.substring(1))
+      const accessToken = hashParams.get('access_token')
+      const type = hashParams.get('type')
+      
+      // If this is a recovery link, the session should already be established
+      if (type === 'recovery' && accessToken) {
+        setIsValidSession(true)
+        return
+      }
+      
+      // Otherwise check for existing session
       const { data: { session } } = await supabase.auth.getSession()
       
       if (session) {

@@ -49,7 +49,16 @@ export default function LoginPage() {
       setError(null)
     } catch (error: unknown) {
       errorLog("[v0] Password reset error:", error)
-      setError(error instanceof Error ? error.message : "Failed to send password reset email")
+      const errorMessage = error instanceof Error ? error.message : "Failed to send password reset email"
+      
+      // Handle rate limit errors with more helpful message
+      if (errorMessage.toLowerCase().includes("rate limit") || errorMessage.toLowerCase().includes("too many requests")) {
+        setError("Too many password reset requests. Please wait 60 seconds before trying again.")
+      } else if (errorMessage.toLowerCase().includes("email rate limit")) {
+        setError("Email rate limit exceeded. Please wait a few minutes before requesting another password reset.")
+      } else {
+        setError(errorMessage)
+      }
     } finally {
       setResetLoading(false)
     }
