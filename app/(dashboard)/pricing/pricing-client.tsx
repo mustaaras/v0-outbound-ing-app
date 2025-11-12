@@ -85,7 +85,77 @@ export function PricingClient({ userTier, userId }: PricingClientProps) {
         </Tabs>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      {/* Mobile: Horizontal scroll */}
+      <div className="lg:hidden overflow-x-auto -mx-4 px-4">
+        <div className="flex gap-4 pb-4">
+          {plans.map((plan) => (
+            <Card key={plan.name + plan.productId} className={`flex-shrink-0 w-[280px] ${plan.tier === "pro" ? "border-primary shadow-lg" : ""}`}>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle>{plan.name}</CardTitle>
+                  {plan.tier === "pro" && (
+                    <span className="rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">
+                      Popular
+                    </span>
+                  )}
+                </div>
+                <CardDescription>{plan.description}</CardDescription>
+                <div className="mt-4">
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-4xl font-bold">{plan.price}</span>
+                    {plan.billingText && <span className="text-sm text-muted-foreground">{plan.billingText}</span>}
+                  </div>
+                  {plan.savings && (
+                    <p className="text-sm text-green-600 font-medium mt-1">
+                      Save {plan.savings}% with annual billing
+                    </p>
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-3">
+                  {plan.features.map((feature, index) => {
+                    const lower = feature.toLowerCase()
+                    const isSearch = lower.startsWith("search contacts") || lower.includes("contact searches") || lower.includes("saved contact emails") || lower.includes("email finder")
+                    const isVerified = lower.includes("verified contacts")
+                    return (
+                      <li key={index} className="flex items-start gap-2">
+                        {isSearch ? (
+                          <Search className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                        ) : isVerified ? (
+                          <Check className="mt-0.5 h-4 w-4 shrink-0 text-green-600" />
+                        ) : (
+                          <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                        )}
+                        <span className="text-sm flex items-center gap-2">
+                          {feature}
+                          {isVerified && (
+                            <span className="inline-flex items-center rounded-full bg-yellow-200 px-2 py-0.5 text-[10px] font-medium text-yellow-800">Premium Beta</span>
+                          )}
+                        </span>
+                      </li>
+                    )
+                  })}
+                </ul>
+              </CardContent>
+              <CardFooter>
+                {plan.name === "Free" ? (
+                  <Button variant="outline" className="w-full bg-transparent" disabled={plan.disabled}>
+                    {plan.cta}
+                  </Button>
+                ) : (
+                  <Button asChild className="w-full" disabled={plan.disabled}>
+                    <Link href={`/upgrade?product=${plan.productId}`}>{plan.cta}</Link>
+                  </Button>
+                )}
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      {/* Desktop: Grid layout */}
+      <div className="hidden lg:grid gap-6 lg:grid-cols-3">
         {plans.map((plan) => (
           <Card key={plan.name + plan.productId} className={plan.tier === "pro" ? "border-primary shadow-lg" : ""}>
             <CardHeader>
