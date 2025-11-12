@@ -122,10 +122,11 @@ export function PublicEmailFinderForm({ userId, userTier, searchesUsed, searchLi
         <CardDescription>
          Extract publicly listed emails from company websites. Search from 3000+ industry keywords including: ai, crypto, blockchain, web3, nft, defi, saas, fintech, devops, machine learning, cloud, and hundreds more across tech, finance, marketing, and other industries.
         </CardDescription>
-        <div className="text-sm text-muted-foreground pt-2">
-          Searches remaining this month: <span className="font-bold">{searchesRemainingLocal}</span> / {searchLimit}
-          {searchLimit > 900000 && <span className="text-green-600 font-semibold ml-2">✓ Unlimited</span>}
-        </div>
+        {searchLimit <= 900000 && (
+          <div className="text-sm text-muted-foreground pt-2">
+            Searches remaining this month: <span className="font-bold">{searchesRemainingLocal}</span> / {searchLimit}
+          </div>
+        )}
       </CardHeader>
       <CardContent className="space-y-4">
         <form onSubmit={onSubmit} className="space-y-4">

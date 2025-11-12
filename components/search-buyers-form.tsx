@@ -214,7 +214,9 @@ export function SearchContactsForm({ userId, userTier, searchesUsed, searchLimit
         <div>
           <h3 className="text-lg font-semibold mb-2">Search for Prospects</h3>
           <p className="text-sm text-muted-foreground">
-            Find the right people to reach out to. Searches remaining this month: <span className="font-bold">{searchesRemainingLocal}</span> / {searchLimit}
+            Find the right people to reach out to.{searchLimit <= 900000 && (
+              <> Searches remaining this month: <span className="font-bold">{searchesRemainingLocal}</span> / {searchLimit}</>
+            )}
           </p>
         </div>
 
