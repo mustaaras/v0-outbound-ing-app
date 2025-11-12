@@ -54,7 +54,7 @@ export function MobileHeader({ user }: MobileHeaderProps) {
     <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-background px-4 md:hidden">
       <Link href="/dashboard" className="flex items-center gap-2 font-semibold">
         <img
-          src="/logos/logo-o-5.svg"
+          src="/logos/logo-o-new.svg"
           alt="Outbound.ing Logo"
           className="h-8 w-8"
         />

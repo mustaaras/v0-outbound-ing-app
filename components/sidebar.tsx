@@ -52,7 +52,7 @@ export function Sidebar({ user }: SidebarProps) {
       <div className="flex h-16 items-center border-b px-6">
         <Link href="/dashboard" className="flex items-center gap-2 font-semibold">
           <img
-            src="/logos/logo-o-5.svg"
+            src="/logos/logo-o-new.svg"
             alt="Outbound.ing Logo"
             className="h-8 w-8"
           />

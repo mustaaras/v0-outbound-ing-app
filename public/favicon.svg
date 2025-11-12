@@ -1,20 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
-  <title id="title">Outbound O — Bolt Cut</title>
-  <desc id="desc">Energetic O with a lightning cut suggesting speed and outbound energy.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <defs>
-    <linearGradient id="g5" x1="24" y1="232" x2="232" y2="24" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#0EA5E9"/>
-      <stop offset="1" stop-color="#8B5CF6"/>
+    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0EA5E9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8B5CF6;stop-opacity:1" />
     </linearGradient>
-    <mask id="boltMask">
-      <rect width="256" height="256" fill="white"/>
-      <!-- lightning zigzag to cut -->
-      <path d="M160 36 L120 116 L172 116 L96 220" stroke="black" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"/>
-    </mask>
   </defs>
-  <circle cx="128" cy="128" r="84" stroke="url(#g5)" stroke-width="32" fill="none" mask="url(#boltMask)"/>
-  <style>@media (prefers-color-scheme: dark) { :root { color-scheme: dark; } }</style>
-  <metadata>Outbound.ing brand mark</metadata>
-</svg>
+  <path d="M 6,16 A 10,10 0 0,1 16,6" fill="none" stroke="url(#logoGradient)" stroke-width="4" stroke-linecap="round"/>
+  <path d="M 16,26 A 10,10 0 0,1 6,16" fill="none" stroke="url(#logoGradient)" stroke-width="4" stroke-linecap="round"/>
+  <path d="M 26,16 A 10,10 0 0,1 16,26" fill="none" stroke="url(#logoGradient)" stroke-width="4" stroke-linecap="round"/>
+  <path d="M 16,6 A 10,10 0 0,1 26,16" fill="none" stroke="url(#logoGradient)" stroke-width="4" stroke-linecap="round"/>
 </svg>

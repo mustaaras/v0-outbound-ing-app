@@ -11,7 +11,7 @@ export default function LandingPage() {
         <div className="container flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <img
-              src="/logos/logo-o-5.svg"
+              src="/logos/logo-o-new.svg"
               alt="Outbound.ing Logo"
               className="h-8 w-8"
             />
