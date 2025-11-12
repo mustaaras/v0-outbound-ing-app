@@ -20,7 +20,40 @@ export default function LoginPage() {
   const [needsVerification, setNeedsVerification] = useState(false)
   const [resendingEmail, setResendingEmail] = useState(false)
   const [emailSent, setEmailSent] = useState(false)
+  const [showForgotPassword, setShowForgotPassword] = useState(false)
+  const [resetEmailSent, setResetEmailSent] = useState(false)
+  const [resetLoading, setResetLoading] = useState(false)
   const router = useRouter()
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!email) {
+      setError("Please enter your email address")
+      return
+    }
+
+    const supabase = createClient()
+    setResetLoading(true)
+    setError(null)
+    setResetEmailSent(false)
+
+    try {
+      const redirectUrl = `${window.location.origin}/auth/callback?redirect_to=/settings`
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: redirectUrl,
+      })
+
+      if (error) throw error
+
+      setResetEmailSent(true)
+      setError(null)
+    } catch (error: unknown) {
+      errorLog("[v0] Password reset error:", error)
+      setError(error instanceof Error ? error.message : "Failed to send password reset email")
+    } finally {
+      setResetLoading(false)
+    }
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -176,7 +209,16 @@ export default function LoginPage() {
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="password">Password</Label>
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="password">Password</Label>
+                      <button
+                        type="button"
+                        onClick={() => setShowForgotPassword(true)}
+                        className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-4"
+                      >
+                        Forgot password?
+                      </button>
+                    </div>
                     <Input
                       id="password"
                       type="password"
@@ -191,9 +233,35 @@ export default function LoginPage() {
                       Verification email sent! Check your inbox.
                     </div>
                   )}
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? "Logging in..." : "Log in"}
-                  </Button>
+                  {resetEmailSent && (
+                    <div className="rounded-lg bg-green-500/10 p-3 text-sm text-green-600 dark:text-green-400">
+                      Password reset email sent! Check your inbox for the reset link.
+                    </div>
+                  )}
+                  {showForgotPassword ? (
+                    <div className="space-y-3">
+                      <Button
+                        type="button"
+                        onClick={handleForgotPassword}
+                        className="w-full"
+                        disabled={resetLoading}
+                      >
+                        {resetLoading ? "Sending reset link..." : "Send password reset email"}
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full bg-transparent"
+                        onClick={() => setShowForgotPassword(false)}
+                      >
+                        Back to login
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button type="submit" className="w-full" disabled={isLoading}>
+                      {isLoading ? "Logging in..." : "Log in"}
+                    </Button>
+                  )}
                   {needsVerification && (
                     <Button
                       type="button"
