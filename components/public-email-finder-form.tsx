@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast"
 import { findPublicEmails } from "@/app/actions/public-email-finder"
 import { saveBuyer } from "@/app/actions/save-buyer"
 import Link from "next/link"
+import { EMAIL_FINDER_KEYWORDS } from "@/lib/email-keywords"
 
 interface Props {
   userId: string
@@ -26,6 +27,45 @@ export function PublicEmailFinderForm({ userId, userTier, searchesUsed, searchLi
   const [isLoading, setIsLoading] = useState(false)
   const [results, setResults] = useState<Array<{ domain: string; email: string; type: "generic" | "personal"; sourceUrl: string }>>([])
   const [searchesRemainingLocal, setSearchesRemainingLocal] = useState(searchLimit - searchesUsed)
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const [filteredKeywords, setFilteredKeywords] = useState<string[]>([])
+  const inputRef = useRef<HTMLInputElement>(null)
+  const suggestionsRef = useRef<HTMLDivElement>(null)
+
+  // Filter keywords as user types
+  useEffect(() => {
+    if (keyword.trim().length > 0) {
+      const filtered = EMAIL_FINDER_KEYWORDS.filter(kw =>
+        kw.toLowerCase().includes(keyword.toLowerCase())
+      ).slice(0, 10) // Show max 10 suggestions
+      setFilteredKeywords(filtered)
+      setShowSuggestions(filtered.length > 0)
+    } else {
+      setShowSuggestions(false)
+    }
+  }, [keyword])
+
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        suggestionsRef.current &&
+        !suggestionsRef.current.contains(event.target as Node) &&
+        inputRef.current &&
+        !inputRef.current.contains(event.target as Node)
+      ) {
+        setShowSuggestions(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
+
+  const selectKeyword = (selectedKeyword: string) => {
+    setKeyword(selectedKeyword)
+    setShowSuggestions(false)
+    inputRef.current?.focus()
+  }
   const handleSendEmail = (r: { domain: string; email: string; type: "generic" | "personal"; sourceUrl: string }) => {
     sessionStorage.setItem(
       "selectedBuyer",
@@ -131,10 +171,36 @@ export function PublicEmailFinderForm({ userId, userTier, searchesUsed, searchLi
       <CardContent className="space-y-4">
         <form onSubmit={onSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
+            <div className="space-y-2 relative">
               <Label htmlFor="pef-keyword">Keyword (optional)</Label>
-              <Input id="pef-keyword" placeholder="ai, crypto, web3, saas, fintech..." value={keyword} onChange={(e) => setKeyword(e.target.value)} disabled={isLoading} />
-              <p className="text-xs text-muted-foreground">3000+ tech, crypto, and industry keywords</p>
+              <Input 
+                ref={inputRef}
+                id="pef-keyword" 
+                placeholder="Type to search: ai, crypto, web3, saas..." 
+                value={keyword} 
+                onChange={(e) => setKeyword(e.target.value)} 
+                onFocus={() => keyword.trim().length > 0 && filteredKeywords.length > 0 && setShowSuggestions(true)}
+                disabled={isLoading}
+                autoComplete="off"
+              />
+              {showSuggestions && filteredKeywords.length > 0 && (
+                <div 
+                  ref={suggestionsRef}
+                  className="absolute z-50 w-full mt-1 bg-popover border rounded-md shadow-lg max-h-60 overflow-y-auto"
+                >
+                  {filteredKeywords.map((kw, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => selectKeyword(kw)}
+                      className="w-full text-left px-3 py-2 hover:bg-accent hover:text-accent-foreground text-sm cursor-pointer border-b last:border-b-0"
+                    >
+                      {kw}
+                    </button>
+                  ))}
+                </div>
+              )}
+              <p className="text-xs text-muted-foreground">200+ tech, crypto, and industry keywords</p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="pef-domains">Domains (comma or newline)</Label>
