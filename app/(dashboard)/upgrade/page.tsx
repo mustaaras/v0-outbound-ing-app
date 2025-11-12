@@ -24,7 +24,7 @@ export default async function UpgradePage({
   const selectedProductId = params.product
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6">
+    <div className="mx-auto max-w-7xl space-y-6 mt-12">
       <div className="text-center space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">Choose Your Plan</h1>
         <p className="text-muted-foreground">Scale your outreach with premium features and higher limits</p>

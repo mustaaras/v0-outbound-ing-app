@@ -37,35 +37,31 @@ export default async function DashboardPage() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="mt-2 text-muted-foreground">Welcome back! Here&apos;s an overview of your account.</p>
-      </div>
-
       <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Monthly Usage</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {usage} / {limit === Number.POSITIVE_INFINITY ? "∞" : limit}
-            </div>
-            <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-muted">
-              <div
-                className="h-full bg-primary transition-all"
-                style={{ width: `${Math.min(usagePercentage, 100)}%` }}
-              />
-            </div>
-            <p className="mt-2 text-xs text-muted-foreground">
-              {limit === Number.POSITIVE_INFINITY
-                ? "Unlimited generations"
-                : `${remaining} generation${remaining !== 1 ? "s" : ""} remaining`}
-            </p>
-          </CardContent>
-        </Card>
-
+        {user.tier !== "pro" && (
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">Monthly Usage</CardTitle>
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {usage} / {limit === Number.POSITIVE_INFINITY ? "∞" : limit}
+              </div>
+              <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-muted">
+                <div
+                  className="h-full bg-primary transition-all"
+                  style={{ width: `${Math.min(usagePercentage, 100)}%` }}
+                />
+              </div>
+              <p className="mt-2 text-xs text-muted-foreground">
+                {limit === Number.POSITIVE_INFINITY
+                  ? "Unlimited generations"
+                  : `${remaining} generation${remaining !== 1 ? "s" : ""} remaining`}
+              </p>
+            </CardContent>
+          </Card>
+        )}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Total Templates</CardTitle>
@@ -76,7 +72,6 @@ export default async function DashboardPage() {
             <p className="mt-2 text-xs text-muted-foreground">All time generated templates</p>
           </CardContent>
         </Card>
-
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Account Tier</CardTitle>

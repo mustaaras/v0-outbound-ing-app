@@ -82,7 +82,7 @@ const featureRows: FeatureRow[] = [
   },
   {
     key: "searchContacts",
-    label: "Snov.io Email Credits / month",
+    label: "Verified Emails / month",
     render: (tier) => {
       const limit = SNOV_SEARCH_LIMITS[tier as keyof typeof SNOV_SEARCH_LIMITS]
       if (limit === 0) return "—"

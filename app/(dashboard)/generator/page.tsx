@@ -57,23 +57,27 @@ export default async function GeneratorPage() {
         </div>
       </div>
 
-      <div className="rounded-lg border bg-card p-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="text-sm font-medium">Monthly Usage</div>
-            <div className="text-2xl font-bold">
-              {usage} / {limit}
+      <div>
+        {user.tier !== "pro" && (
+          <div className="rounded-lg border bg-card p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-sm font-medium">Monthly Usage</div>
+                <div className="text-2xl font-bold">
+                  {usage} / {limit}
+                </div>
+              </div>
+              {user.tier === "free" && !canGenerate && (
+                <Button asChild>
+                  <Link href="/upgrade">
+                    <Crown className="mr-2 h-4 w-4" />
+                    Upgrade to Pro
+                  </Link>
+                </Button>
+              )}
             </div>
           </div>
-          {user.tier === "free" && !canGenerate && (
-            <Button asChild>
-              <Link href="/upgrade">
-                <Crown className="mr-2 h-4 w-4" />
-                Upgrade to Pro
-              </Link>
-            </Button>
-          )}
-        </div>
+        )}
       </div>
 
       {strategies.length === 0 && (
