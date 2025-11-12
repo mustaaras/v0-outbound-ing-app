@@ -1,5 +1,5 @@
 // Contact Generator: Smart domain matching for product keywords
-export async function findContactEmails({ keyword, maxResults = 5 }: { keyword: string; maxResults?: number }) {
+export async function findContactEmails({ keyword, maxResults = 20 }: { keyword: string; maxResults?: number }) {
   if (!keyword || keyword.length < 2) return []
   
   const candidates: string[] = []
@@ -49,8 +49,8 @@ export async function findContactEmails({ keyword, maxResults = 5 }: { keyword: 
 
   // Try domains in parallel batches with global timeout
   const results: PublicEmailResult[] = []
-  const BATCH_SIZE = 8 // Increased from 5 for faster parallel processing
-  const MAX_BATCHES = 8 // Check at most 64 domains
+  const BATCH_SIZE = 10 // Increased from 8 for more parallel processing
+  const MAX_BATCHES = 15 // Check at most 150 domains (up from 64)
   let timedOut = false
   
   const searchPromise = (async () => {
@@ -83,14 +83,14 @@ export async function findContactEmails({ keyword, maxResults = 5 }: { keyword: 
     }
   })()
   
-  // Global timeout of 25 seconds (increased for more thorough search)
+  // Global timeout of 35 seconds (increased for more thorough search)
   await Promise.race([
     searchPromise,
     new Promise((resolve) => setTimeout(() => {
       timedOut = true
-      devLog("[contact-gen] Search timed out after 25s")
+      devLog("[contact-gen] Search timed out after 35s")
       resolve(null)
-    }, 25000))
+    }, 35000))
   ])
   
   devLog("[contact-gen] Final results:", results.length, "emails found", timedOut ? "(timed out)" : "")
@@ -1084,7 +1084,7 @@ export async function extractPublicEmailsEnhanced(params: {
   const seen = new Set<string>()
   
   // Run all methods in parallel for each domain
-  const domainPromises = uniqueDomains.slice(0, 10).map(async (domain) => {
+  const domainPromises = uniqueDomains.slice(0, 30).map(async (domain) => {
     const domainResults: PublicEmailResult[] = []
     
     try {
@@ -1122,7 +1122,7 @@ export async function extractPublicEmailsEnhanced(params: {
   const resultsArrays = await Promise.race([
     Promise.all(domainPromises),
     new Promise<PublicEmailResult[][]>((resolve) => 
-      setTimeout(() => resolve([]), 25000)
+      setTimeout(() => resolve([]), 35000) // Increased from 25s to 35s for more thorough search
     )
   ])
   

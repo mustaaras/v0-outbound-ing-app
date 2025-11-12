@@ -25,6 +25,7 @@ export function PublicEmailFinderForm({ userId, userTier, searchesUsed, searchLi
   const [keyword, setKeyword] = useState("")
   const [domains, setDomains] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [loadingMessage, setLoadingMessage] = useState("")
   const [results, setResults] = useState<Array<{ domain: string; email: string; type: "generic" | "personal"; sourceUrl: string }>>([])
   const [searchesRemainingLocal, setSearchesRemainingLocal] = useState(searchLimit - searchesUsed)
   const [showSuggestions, setShowSuggestions] = useState(false)
@@ -83,8 +84,33 @@ export function PublicEmailFinderForm({ userId, userTier, searchesUsed, searchLi
     e.preventDefault()
     setIsLoading(true)
     setResults([])
+    setLoadingMessage("🔍 Searching domains...")
+    
     try {
-      const res = await findPublicEmails({ userId, userTier, keyword: keyword || undefined, domains: domains || undefined, perDomainCap: 5, totalCap: 50 })
+      // Show progress messages
+      const progressInterval = setInterval(() => {
+        const messages = [
+          "🔍 Scanning company websites...",
+          "📧 Extracting contact emails...",
+          "🌐 Checking DNS records...",
+          "✉️ Verifying email patterns...",
+          "🔎 Searching contact pages...",
+          "📋 Analyzing results..."
+        ]
+        setLoadingMessage(messages[Math.floor(Math.random() * messages.length)])
+      }, 3000)
+
+      const res = await findPublicEmails({ 
+        userId, 
+        userTier, 
+        keyword: keyword || undefined, 
+        domains: domains || undefined, 
+        perDomainCap: 15, // Increased from 5 to get more emails per domain
+        totalCap: 150 // Increased from 50 to get more total results
+      })
+      
+      clearInterval(progressInterval)
+      
       if (!res.success) {
         toast({ title: "Search failed", description: res.error || "Unknown error", variant: "destructive" })
         return
@@ -120,6 +146,7 @@ export function PublicEmailFinderForm({ userId, userTier, searchesUsed, searchLi
       toast({ title: "Error", description: e instanceof Error ? e.message : "Unexpected error", variant: "destructive" })
     } finally {
       setIsLoading(false)
+      setLoadingMessage("")
     }
   }
 
@@ -210,7 +237,17 @@ export function PublicEmailFinderForm({ userId, userTier, searchesUsed, searchLi
           </div>
 
           <Button type="submit" disabled={isLoading} className="w-full">
-            {isLoading ? (<><Loader2 className="mr-2 h-4 w-4 animate-spin"/>Searching...</>) : (<><Globe className="mr-2 h-4 w-4"/>Find Public Emails</>)}
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
+                {loadingMessage || "Searching..."}
+              </>
+            ) : (
+              <>
+                <Globe className="mr-2 h-4 w-4"/>
+                Find Public Emails
+              </>
+            )}
           </Button>
         </form>
 
