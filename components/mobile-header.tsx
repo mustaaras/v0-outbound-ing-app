@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Menu, X, Home, Wand2, Archive, Settings, Users, Coins, Rocket, Crown, LogOut, Shield } from "lucide-react"
+import { Menu, X, Home, Wand2, Archive, Settings, Users, Coins, Rocket, Crown, LogOut, Shield, BookUser } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import type { User } from "@/lib/types"
@@ -22,6 +22,7 @@ const getNavigation = (userEmail: string) => {
     { name: "Dashboard", href: "/dashboard", icon: Home },
     { name: "Email Generator", href: "/generator", icon: Wand2 },
     { name: "Search Contacts", href: "/search-buyers", icon: Users, badge: "beta" },
+    { name: "My Contacts", href: "/contacts", icon: BookUser },
     { name: "Archive", href: "/archive", icon: Archive },
     { name: "Settings", href: "/settings", icon: Settings },
     { name: "Upgrade", href: "/upgrade", icon: Rocket },
@@ -30,7 +31,7 @@ const getNavigation = (userEmail: string) => {
   
   // Add admin link only for admin user
   if (userEmail === "mustafaaras91@gmail.com") {
-    baseNavigation.splice(5, 0, { name: "Admin", href: "/admin", icon: Shield })
+    baseNavigation.splice(6, 0, { name: "Admin", href: "/admin", icon: Shield })
   }
   
   return baseNavigation
