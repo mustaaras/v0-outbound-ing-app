@@ -162,7 +162,7 @@ export function SettingsForm({ user, hasPassword, renewalDate }: SettingsFormPro
 
   const tierDisplay = getTierDisplay()
 
-  const hasPaidSubscription = user.tier !== "free" && user.stripe_customer_id
+  const hasPaidSubscription = user.tier !== "free"
 
   return (
     <div className="space-y-6">
