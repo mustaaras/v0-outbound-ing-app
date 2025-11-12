@@ -26,6 +26,7 @@ export function PublicEmailFinderForm({ userId, userTier, searchesUsed, searchLi
   const [domains, setDomains] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [loadingMessage, setLoadingMessage] = useState("")
+  const [loadingStats, setLoadingStats] = useState({ domains: 0, emails: 0 })
   const [results, setResults] = useState<Array<{ domain: string; email: string; type: "generic" | "personal"; sourceUrl: string }>>([])
   const [searchesRemainingLocal, setSearchesRemainingLocal] = useState(searchLimit - searchesUsed)
   const [showSuggestions, setShowSuggestions] = useState(false)
@@ -85,9 +86,12 @@ export function PublicEmailFinderForm({ userId, userTier, searchesUsed, searchLi
     setIsLoading(true)
     setResults([])
     setLoadingMessage("🔍 Searching domains...")
+    setLoadingStats({ domains: 0, emails: 0 })
     
     try {
-      // Show progress messages
+      // Simulate progress with counters
+      let domainsChecked = 0
+      let emailsFound = 0
       const progressInterval = setInterval(() => {
         const messages = [
           "🔍 Scanning company websites...",
@@ -98,7 +102,12 @@ export function PublicEmailFinderForm({ userId, userTier, searchesUsed, searchLi
           "📋 Analyzing results..."
         ]
         setLoadingMessage(messages[Math.floor(Math.random() * messages.length)])
-      }, 3000)
+        
+        // Simulate progressive counter (estimate)
+        domainsChecked = Math.min(domainsChecked + Math.floor(Math.random() * 3) + 1, 30)
+        emailsFound = Math.min(emailsFound + Math.floor(Math.random() * 4) + 1, 150)
+        setLoadingStats({ domains: domainsChecked, emails: emailsFound })
+      }, 2000)
 
       const res = await findPublicEmails({ 
         userId, 
@@ -147,6 +156,7 @@ export function PublicEmailFinderForm({ userId, userTier, searchesUsed, searchLi
     } finally {
       setIsLoading(false)
       setLoadingMessage("")
+      setLoadingStats({ domains: 0, emails: 0 })
     }
   }
 
@@ -238,10 +248,15 @@ export function PublicEmailFinderForm({ userId, userTier, searchesUsed, searchLi
 
           <Button type="submit" disabled={isLoading} className="w-full">
             {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
-                {loadingMessage || "Searching..."}
-              </>
+              <div className="flex flex-col items-center gap-1 w-full">
+                <div className="flex items-center">
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
+                  {loadingMessage || "Searching..."}
+                </div>
+                <div className="text-xs font-normal opacity-90">
+                  {loadingStats.domains} domains checked • {loadingStats.emails} emails found
+                </div>
+              </div>
             ) : (
               <>
                 <Globe className="mr-2 h-4 w-4"/>
