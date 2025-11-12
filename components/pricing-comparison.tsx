@@ -20,8 +20,12 @@ interface FeatureRow {
 const featureRows: FeatureRow[] = [
   {
     key: "templates",
-  label: "Emails / month",
-    render: (tier) => String(TIER_LIMITS[tier as keyof typeof TIER_LIMITS] || (tier === "free" ? 25 : "")),
+    label: "Email Generation / month",
+    render: (tier) => {
+      const limit = TIER_LIMITS[tier as keyof typeof TIER_LIMITS]
+      if (limit === 999999) return "Unlimited"
+      return String(limit || 30)
+    },
   },
   {
     key: "strategies",
@@ -44,22 +48,46 @@ const featureRows: FeatureRow[] = [
     render: () => <Check className="mx-auto h-4 w-4 text-primary" />,
   },
   {
+    key: "additionalNotes",
+    label: "Additional Instructions",
+    render: (tier) => {
+      if (tier === "free") return "—"
+      if (tier === "light") return "200 chars"
+      return "300 chars"
+    },
+  },
+  {
+    key: "abTesting",
+    label: "A/B Test Variants",
+    render: (tier) => (tier === "pro" ? <Check className="mx-auto h-4 w-4 text-primary" /> : "—"),
+  },
+  {
+    key: "languages",
+    label: "Multiple Languages",
+    render: (tier) => (tier === "pro" ? <Check className="mx-auto h-4 w-4 text-primary" /> : "—"),
+  },
+  {
     key: "archive",
     label: "Archive access",
     render: () => <Check className="mx-auto h-4 w-4 text-primary" />,
   },
   {
-    key: "searchContacts",
-    label: "Search Contacts saved emails / month",
+    key: "publicEmailFinder",
+    label: "Public Email Finder / month",
     render: (tier) => {
-      if (tier === "free") return "Not included"
-      return String(SNOV_SEARCH_LIMITS[tier as keyof typeof SNOV_SEARCH_LIMITS])
+      const limit = PUBLIC_EMAIL_SEARCH_LIMITS[tier as keyof typeof PUBLIC_EMAIL_SEARCH_LIMITS]
+      if (limit === 999999) return "Unlimited"
+      return String(limit || 60)
     },
   },
   {
-    key: "publicEmailFinder",
-    label: "Public Email Finder searches / month",
-    render: (tier) => (tier === "free" ? String(PUBLIC_EMAIL_SEARCH_LIMITS.free) : "Unlimited"),
+    key: "searchContacts",
+    label: "Snov.io Email Credits / month",
+    render: (tier) => {
+      const limit = SNOV_SEARCH_LIMITS[tier as keyof typeof SNOV_SEARCH_LIMITS]
+      if (limit === 0) return "—"
+      return String(limit)
+    },
   },
   {
     key: "support",
@@ -69,17 +97,20 @@ const featureRows: FeatureRow[] = [
 ]
 
 export function PricingComparison({ currentTier }: PricingComparisonProps) {
+  // Only show monthly plans in comparison table
+  const monthlyProducts = PRODUCTS.filter(p => p.billingCycle === 'monthly')
+  
   const tiers = [
     { name: "Free", tier: "free", price: 0 },
-    ...PRODUCTS.map((p) => ({ name: p.name, tier: p.tier, price: p.priceInCents / 100 })),
+    ...monthlyProducts.map((p) => ({ name: p.name, tier: p.tier, price: p.priceInCents / 100 })),
   ]
 
   return (
     <div className="rounded-xl border bg-card overflow-hidden">
-  <div className="grid grid-cols-1 md:grid-cols-[240px_repeat(3,1fr)]">
+      <div className="grid grid-cols-1 md:grid-cols-[240px_repeat(3,1fr)]">
         <div className="p-4 md:p-6 border-b md:border-b-0 md:border-r bg-muted/40">
           <h3 className="text-sm font-semibold">Compare Plans</h3>
-          <p className="mt-1 text-xs text-muted-foreground">Everything scales with your outreach volume.</p>
+          <p className="mt-1 text-xs text-muted-foreground">Compare features across all tiers.</p>
         </div>
         {tiers.map((t) => (
           <div
