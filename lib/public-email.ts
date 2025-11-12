@@ -7,28 +7,38 @@ export async function findContactEmails({ keyword, maxResults = 5 }: { keyword: 
   
   devLog("[contact-gen] Searching for keyword:", keyword, "base:", base)
   
-  // Build comprehensive candidate list
-  const extensions = [".com", ".ai", ".io", ".net", ".org", ".app", ".co"]
+  // Build comprehensive candidate list with prioritized extensions
+  const primaryExtensions = [".com", ".io", ".ai"] // Most common for tech
+  const secondaryExtensions = [".net", ".org", ".app", ".co", ".dev"]
   
-  // 1. Exact match
-  extensions.forEach(ext => candidates.push(`${base}${ext}`))
+  // 1. Exact match (highest priority)
+  primaryExtensions.forEach(ext => candidates.push(`${base}${ext}`))
+  secondaryExtensions.forEach(ext => candidates.push(`${base}${ext}`))
   
-  // 2. keyword + gpt
-  extensions.forEach(ext => candidates.push(`${base}gpt${ext}`))
+  // 2. Common variations with "labs", "hq", "tech"
+  const suffixes = ["labs", "hq", "tech", "app", "tools", "platform"]
+  suffixes.forEach(suffix => {
+    primaryExtensions.forEach(ext => candidates.push(`${base}${suffix}${ext}`))
+  })
   
-  // 3. gpt + keyword
-  extensions.forEach(ext => candidates.push(`gpt${base}${ext}`))
+  // 3. keyword + ai/gpt variations
+  primaryExtensions.forEach(ext => {
+    candidates.push(`${base}ai${ext}`)
+    candidates.push(`ai${base}${ext}`)
+    candidates.push(`${base}gpt${ext}`)
+    candidates.push(`gpt${base}${ext}`)
+  })
   
-  // 4. keyword + ai
-  extensions.forEach(ext => candidates.push(`${base}ai${ext}`))
+  // 4. "get" + keyword (e.g., "getweb3.com")
+  primaryExtensions.forEach(ext => candidates.push(`get${base}${ext}`))
   
-  // 5. ai + keyword
-  extensions.forEach(ext => candidates.push(`ai${base}${ext}`))
+  // 5. "use" + keyword (e.g., "useweb3.com")
+  primaryExtensions.forEach(ext => candidates.push(`use${base}${ext}`))
   
-  // 6. If keyword contains multiple parts, try variations
+  // 6. Word split variations for longer keywords
   if (base.length > 4) {
     const parts = [base.slice(0, 4), base.slice(4)]
-    extensions.forEach(ext => {
+    primaryExtensions.forEach(ext => {
       candidates.push(`${parts[0]}${parts[1]}${ext}`)
       candidates.push(`${parts[1]}${parts[0]}${ext}`)
     })
@@ -39,8 +49,8 @@ export async function findContactEmails({ keyword, maxResults = 5 }: { keyword: 
 
   // Try domains in parallel batches with global timeout
   const results: PublicEmailResult[] = []
-  const BATCH_SIZE = 5
-  const MAX_BATCHES = 6 // Check at most 30 domains
+  const BATCH_SIZE = 8 // Increased from 5 for faster parallel processing
+  const MAX_BATCHES = 8 // Check at most 64 domains
   let timedOut = false
   
   const searchPromise = (async () => {
@@ -49,7 +59,7 @@ export async function findContactEmails({ keyword, maxResults = 5 }: { keyword: 
       const promises = batch.map(async domain => {
         try {
           devLog("[contact-gen] Trying domain:", domain)
-          const found = await extractPublicEmailsForDomain(domain, { pagesPerDomain: 6, timeoutMs: 3000 })
+          const found = await extractPublicEmailsForDomain(domain, { pagesPerDomain: 8, timeoutMs: 4000 })
           if (found.length > 0) {
             devLog("[contact-gen] Found", found.length, "emails on", domain)
           }
@@ -73,14 +83,14 @@ export async function findContactEmails({ keyword, maxResults = 5 }: { keyword: 
     }
   })()
   
-  // Global timeout of 20 seconds
+  // Global timeout of 25 seconds (increased for more thorough search)
   await Promise.race([
     searchPromise,
     new Promise((resolve) => setTimeout(() => {
       timedOut = true
-      devLog("[contact-gen] Search timed out after 20s")
+      devLog("[contact-gen] Search timed out after 25s")
       resolve(null)
-    }, 20000))
+    }, 25000))
   ])
   
   devLog("[contact-gen] Final results:", results.length, "emails found", timedOut ? "(timed out)" : "")
