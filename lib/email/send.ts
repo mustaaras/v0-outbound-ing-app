@@ -3,9 +3,11 @@
 import { getResend } from "./resend"
 import { WelcomeEmail } from "@/emails/welcome"
 import { SubscriptionConfirmation } from "@/emails/subscription-confirmation"
+import PasswordResetEmail from "@/emails/password-reset"
+import UsageWarningEmail from "@/emails/usage-warning"
 import { devLog, errorLog } from "@/lib/logger"
 
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "Outbound.ing <noreply@outbound.ing>"
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "Outbounding <noreply@outbounding.com>"
 
 export async function sendWelcomeEmail(email: string, firstName: string) {
   try {
@@ -14,7 +16,7 @@ export async function sendWelcomeEmail(email: string, firstName: string) {
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
       to: email,
-      subject: "Welcome to Outbound.ing! 🎉",
+      subject: "Welcome to Outbounding! 🎉",
       react: WelcomeEmail({ firstName, email }),
     })
 
@@ -93,11 +95,11 @@ export async function sendSubscriptionCancelledEmail(
           </p>
           <p style="color: #484848; font-size: 16px; line-height: 26px;">
             We're sorry to see you go! If you change your mind, you can always resubscribe from your 
-            <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://outbound.ing'}/upgrade" style="color: #000; text-decoration: underline;">upgrade page</a>.
+            <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://outbounding.com'}/upgrade" style="color: #000; text-decoration: underline;">upgrade page</a>.
           </p>
           <p style="color: #484848; font-size: 16px; line-height: 26px; margin-top: 40px;">
-            Thanks for using Outbound.ing!<br/>
-            The Outbound.ing Team
+            Thanks for using Outbounding!<br/>
+            The Outbounding Team
           </p>
         </div>
       `,
@@ -112,6 +114,72 @@ export async function sendSubscriptionCancelledEmail(
     return { success: true, data }
   } catch (error) {
     errorLog("[Email] Error sending cancellation email:", error)
+    return { success: false, error }
+  }
+}
+
+export async function sendPasswordResetEmail(email: string, resetLink: string) {
+  try {
+    const resend = getResend()
+    
+    const { data, error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to: email,
+      subject: "Reset your password - Outbounding",
+      react: PasswordResetEmail({ userEmail: email, resetLink }),
+    })
+
+    if (error) {
+      errorLog("[Email] Failed to send password reset email:", error)
+      return { success: false, error }
+    }
+
+    devLog("[Email] Password reset email sent successfully:", data)
+    return { success: true, data }
+  } catch (error) {
+    errorLog("[Email] Error sending password reset email:", error)
+    return { success: false, error }
+  }
+}
+
+export async function sendUsageWarningEmail(
+  email: string,
+  userName: string | undefined,
+  usageCount: number,
+  limitCount: number,
+  percentage: number,
+  tier: string
+) {
+  try {
+    const resend = getResend()
+    
+    const isAtLimit = percentage >= 100
+    const subject = isAtLimit 
+      ? "You've reached your monthly limit - Outbounding"
+      : "You're running low on credits - Outbounding"
+    
+    const { data, error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to: email,
+      subject,
+      react: UsageWarningEmail({
+        userName,
+        usageCount,
+        limitCount,
+        percentage,
+        tier,
+      }),
+    })
+
+    if (error) {
+      errorLog("[Email] Failed to send usage warning email:", error)
+      return { success: false, error }
+    }
+
+    devLog("[Email] Usage warning email sent successfully:", data)
+    return { success: true, data }
+  } catch (error) {
+    errorLog("[Email] Error sending usage warning email:", error)
     return { success: false, error }
   }
 }

@@ -19,14 +19,12 @@ interface WelcomeEmailProps {
 }
 
 export const WelcomeEmail = ({ firstName, email }: WelcomeEmailProps) => (
-  <Html>
-    <Head />
-    <Preview>Welcome to Outbound.ing - Start generating AI-powered cold emails!</Preview>
-    <Body style={main}>
-      <Container style={container}>
-        <Heading style={h1}>Welcome to Outbound.ing! 🎉</Heading>
-        
-        <Text style={text}>Hi {firstName},</Text>
+    <Html>
+      <Head />
+      <Preview>Welcome to Outbounding - Start generating AI-powered cold emails!</Preview>
+      <Body style={main}>
+        <Container style={container}>
+        <Heading style={h1}>Welcome to Outbounding! 🎉</Heading>        <Text style={text}>Hi {firstName},</Text>
         
         <Text style={text}>
           Thank you for signing up! You're now ready to create professional cold emails that get responses.
@@ -53,7 +51,7 @@ export const WelcomeEmail = ({ firstName, email }: WelcomeEmailProps) => (
         
         <Text style={footer}>
           Happy emailing!<br />
-          The Outbound.ing Team
+          The Outbounding Team
         </Text>
         
         <Text style={footerSmall}>

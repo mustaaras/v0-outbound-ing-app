@@ -1,6 +1,7 @@
 import { errorLog } from "@/lib/logger"
 import { createClient } from "@/lib/supabase/server"
 import type { User } from "@/lib/types"
+import { sendUsageWarningEmail } from "@/lib/email/send"
 
 async function withTimeout<T>(promise: Promise<T>, timeoutMs = 5000): Promise<T> {
   const timeoutPromise = new Promise<T>((_, reject) =>
@@ -70,15 +71,57 @@ export async function incrementUsage(userId: string): Promise<void> {
     .eq("month", currentMonth)
     .maybeSingle()
 
+  const newCount = existing ? existing.count + 1 : 1
+
   if (existing) {
     await supabase
       .from("usage")
-      .update({ count: existing.count + 1 })
+      .update({ count: newCount })
       .eq("user_id", userId)
       .eq("month", currentMonth)
   } else {
     // Create new usage record
-    await supabase.from("usage").insert({ user_id: userId, month: currentMonth, count: 1 })
+    await supabase.from("usage").insert({ user_id: userId, month: currentMonth, count: newCount })
+  }
+
+  // Check if we should send usage warning email
+  const { data: user } = await supabase
+    .from("users")
+    .select("email, first_name, tier")
+    .eq("id", userId)
+    .single()
+
+  if (user) {
+    const effectiveTier = user.tier === "ultra" ? "pro" : user.tier
+    const limit = effectiveTier === "pro" ? 999999 : effectiveTier === "light" ? 300 : 30
+    const percentage = Math.round((newCount / limit) * 100)
+
+    // Only send warnings for non-pro users
+    if (effectiveTier !== "pro") {
+      // Send warning at 80%
+      if (newCount === Math.floor(limit * 0.8)) {
+        await sendUsageWarningEmail(
+          user.email,
+          user.first_name,
+          newCount,
+          limit,
+          percentage,
+          effectiveTier
+        ).catch(error => errorLog("[Email] Failed to send 80% usage warning:", error))
+      }
+      
+      // Send warning at 100%
+      if (newCount === limit) {
+        await sendUsageWarningEmail(
+          user.email,
+          user.first_name,
+          newCount,
+          limit,
+          100,
+          effectiveTier
+        ).catch(error => errorLog("[Email] Failed to send 100% usage warning:", error))
+      }
+    }
   }
 }
 
@@ -89,7 +132,7 @@ export async function canGenerateTemplate(
   // Fallback: treat any legacy 'ultra' tier value as 'pro'
   const effectiveTier = tier === "ultra" ? "pro" : tier
   const usage = await getUserUsage(userId)
-  const limit = effectiveTier === "pro" ? 750 : effectiveTier === "light" ? 100 : 25
+  const limit = effectiveTier === "pro" ? 999999 : effectiveTier === "light" ? 300 : 30
 
   return {
     canGenerate: usage < limit,

@@ -62,8 +62,8 @@ export const SubscriptionConfirmation = ({
         </Text>
         
         <Text style={footer}>
-          Thanks for choosing Outbound.ing!<br />
-          The Outbound.ing Team
+          Thanks for choosing Outbounding!<br />
+          The Outbounding Team
         </Text>
         
         <Text style={footerSmall}>
