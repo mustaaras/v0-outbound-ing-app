@@ -1,13 +1,12 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { 
   getSavedContactsAction, 
   updateSavedContactAction, 
   deleteSavedContactAction, 
   addContactAction,
-  searchContactsAction,
-  saveContactAction 
 } from "@/app/actions/contacts"
 import type { UserContactView } from "@/lib/contacts-db-types"
 import { Button } from "@/components/ui/button"
@@ -18,27 +17,8 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Search, Plus, Mail, Building2, CheckCircle2 } from "lucide-react"
+import { Plus, Mail, Building2, Send, CheckCircle2 } from "lucide-react"
 import { ContactsImportDialog } from "@/components/contacts-import-dialog"
-
-interface SearchResult {
-  id: string
-  email: string
-  first_name?: string
-  last_name?: string
-  title?: string
-  company_id?: string
-  is_verified: boolean
-  source?: string
-  companies?: {
-    id: string
-    name: string
-    domain: string
-    industry?: string
-    company_size?: string
-    location?: string
-  }
-}
 
 export default function ContactsList({ userTier }: { userTier: string }) {
   const [contacts, setContacts] = useState<UserContactView[]>([])
@@ -47,13 +27,8 @@ export default function ContactsList({ userTier }: { userTier: string }) {
   const [searchQuery, setSearchQuery] = useState("")
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   
-  // Database search states
-  const [databaseSearchQuery, setDatabaseSearchQuery] = useState("")
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([])
-  const [isSearching, setIsSearching] = useState(false)
-  const [showSearchResults, setShowSearchResults] = useState(false)
-  
   const { toast } = useToast()
+  const router = useRouter()
 
   // Form state for adding new contact
   const [newContact, setNewContact] = useState({
@@ -97,80 +72,6 @@ export default function ContactsList({ userTier }: { userTier: string }) {
       })
     } finally {
       setLoading(false)
-    }
-  }
-
-  async function handleSearchDatabase() {
-    if (!databaseSearchQuery.trim()) return
-
-    setIsSearching(true)
-    setShowSearchResults(true)
-    
-    try {
-      // Check if it's an email, domain, or general search
-      const isEmail = databaseSearchQuery.includes('@')
-      const isDomain = databaseSearchQuery.includes('.') && !databaseSearchQuery.includes('@')
-      
-      const result = await searchContactsAction({
-        email: isEmail ? databaseSearchQuery : undefined,
-        domain: isDomain ? databaseSearchQuery : undefined,
-        name: !isEmail && !isDomain ? databaseSearchQuery : undefined,
-        limit: 50,
-      })
-
-      if (result.success) {
-        setSearchResults(result.contacts as SearchResult[])
-        if (result.contacts.length === 0) {
-          toast({
-            title: "No Results",
-            description: "No contacts found matching your search",
-          })
-        }
-      } else {
-        toast({
-          title: "Error",
-          description: result.error || "Failed to search contacts",
-          variant: "destructive",
-        })
-      }
-    } catch (error) {
-      console.error("Error searching database:", error)
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred",
-        variant: "destructive",
-      })
-    } finally {
-      setIsSearching(false)
-    }
-  }
-
-  async function handleSaveFromSearch(contact: SearchResult) {
-    try {
-      const result = await saveContactAction(contact.id, {
-        status: "new",
-      })
-
-      if (result.success) {
-        toast({
-          title: "Success",
-          description: "Contact added to your list",
-        })
-        loadContacts()
-      } else {
-        toast({
-          title: "Error",
-          description: result.error || "Failed to save contact",
-          variant: "destructive",
-        })
-      }
-    } catch (error) {
-      console.error("Error saving contact:", error)
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred",
-        variant: "destructive",
-      })
     }
   }
 
@@ -249,6 +150,18 @@ export default function ContactsList({ userTier }: { userTier: string }) {
     }
   }
 
+  function handleSendEmail(contact: UserContactView) {
+    // Navigate to generator with pre-filled contact info
+    const params = new URLSearchParams({
+      recipientEmail: contact.email,
+      recipientName: `${contact.first_name || ''} ${contact.last_name || ''}`.trim() || contact.email.split('@')[0],
+      recipientCompany: contact.company_name || '',
+      recipientTitle: contact.title || '',
+    })
+    
+    router.push(`/dashboard/generator?${params.toString()}`)
+  }
+
   async function handleDelete(contactId: string) {
     if (!confirm("Are you sure you want to remove this contact?")) {
       return
@@ -311,121 +224,6 @@ export default function ContactsList({ userTier }: { userTier: string }) {
 
   return (
     <div className="space-y-6">
-      {/* Search Database Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Search className="h-5 w-5" />
-            Search Contact Database
-          </CardTitle>
-          <CardDescription>
-            Search all contacts in the database and add them to your list
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex gap-2">
-            <Input
-              placeholder="Search by name, email, company, or domain..."
-              value={databaseSearchQuery}
-              onChange={(e) => setDatabaseSearchQuery(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  handleSearchDatabase()
-                }
-              }}
-            />
-            <Button onClick={handleSearchDatabase} disabled={isSearching || !databaseSearchQuery.trim()}>
-              {isSearching ? "Searching..." : "Search"}
-            </Button>
-          </div>
-
-          {/* Search Results */}
-          {showSearchResults && searchResults.length > 0 && (
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <h4 className="font-medium text-sm">Search Results ({searchResults.length})</h4>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setShowSearchResults(false)
-                    setSearchResults([])
-                    setDatabaseSearchQuery("")
-                  }}
-                >
-                  Clear
-                </Button>
-              </div>
-              <div className="grid gap-2 max-h-96 overflow-y-auto border rounded-lg p-2">
-                {searchResults.map((result) => {
-                  const isAlreadySaved = contacts.some(c => c.contact_id === result.id)
-                  return (
-                    <Card key={result.id} className="p-4 hover:bg-muted/50 transition-colors">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="space-y-1 flex-1 min-w-0">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <p className="font-medium truncate">
-                              {result.first_name || result.last_name
-                                ? `${result.first_name || ''} ${result.last_name || ''}`.trim()
-                                : 'Unknown Name'}
-                            </p>
-                            {result.is_verified && (
-                              <Badge variant="outline" className="text-xs">
-                                <CheckCircle2 className="h-3 w-3 mr-1" />
-                                Verified
-                              </Badge>
-                            )}
-                            {result.source && (
-                              <Badge variant="secondary" className="text-xs">
-                                {result.source}
-                              </Badge>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                            <Mail className="h-3 w-3" />
-                            <p className="truncate">{result.email}</p>
-                          </div>
-                          {result.title && (
-                            <p className="text-sm text-muted-foreground truncate">{result.title}</p>
-                          )}
-                          {result.companies && (
-                            <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                              <Building2 className="h-3 w-3" />
-                              <p className="truncate">
-                                {result.companies.name} • {result.companies.domain}
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                        <Button
-                          size="sm"
-                          variant={isAlreadySaved ? "outline" : "default"}
-                          onClick={() => handleSaveFromSearch(result)}
-                          disabled={isAlreadySaved}
-                          className="shrink-0"
-                        >
-                          {isAlreadySaved ? (
-                            <>
-                              <CheckCircle2 className="h-4 w-4 mr-1" />
-                              Saved
-                            </>
-                          ) : (
-                            <>
-                              <Plus className="h-4 w-4 mr-1" />
-                              Add
-                            </>
-                          )}
-                        </Button>
-                      </div>
-                    </Card>
-                  )
-                })}
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
       {/* My Contacts Section */}
       <Card>
         <CardHeader>
@@ -624,6 +422,15 @@ export default function ContactsList({ userTier }: { userTier: string }) {
                       </div>
                     </div>
                     <div className="flex gap-2">
+                      <Button
+                        variant="default"
+                        size="sm"
+                        onClick={() => handleSendEmail(contact)}
+                        className="shrink-0"
+                      >
+                        <Send className="h-4 w-4 mr-1" />
+                        Send Email
+                      </Button>
                       <select
                         value={contact.status}
                         onChange={(e) => handleUpdateStatus(contact.saved_contact_id, e.target.value as any)}
