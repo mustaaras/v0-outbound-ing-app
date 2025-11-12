@@ -33,8 +33,8 @@ pnpm install resend react-email @react-email/components
 Add these to your `.env.local` file:
 ```env
 # Resend Email Service
-RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxxx
-RESEND_FROM_EMAIL=Outbound.ing <noreply@yourdomain.com>
+RESEND_API_KEY=re_xxxxxxxxxxxxxxxxx
+RESEND_FROM_EMAIL="Outbounding <noreply@noreply.outbound.ing>"
 ```
 
 Note: For testing, you can use Resend's test domain: `onboarding@resend.dev`

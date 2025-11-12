@@ -14,6 +14,7 @@ import { TIER_LIMITS } from "@/lib/types"
 import { useToast } from "@/hooks/use-toast"
 import { errorLog } from "@/lib/logger"
 import { changePassword } from "@/app/actions/change-password"
+import { sendTestEmail } from "@/app/actions/send-test-email"
 import { createPortalSession, cancelSubscription } from "@/app/actions/stripe"
 import {
   AlertDialog,
@@ -36,6 +37,7 @@ export function SettingsForm({ user, hasPassword }: SettingsFormProps) {
   // Simple admin check: only show cost tracking to specific email
   const isAdmin = user.email === "aras@yourdomain.com" // Change to your admin email
   const [isChangingPassword, setIsChangingPassword] = useState(false)
+  const [isSendingTest, setIsSendingTest] = useState(false)
   const [newPassword, setNewPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [isManagingSubscription, setIsManagingSubscription] = useState(false)
@@ -167,6 +169,24 @@ export function SettingsForm({ user, hasPassword }: SettingsFormProps) {
 
   const hasPaidSubscription = user.tier !== "free" && user.stripe_customer_id
 
+  const handleSendTestEmail = async () => {
+    try {
+      setIsSendingTest(true)
+      const res = await sendTestEmail()
+      if (res.success) {
+        toast({ title: "Test email sent", description: "Check your inbox for a welcome email." })
+      } else {
+        const desc = typeof res.error === "string" ? res.error : "Unknown error"
+        toast({ title: "Failed to send", description: desc, variant: "destructive" })
+      }
+    } catch (e) {
+      errorLog("sendTestEmail UI error:", e)
+      toast({ title: "Failed to send", description: "Unexpected error", variant: "destructive" })
+    } finally {
+      setIsSendingTest(false)
+    }
+  }
+
   return (
     <div className="space-y-6">
       {/* Cost Tracking (Admin Only) */}
@@ -209,6 +229,15 @@ export function SettingsForm({ user, hasPassword }: SettingsFormProps) {
             <Label>Email Address</Label>
             <div className="mt-1 flex items-center gap-2">
               <Input value={user.email} disabled className="bg-muted" />
+              <Button size="sm" variant="outline" className="bg-transparent" onClick={handleSendTestEmail} disabled={isSendingTest}>
+                {isSendingTest ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending...
+                  </>
+                ) : (
+                  <>Send test email</>
+                )}
+              </Button>
             </div>
             <p className="mt-1 text-xs text-muted-foreground">Email cannot be changed</p>
           </div>
