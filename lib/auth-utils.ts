@@ -96,8 +96,8 @@ export async function incrementUsage(userId: string): Promise<void> {
     const limit = effectiveTier === "pro" ? 999999 : effectiveTier === "light" ? 300 : 30
     const percentage = Math.round((newCount / limit) * 100)
 
-    // Only send warnings for non-pro users
-    if (effectiveTier !== "pro") {
+    // Only send warnings for paid tiers (light and pro), not free
+    if (effectiveTier === "light") {
       // Send warning at 80%
       if (newCount === Math.floor(limit * 0.8)) {
         await sendUsageWarningEmail(
