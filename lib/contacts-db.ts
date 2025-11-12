@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
+import { errorLog, devLog } from "@/lib/logger"
 import type {
   Company,
   Contact,
@@ -17,30 +18,43 @@ import type {
 export async function findOrCreateCompany(data: CompanyInsert): Promise<Company | null> {
   const supabase = await createClient()
 
-  // Try to find existing company by domain
-  const { data: existing } = await supabase
-    .from("companies")
-    .select("*")
-    .eq("domain", data.domain)
-    .single()
+  try {
+    // Try to find existing company by domain
+    const { data: existing, error: findError } = await supabase
+      .from("companies")
+      .select("*")
+      .eq("domain", data.domain)
+      .maybeSingle()
 
-  if (existing) {
-    return existing as Company
-  }
+    if (findError) {
+      errorLog("[v0] Error finding company:", findError)
+    }
 
-  // Create new company
-  const { data: newCompany, error } = await supabase
-    .from("companies")
-    .insert(data)
-    .select()
-    .single()
+    if (existing) {
+      devLog("[v0] Found existing company:", existing.name)
+      return existing as Company
+    }
 
-  if (error) {
-    console.error("Error creating company:", error)
+    // Create new company
+    devLog("[v0] Creating new company:", data)
+    const { data: newCompany, error } = await supabase
+      .from("companies")
+      .insert(data)
+      .select()
+      .single()
+
+    if (error) {
+      errorLog("[v0] Error creating company:", error)
+      errorLog("[v0] Company data:", data)
+      return null
+    }
+
+    devLog("[v0] Successfully created company:", newCompany.name)
+    return newCompany as Company
+  } catch (err) {
+    errorLog("[v0] Exception in findOrCreateCompany:", err)
     return null
   }
-
-  return newCompany as Company
 }
 
 /**
@@ -49,30 +63,43 @@ export async function findOrCreateCompany(data: CompanyInsert): Promise<Company 
 export async function findOrCreateContact(data: ContactInsert): Promise<Contact | null> {
   const supabase = await createClient()
 
-  // Try to find existing contact by email
-  const { data: existing } = await supabase
-    .from("contacts")
-    .select("*")
-    .eq("email", data.email)
-    .single()
+  try {
+    // Try to find existing contact by email
+    const { data: existing, error: findError } = await supabase
+      .from("contacts")
+      .select("*")
+      .eq("email", data.email)
+      .maybeSingle()
 
-  if (existing) {
-    return existing as Contact
-  }
+    if (findError) {
+      errorLog("[v0] Error finding contact:", findError)
+    }
 
-  // Create new contact
-  const { data: newContact, error } = await supabase
-    .from("contacts")
-    .insert(data)
-    .select()
-    .single()
+    if (existing) {
+      devLog("[v0] Found existing contact:", existing.email)
+      return existing as Contact
+    }
 
-  if (error) {
-    console.error("Error creating contact:", error)
+    // Create new contact
+    devLog("[v0] Creating new contact:", data.email)
+    const { data: newContact, error } = await supabase
+      .from("contacts")
+      .insert(data)
+      .select()
+      .single()
+
+    if (error) {
+      errorLog("[v0] Error creating contact:", error)
+      errorLog("[v0] Contact data:", data)
+      return null
+    }
+
+    devLog("[v0] Successfully created contact:", newContact.email)
+    return newContact as Contact
+  } catch (err) {
+    errorLog("[v0] Exception in findOrCreateContact:", err)
     return null
   }
-
-  return newContact as Contact
 }
 
 /**
@@ -85,38 +112,45 @@ export async function saveContactForUser(
 ): Promise<UserSavedContact | null> {
   const supabase = await createClient()
 
-  const data: UserSavedContactInsert = {
-    user_id: userId,
-    contact_id: contactId,
-    notes: options?.notes,
-    tags: options?.tags,
-    status: options?.status || "new",
-  }
-
-  const { data: saved, error } = await supabase
-    .from("user_saved_contacts")
-    .insert(data)
-    .select()
-    .single()
-
-  if (error) {
+  try {
     // Check if already saved
-    if (error.code === "23505") {
-      // Unique constraint violation
-      const { data: existing } = await supabase
-        .from("user_saved_contacts")
-        .select("*")
-        .eq("user_id", userId)
-        .eq("contact_id", contactId)
-        .single()
+    const { data: existing } = await supabase
+      .from("user_saved_contacts")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("contact_id", contactId)
+      .maybeSingle()
 
+    if (existing) {
+      devLog("[v0] Contact already saved for user")
       return existing as UserSavedContact
     }
-    console.error("Error saving contact:", error)
+
+    const data: UserSavedContactInsert = {
+      user_id: userId,
+      contact_id: contactId,
+      notes: options?.notes,
+      tags: options?.tags,
+      status: options?.status || "new",
+    }
+
+    const { data: saved, error } = await supabase
+      .from("user_saved_contacts")
+      .insert(data)
+      .select()
+      .single()
+
+    if (error) {
+      errorLog("[v0] Error saving contact for user:", error)
+      return null
+    }
+
+    devLog("[v0] Successfully saved contact for user")
+    return saved as UserSavedContact
+  } catch (err) {
+    errorLog("[v0] Exception in saveContactForUser:", err)
     return null
   }
-
-  return saved as UserSavedContact
 }
 
 /**
@@ -133,36 +167,41 @@ export async function getUserSavedContacts(
 ): Promise<UserContactView[]> {
   const supabase = await createClient()
 
-  let query = supabase
-    .from("user_contacts_view")
-    .select("*")
-    .eq("user_id", userId)
-    .order("saved_at", { ascending: false })
+  try {
+    let query = supabase
+      .from("user_contacts_view")
+      .select("*")
+      .eq("user_id", userId)
+      .order("saved_at", { ascending: false })
 
-  if (options?.status) {
-    query = query.eq("status", options.status)
-  }
+    if (options?.status) {
+      query = query.eq("status", options.status)
+    }
 
-  if (options?.tags && options.tags.length > 0) {
-    query = query.contains("tags", options.tags)
-  }
+    if (options?.tags && options.tags.length > 0) {
+      query = query.contains("tags", options.tags)
+    }
 
-  if (options?.limit) {
-    query = query.limit(options.limit)
-  }
+    if (options?.limit) {
+      query = query.limit(options.limit)
+    }
 
-  if (options?.offset) {
-    query = query.range(options.offset, options.offset + (options.limit || 10) - 1)
-  }
+    if (options?.offset) {
+      query = query.range(options.offset, options.offset + (options.limit || 10) - 1)
+    }
 
-  const { data, error } = await query
+    const { data, error } = await query
 
-  if (error) {
-    console.error("Error fetching saved contacts:", error)
+    if (error) {
+      errorLog("[v0] Error getting saved contacts:", error)
+      return []
+    }
+
+    return (data as UserContactView[]) || []
+  } catch (err) {
+    errorLog("[v0] Exception in getUserSavedContacts:", err)
     return []
   }
-
-  return (data as UserContactView[]) || []
 }
 
 /**
@@ -175,18 +214,23 @@ export async function updateSavedContact(
 ): Promise<boolean> {
   const supabase = await createClient()
 
-  const { error } = await supabase
-    .from("user_saved_contacts")
-    .update(updates)
-    .eq("id", savedContactId)
-    .eq("user_id", userId)
+  try {
+    const { error } = await supabase
+      .from("user_saved_contacts")
+      .update(updates)
+      .eq("id", savedContactId)
+      .eq("user_id", userId)
 
-  if (error) {
-    console.error("Error updating saved contact:", error)
+    if (error) {
+      errorLog("[v0] Error updating saved contact:", error)
+      return false
+    }
+
+    return true
+  } catch (err) {
+    errorLog("[v0] Exception in updateSavedContact:", err)
     return false
   }
-
-  return true
 }
 
 /**
@@ -195,22 +239,27 @@ export async function updateSavedContact(
 export async function deleteSavedContact(userId: string, savedContactId: string): Promise<boolean> {
   const supabase = await createClient()
 
-  const { error } = await supabase
-    .from("user_saved_contacts")
-    .delete()
-    .eq("id", savedContactId)
-    .eq("user_id", userId)
+  try {
+    const { error } = await supabase
+      .from("user_saved_contacts")
+      .delete()
+      .eq("id", savedContactId)
+      .eq("user_id", userId)
 
-  if (error) {
-    console.error("Error deleting saved contact:", error)
+    if (error) {
+      errorLog("[v0] Error deleting saved contact:", error)
+      return false
+    }
+
+    return true
+  } catch (err) {
+    errorLog("[v0] Exception in deleteSavedContact:", err)
     return false
   }
-
-  return true
 }
 
 /**
- * Search contacts by various criteria
+ * Search contacts
  */
 export async function searchContacts(query: {
   email?: string
@@ -219,43 +268,57 @@ export async function searchContacts(query: {
   title?: string
   name?: string
   limit?: number
-}): Promise<UserContactView[]> {
+}): Promise<Contact[]> {
   const supabase = await createClient()
 
-  let dbQuery = supabase.from("user_contacts_view").select("*")
+  try {
+    let dbQuery = supabase.from("contacts").select(`
+      *,
+      companies (
+        id,
+        name,
+        domain,
+        industry,
+        company_size,
+        location
+      )
+    `)
 
-  if (query.email) {
-    dbQuery = dbQuery.ilike("email", `%${query.email}%`)
-  }
+    if (query.email) {
+      dbQuery = dbQuery.ilike("email", `%${query.email}%`)
+    }
 
-  if (query.domain) {
-    dbQuery = dbQuery.ilike("company_domain", `%${query.domain}%`)
-  }
+    if (query.title) {
+      dbQuery = dbQuery.ilike("title", `%${query.title}%`)
+    }
 
-  if (query.companyName) {
-    dbQuery = dbQuery.ilike("company_name", `%${query.companyName}%`)
-  }
+    if (query.name) {
+      const nameParts = query.name.split(" ")
+      if (nameParts.length > 1) {
+        dbQuery = dbQuery
+          .ilike("first_name", `%${nameParts[0]}%`)
+          .ilike("last_name", `%${nameParts[nameParts.length - 1]}%`)
+      } else {
+        dbQuery = dbQuery.or(`first_name.ilike.%${query.name}%,last_name.ilike.%${query.name}%`)
+      }
+    }
 
-  if (query.title) {
-    dbQuery = dbQuery.ilike("title", `%${query.title}%`)
-  }
+    if (query.limit) {
+      dbQuery = dbQuery.limit(query.limit)
+    }
 
-  if (query.name) {
-    dbQuery = dbQuery.or(`first_name.ilike.%${query.name}%,last_name.ilike.%${query.name}%`)
-  }
+    const { data, error } = await dbQuery
 
-  if (query.limit) {
-    dbQuery = dbQuery.limit(query.limit)
-  }
+    if (error) {
+      errorLog("[v0] Error searching contacts:", error)
+      return []
+    }
 
-  const { data, error } = await dbQuery
-
-  if (error) {
-    console.error("Error searching contacts:", error)
+    return (data as Contact[]) || []
+  } catch (err) {
+    errorLog("[v0] Exception in searchContacts:", err)
     return []
   }
-
-  return (data as UserContactView[]) || []
 }
 
 /**
@@ -264,14 +327,22 @@ export async function searchContacts(query: {
 export async function updateContact(contactId: string, updates: ContactUpdate): Promise<boolean> {
   const supabase = await createClient()
 
-  const { error } = await supabase.from("contacts").update(updates).eq("id", contactId)
+  try {
+    const { error } = await supabase
+      .from("contacts")
+      .update(updates)
+      .eq("id", contactId)
 
-  if (error) {
-    console.error("Error updating contact:", error)
+    if (error) {
+      errorLog("[v0] Error updating contact:", error)
+      return false
+    }
+
+    return true
+  } catch (err) {
+    errorLog("[v0] Exception in updateContact:", err)
     return false
   }
-
-  return true
 }
 
 /**
@@ -280,39 +351,45 @@ export async function updateContact(contactId: string, updates: ContactUpdate): 
 export async function logContactSearch(
   userId: string,
   searchQuery: string,
-  searchType: "domain" | "title" | "company_name" | "email" | "keyword",
+  searchType: string,
   resultsCount: number
 ): Promise<void> {
   const supabase = await createClient()
 
-  await supabase.from("contact_search_history").insert({
-    user_id: userId,
-    search_query: searchQuery,
-    search_type: searchType,
-    results_count: resultsCount,
-  })
+  try {
+    await supabase.from("contact_search_history").insert({
+      user_id: userId,
+      search_query: searchQuery,
+      search_type: searchType,
+      results_count: resultsCount,
+    })
+  } catch (err) {
+    errorLog("[v0] Exception in logContactSearch:", err)
+  }
 }
 
 /**
- * Get contact search history for a user
+ * Get contact search history
  */
-export async function getContactSearchHistory(
-  userId: string,
-  limit: number = 20
-): Promise<any[]> {
+export async function getContactSearchHistory(userId: string, limit: number = 20): Promise<any[]> {
   const supabase = await createClient()
 
-  const { data, error } = await supabase
-    .from("contact_search_history")
-    .select("*")
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false })
-    .limit(limit)
+  try {
+    const { data, error } = await supabase
+      .from("contact_search_history")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(limit)
 
-  if (error) {
-    console.error("Error fetching search history:", error)
+    if (error) {
+      errorLog("[v0] Error getting search history:", error)
+      return []
+    }
+
+    return data || []
+  } catch (err) {
+    errorLog("[v0] Exception in getContactSearchHistory:", err)
     return []
   }
-
-  return data || []
 }
