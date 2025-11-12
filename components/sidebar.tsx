@@ -51,9 +51,11 @@ export function Sidebar({ user }: SidebarProps) {
     <aside className="hidden w-64 flex-col border-r bg-background md:flex">
       <div className="flex h-16 items-center border-b px-6">
         <Link href="/dashboard" className="flex items-center gap-2 font-semibold">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            O
-          </div>
+          <img
+            src="/logos/logo-o-5.svg"
+            alt="Outbound.ing Logo"
+            className="h-8 w-8"
+          />
           <span className="text-lg">Outbound.ing</span>
         </Link>
       </div>

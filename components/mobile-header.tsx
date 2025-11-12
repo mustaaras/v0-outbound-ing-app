@@ -53,7 +53,11 @@ export function MobileHeader({ user }: MobileHeaderProps) {
   return (
     <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-background px-4 md:hidden">
       <Link href="/dashboard" className="flex items-center gap-2 font-semibold">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">O</div>
+        <img
+          src="/logos/logo-o-5.svg"
+          alt="Outbound.ing Logo"
+          className="h-8 w-8"
+        />
         <span>Outbound.ing</span>
       </Link>
 

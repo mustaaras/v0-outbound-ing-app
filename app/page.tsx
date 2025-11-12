@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button"
 import { Wand2, Zap, Crown, Sparkles, Target, Users, Check } from "lucide-react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { PRODUCTS } from "@/lib/products"
-import Image from "next/image"
 
 export default function LandingPage() {
   return (
@@ -11,11 +10,9 @@ export default function LandingPage() {
       <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <Image
+            <img
               src="/logos/logo-o-5.svg"
               alt="Outbound.ing Logo"
-              width={32}
-              height={32}
               className="h-8 w-8"
             />
             <span className="text-lg font-semibold">Outbound.ing</span>
