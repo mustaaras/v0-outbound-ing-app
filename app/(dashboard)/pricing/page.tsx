@@ -1,7 +1,7 @@
 import { getCurrentUser } from "@/lib/auth-utils"
 import { redirect } from "next/navigation"
-import { PricingClient } from "./pricing-client"
 import { PricingComparison } from "@/components/pricing-comparison"
+import { PricingClient } from "@/app/(dashboard)/pricing/pricing-client"
 
 export default async function PricingPage() {
   const user = await getCurrentUser()
