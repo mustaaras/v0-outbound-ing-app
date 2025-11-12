@@ -1,0 +1,4 @@
+email,first name,last name,company,domain,title,industry,company size,location
+john.doe@acme.com,John,Doe,Acme Inc,acme.com,CEO,Technology,50-200,San Francisco
+jane.smith@techcorp.com,Jane,Smith,TechCorp,techcorp.com,CTO,Software,200-500,New York
+bob.wilson@startup.io,Bob,Wilson,Startup Inc,startup.io,VP Sales,SaaS,10-50,Austin

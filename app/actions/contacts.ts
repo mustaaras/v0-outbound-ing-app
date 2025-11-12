@@ -329,7 +329,7 @@ export async function bulkImportContactsAction(contacts: Array<{
         const result = await addContactAction({
           ...contactData,
           saveForUser: true,
-          source: "csv_import",
+          source: "imported",
         })
 
         if (result.success) {
