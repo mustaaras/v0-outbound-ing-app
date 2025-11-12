@@ -28,16 +28,16 @@ export interface PublicEmailFinderResult {
 export async function getPublicEmailSearchCount(userId: string): Promise<number> {
   try {
     const supabase = await createClient()
-    const currentMonth = new Date().toISOString().slice(0, 7) // YYYY-MM
+    const currentMonth = new Date().toISOString().slice(0, 7)
 
     const { data, error } = await supabase
       .from("public_email_searches")
       .select("search_count")
       .eq("user_id", userId)
       .eq("month", currentMonth)
-      .single()
+      .maybeSingle()
 
-    if (error && error.code !== "PGRST116") {
+    if (error) {
       errorLog("[public-email] Error fetching search count:", error)
       return 0
     }

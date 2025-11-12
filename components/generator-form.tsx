@@ -79,7 +79,23 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
     return grouped
   }, [strategies])
 
-  const categories = Object.keys(categorizedStrategies).sort()
+  // Custom sort to balance categories across two rows (5 top, 5 bottom)
+  // Move "General" to second row for better visual balance
+  const categories = Object.keys(categorizedStrategies).sort((a, b) => {
+    const order = [
+      'SaaS & Startup',
+      'Affiliate Marketing', 
+      'B2B Services',
+      'Domain Sellers',
+      'E-commerce & Dropshipping',
+      'Freelancers & Agencies',
+      'General',
+      'Investment',
+      'Real Estate',
+      'Recruiting'
+    ]
+    return order.indexOf(a) - order.indexOf(b)
+  })
 
   const getShortCategory = (cat: string) => {
     if (cat.startsWith("SaaS")) return "SaaS"
