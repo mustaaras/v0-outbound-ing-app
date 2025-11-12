@@ -1,3 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Outbound O — Bolt Cut</title>
+  <desc id="desc">Energetic O with a lightning cut suggesting speed and outbound energy.</desc>
+  <defs>
+    <linearGradient id="g5" x1="24" y1="232" x2="232" y2="24" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0EA5E9"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+    <mask id="boltMask">
+      <rect width="256" height="256" fill="white"/>
+      <!-- lightning zigzag to cut -->
+      <path d="M160 36 L120 116 L172 116 L96 220" stroke="black" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"/>
+    </mask>
+  </defs>
+  <circle cx="128" cy="128" r="84" stroke="url(#g5)" stroke-width="32" fill="none" mask="url(#boltMask)"/>
+</svg>
 <svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
   <style>
     @media (prefers-color-scheme: light) {
