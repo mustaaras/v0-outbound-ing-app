@@ -1,6 +1,6 @@
 "use server"
 
-import { publicEmailFinder } from "@/lib/public-email"
+import { extractPublicEmailsEnhanced } from "@/lib/public-email"
 import { errorLog, devLog } from "@/lib/logger"
 import { createClient } from "@/lib/supabase/server"
 import { PUBLIC_EMAIL_SEARCH_LIMITS } from "@/lib/types"
@@ -73,11 +73,11 @@ export async function findPublicEmails(input: PublicEmailFinderInput): Promise<P
       }
     }
 
-    const { results } = await publicEmailFinder({
+    const { results } = await extractPublicEmailsEnhanced({
       keyword: input.keyword,
-      domains: rawDomains,
-      pagesPerDomain: input.pagesPerDomain ?? 12,
-      perDomainCap: input.perDomainCap ?? 5,
+      domains: rawDomains.join(','),
+      pagesPerDomain: input.pagesPerDomain ?? 6,
+      perDomainCap: input.perDomainCap ?? 10,
       totalCap: input.totalCap ?? 50,
     })
 

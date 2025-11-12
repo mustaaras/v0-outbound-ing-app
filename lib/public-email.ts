@@ -958,3 +958,173 @@ export async function publicEmailFinder(
   devLog("[public-email] Final results:", all.length, "from", uniqueDomains.length, "domains", timedOut ? "(timed out)" : "")
   return { results: all }
 }
+
+// ===== ENHANCED EMAIL DISCOVERY METHODS =====
+
+/**
+ * Check common email patterns for a domain
+ * Returns emails that are likely to exist (info@, contact@, support@, etc.)
+ */
+async function checkCommonEmailPatterns(domain: string): Promise<PublicEmailResult[]> {
+  const commonPatterns = [
+    "info",
+    "contact", 
+    "hello",
+    "support",
+    "sales",
+    "team",
+    "admin",
+    "help",
+    "inquiries",
+    "general"
+  ]
+  
+  const results: PublicEmailResult[] = []
+  
+  for (const pattern of commonPatterns) {
+    const email = `${pattern}@${domain}`
+    
+    // Quick syntax validation
+    if (!/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i.test(email)) continue
+    
+    results.push({
+      domain,
+      email,
+      type: "generic",
+      sourceUrl: `Pattern check: ${pattern}@`
+    })
+  }
+  
+  return results
+}
+
+/**
+ * Extract emails from DNS TXT records
+ * Some domains include contact emails in SPF or other TXT records
+ */
+async function getDnsEmails(domain: string): Promise<PublicEmailResult[]> {
+  try {
+    const dns = await import('dns/promises')
+    const txtRecords = await dns.resolveTxt(domain).catch(() => [])
+    const emails: PublicEmailResult[] = []
+    
+    txtRecords.forEach(record => {
+      const text = record.join('')
+      const emailMatches = text.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/gi) || []
+      
+      emailMatches.forEach(email => {
+        // Filter out common non-contact emails
+        const localpart = email.split('@')[0].toLowerCase()
+        if (['noreply', 'no-reply', 'donotreply', 'postmaster'].includes(localpart)) return
+        
+        emails.push({
+          domain,
+          email: email.toLowerCase(),
+          type: "generic",
+          sourceUrl: "DNS TXT record"
+        })
+      })
+    })
+    
+    return emails
+  } catch (e) {
+    devLog("[dns-emails] Error for", domain, e)
+    return []
+  }
+}
+
+/**
+ * Enhanced extractPublicEmails with parallel DNS and pattern checks
+ */
+export async function extractPublicEmailsEnhanced(params: {
+  keyword?: string
+  domains?: string
+  perDomainCap?: number
+  totalCap?: number
+  pagesPerDomain?: number
+}): Promise<{ results: PublicEmailResult[] }> {
+  const normalizedDomainsList: string[] = []
+  
+  // Parse domains from input
+  if (params.domains) {
+    const inputDomains = params.domains
+      .split(/[\n,]+/)
+      .map(d => normalizeDomain(d))
+      .filter(Boolean)
+    normalizedDomainsList.push(...inputDomains)
+  }
+  
+  // Get domains from keyword
+  if (params.keyword && params.keyword.trim()) {
+    const matchedDomains = await findContactEmails({ keyword: params.keyword.trim(), maxResults: 5 })
+    normalizedDomainsList.push(...matchedDomains.map(r => r.domain))
+  }
+  
+  const uniqueDomains = Array.from(new Set(normalizedDomainsList))
+  if (uniqueDomains.length === 0) {
+    return { results: [] }
+  }
+  
+  const perDomainCap = params.perDomainCap ?? 10
+  const totalCap = params.totalCap ?? 50
+  
+  devLog("[email-enhanced] Starting enhanced search for", uniqueDomains.length, "domains")
+  
+  const all: PublicEmailResult[] = []
+  const seen = new Set<string>()
+  
+  // Run all methods in parallel for each domain
+  const domainPromises = uniqueDomains.slice(0, 10).map(async (domain) => {
+    const domainResults: PublicEmailResult[] = []
+    
+    try {
+      // Run all methods in parallel
+      const [scrapedEmails, dnsEmails, patternEmails] = await Promise.all([
+        extractPublicEmailsForDomain(domain, { 
+          pagesPerDomain: params.pagesPerDomain ?? 6, 
+          timeoutMs: 3000 
+        }).catch(() => []),
+        getDnsEmails(domain).catch(() => []),
+        checkCommonEmailPatterns(domain).catch(() => [])
+      ])
+      
+      // Combine all results
+      const combined = [...scrapedEmails, ...dnsEmails, ...patternEmails]
+      
+      // Deduplicate and limit per domain
+      let addedForDomain = 0
+      for (const result of combined) {
+        if (addedForDomain >= perDomainCap) break
+        const key = result.email.toLowerCase()
+        if (seen.has(key)) continue
+        seen.add(key)
+        domainResults.push(result)
+        addedForDomain++
+      }
+    } catch (e) {
+      devLog("[email-enhanced] Error for domain", domain, e)
+    }
+    
+    return domainResults
+  })
+  
+  // Wait for all domains with timeout
+  const resultsArrays = await Promise.race([
+    Promise.all(domainPromises),
+    new Promise<PublicEmailResult[][]>((resolve) => 
+      setTimeout(() => resolve([]), 25000)
+    )
+  ])
+  
+  // Flatten and limit total
+  for (const domainResults of resultsArrays) {
+    for (const result of domainResults) {
+      if (all.length >= totalCap) break
+      all.push(result)
+    }
+    if (all.length >= totalCap) break
+  }
+  
+  devLog("[email-enhanced] Found", all.length, "total emails from", uniqueDomains.length, "domains")
+  return { results: all }
+}
