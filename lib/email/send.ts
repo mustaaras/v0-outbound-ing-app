@@ -10,7 +10,7 @@ import { devLog, errorLog } from "@/lib/logger"
 // Use the verified Resend subdomain. If you verified `noreply.outbound.ing`,
 // the From address must be something@noreply.outbound.ing to pass DMARC.
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "Outbounding <noreply@noreply.outbound.ing>"
-const REPLY_TO = process.env.RESEND_REPLY_TO_EMAIL || "your-gmail@gmail.com"  // Replace with your actual Gmail
+const REPLY_TO = process.env.RESEND_REPLY_TO_EMAIL || "support@outbound.ing"
 
 export async function sendWelcomeEmail(email: string, firstName: string) {
   try {

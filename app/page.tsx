@@ -289,7 +289,7 @@ export default function LandingPage() {
           <Link href="/faq" className="hover:text-foreground">
             FAQ
           </Link>
-          <a href="mailto:your-gmail@gmail.com" className="hover:text-foreground">
+          <a href="mailto:support@outbound.ing" className="hover:text-foreground">
             Contact
           </a>
         </div>
