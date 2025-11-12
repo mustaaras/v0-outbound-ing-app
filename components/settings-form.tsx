@@ -8,13 +8,14 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Crown, Mail, Shield, Loader2, CreditCard, AlertTriangle } from "lucide-react"
+import { Crown, Mail, Shield, Loader2, CreditCard, AlertTriangle, Trash2 } from "lucide-react"
 import type { User } from "@/lib/types"
 import { TIER_LIMITS } from "@/lib/types"
 import { useToast } from "@/hooks/use-toast"
 import { errorLog } from "@/lib/logger"
 import { changePassword } from "@/app/actions/change-password"
 import { createPortalSession, cancelSubscription } from "@/app/actions/stripe"
+import { deleteAccount } from "@/app/actions/delete-account"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,6 +27,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { useRouter } from "next/navigation"
 
 interface SettingsFormProps {
   user: User
@@ -40,7 +42,10 @@ export function SettingsForm({ user, hasPassword, renewalDate }: SettingsFormPro
   const [confirmPassword, setConfirmPassword] = useState("")
   const [isManagingSubscription, setIsManagingSubscription] = useState(false)
   const [isCancellingSubscription, setIsCancellingSubscription] = useState(false)
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false)
+  const [deleteConfirmText, setDeleteConfirmText] = useState("")
   const { toast } = useToast()
+  const router = useRouter()
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -104,13 +109,18 @@ export function SettingsForm({ user, hasPassword, renewalDate }: SettingsFormPro
       if (result.success) {
         toast({
           title: "Subscription Cancelled",
-          description:
-            "Your subscription has been cancelled. You'll retain access until the end of your billing period.",
+          description: "Your subscription has been cancelled. You'll retain access until the end of your billing period.",
         })
-        // Refresh page to show updated status
-        window.location.reload()
+        setTimeout(() => {
+          window.location.reload()
+        }, 2000)
       } else {
-        throw new Error(result.error || "Failed to cancel subscription")
+        toast({
+          title: "Error",
+          description: result.error || "Failed to cancel subscription",
+          variant: "destructive",
+        })
+        setIsCancellingSubscription(false)
       }
     } catch (error) {
       errorLog("Failed to cancel subscription:", error)
@@ -119,149 +129,157 @@ export function SettingsForm({ user, hasPassword, renewalDate }: SettingsFormPro
         description: error instanceof Error ? error.message : "Failed to cancel subscription",
         variant: "destructive",
       })
-    } finally {
       setIsCancellingSubscription(false)
     }
   }
 
-  const getTierDisplay = () => {
-    const limit = TIER_LIMITS[user.tier]
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmText !== "DELETE") {
+      toast({
+        title: "Confirmation Required",
+        description: "Please type DELETE to confirm account deletion",
+        variant: "destructive",
+      })
+      return
+    }
 
-    switch (user.tier) {
-      case "free":
-        return {
-          label: "Free Plan",
-          description: `${limit} emails/month`,
-          variant: "secondary" as const,
-          icon: null,
-        }
-      case "light":
-        return {
-          label: "Light Plan",
-          description: `${limit} emails/month`,
-          variant: "default" as const,
-          icon: <Crown className="mr-1 h-4 w-4" />,
-        }
-      case "pro":
-        return {
-          label: "Pro Plan",
-          description: `${limit} emails/month`,
-          variant: "default" as const,
-          icon: <Crown className="mr-1 h-4 w-4" />,
-        }
-      // removed ultra tier
-      default:
-        return {
-          label: "Unknown Plan",
-          description: "",
-          variant: "secondary" as const,
-          icon: null,
-        }
+    setIsDeletingAccount(true)
+    
+    try {
+      const result = await deleteAccount(user.id)
+      
+      if (result.success) {
+        toast({
+          title: "Account Deleted",
+          description: "Your account and all data have been permanently deleted.",
+        })
+        // Redirect to home page after a brief delay
+        setTimeout(() => {
+          router.push("/")
+        }, 2000)
+      } else {
+        toast({
+          title: "Error",
+          description: result.error || "Failed to delete account",
+          variant: "destructive",
+        })
+        setIsDeletingAccount(false)
+      }
+    } catch (error) {
+      errorLog("Failed to delete account:", error)
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to delete account",
+        variant: "destructive",
+      })
+      setIsDeletingAccount(false)
     }
   }
 
-  const tierDisplay = getTierDisplay()
-
-  const hasPaidSubscription = user.tier !== "free"
+  const isPaidUser = user.tier !== "free"
+  const monthlyLimit = TIER_LIMITS[user.tier]
 
   return (
     <div className="space-y-6">
       {/* Account Information */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Mail className="h-5 w-5" />
-            Account Information
-          </CardTitle>
-          <CardDescription>Your account details and subscription status</CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Mail className="h-5 w-5" />
+                Account Information
+              </CardTitle>
+              <CardDescription>Your account details and subscription status</CardDescription>
+            </div>
+            {isPaidUser && <Crown className="h-8 w-8 text-yellow-500" />}
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label>Email Address</Label>
-            <div className="mt-1">
-              <Input value={user.email} disabled className="bg-muted" />
-            </div>
-            <p className="mt-1 text-xs text-muted-foreground">Email cannot be changed</p>
+            <Label>Email</Label>
+            <div className="text-sm text-muted-foreground">{user.email}</div>
           </div>
 
           <div>
-            <Label>Subscription Plan</Label>
-            <div className="mt-2 flex flex-col gap-2">
-              <Badge className="text-sm w-fit" variant={tierDisplay.variant}>
-                {tierDisplay.icon}
-                {tierDisplay.label} - {tierDisplay.description}
+            <Label>Current Plan</Label>
+            <div className="mt-1 flex items-center gap-2">
+              <Badge variant={user.tier === "free" ? "secondary" : "default"} className="capitalize">
+                {user.tier === "free" ? "Free" : user.tier === "light" ? "Light" : "Pro"}
               </Badge>
-              {renewalDate && user.tier !== "free" && (
-                <p className="text-xs text-muted-foreground">
-                  Renews on {renewalDate}
-                </p>
+              {monthlyLimit === 999999 ? (
+                <span className="text-sm text-muted-foreground">Unlimited emails per month</span>
+              ) : (
+                <span className="text-sm text-muted-foreground">{monthlyLimit} emails per month</span>
               )}
             </div>
           </div>
+
+          {renewalDate && (
+            <div>
+              <Label>Next Renewal Date</Label>
+              <div className="text-sm text-muted-foreground">{renewalDate}</div>
+            </div>
+          )}
+
+          {user.first_name && (
+            <div>
+              <Label>Name</Label>
+              <div className="text-sm text-muted-foreground">
+                {user.first_name} {user.last_name || ""}
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
       {/* Subscription Management */}
-      {hasPaidSubscription && (
+      {isPaidUser && user.stripe_customer_id && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CreditCard className="h-5 w-5" />
               Subscription Management
             </CardTitle>
-            <CardDescription>Manage your subscription and billing</CardDescription>
+            <CardDescription>Manage your billing and subscription</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex flex-col gap-3">
-              <Button
-                onClick={handleManageSubscription}
-                disabled={isManagingSubscription}
-                variant="outline"
-                className="w-full sm:w-auto bg-transparent"
-              >
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Button onClick={handleManageSubscription} disabled={isManagingSubscription} variant="outline">
                 {isManagingSubscription ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Loading...
+                    Opening Portal...
                   </>
                 ) : (
-                  <>
-                    <CreditCard className="mr-2 h-4 w-4" />
-                    Manage Billing & Payment
-                  </>
+                  "Manage Billing"
                 )}
               </Button>
 
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="destructive" className="w-full sm:w-auto" disabled={isCancellingSubscription}>
-                    <AlertTriangle className="mr-2 h-4 w-4" />
-                    Cancel my subscription
+                  <Button variant="outline" disabled={isCancellingSubscription}>
+                    {isCancellingSubscription ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Cancelling...
+                      </>
+                    ) : (
+                      "Cancel Subscription"
+                    )}
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                    <AlertDialogTitle>Cancel Subscription?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      This will cancel your subscription. You'll retain access to your current plan until the end of
-                      your billing period, after which you'll be moved to the Free plan.
+                      Are you sure you want to cancel your subscription? You'll retain access until the end of your
+                      current billing period, after which your account will be downgraded to the Free plan.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Keep Subscription</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={handleCancelSubscription}
-                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                    >
-                      {isCancellingSubscription ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Cancelling...
-                        </>
-                      ) : (
-                        "Yes, Cancel Subscription"
-                      )}
-                    </AlertDialogAction>
+                    <AlertDialogAction onClick={handleCancelSubscription}>Yes, Cancel</AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
@@ -270,6 +288,7 @@ export function SettingsForm({ user, hasPassword, renewalDate }: SettingsFormPro
         </Card>
       )}
 
+      {/* Password Change */}
       {hasPassword && (
         <Card>
           <CardHeader>
@@ -277,7 +296,7 @@ export function SettingsForm({ user, hasPassword, renewalDate }: SettingsFormPro
               <Shield className="h-5 w-5" />
               Change Password
             </CardTitle>
-            <CardDescription>Update your password to keep your account secure</CardDescription>
+            <CardDescription>Update your account password</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handlePasswordChange} className="space-y-4">
@@ -321,6 +340,83 @@ export function SettingsForm({ user, hasPassword, renewalDate }: SettingsFormPro
           </CardContent>
         </Card>
       )}
+
+      {/* Danger Zone - Delete Account */}
+      <Card className="border-destructive">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-destructive">
+            <AlertTriangle className="h-5 w-5" />
+            Danger Zone
+          </CardTitle>
+          <CardDescription>Permanently delete your account and all associated data</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="rounded-lg bg-destructive/10 p-4">
+            <p className="text-sm text-muted-foreground">
+              <strong>Warning:</strong> This action cannot be undone. This will permanently delete your account, cancel
+              any active subscriptions, and remove all your data including:
+            </p>
+            <ul className="mt-2 list-inside list-disc text-sm text-muted-foreground">
+              <li>All generated email templates</li>
+              <li>Saved contacts and buyers</li>
+              <li>Usage history and statistics</li>
+              <li>Account settings and preferences</li>
+            </ul>
+          </div>
+
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" disabled={isDeletingAccount}>
+                <Trash2 className="mr-2 h-4 w-4" />
+                Delete My Account
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="text-destructive">Delete Account Permanently?</AlertDialogTitle>
+                <AlertDialogDescription className="space-y-4">
+                  <p>
+                    This will permanently delete your account and all associated data. This action cannot be undone.
+                  </p>
+                  {isPaidUser && (
+                    <p className="font-semibold">
+                      Your active subscription will be cancelled immediately and you will not be refunded for the
+                      remaining time in your billing period.
+                    </p>
+                  )}
+                  <div className="space-y-2">
+                    <Label htmlFor="delete-confirm">Type DELETE to confirm:</Label>
+                    <Input
+                      id="delete-confirm"
+                      value={deleteConfirmText}
+                      onChange={(e) => setDeleteConfirmText(e.target.value)}
+                      placeholder="Type DELETE"
+                      className="font-mono"
+                    />
+                  </div>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel onClick={() => setDeleteConfirmText("")}>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDeleteAccount}
+                  disabled={isDeletingAccount || deleteConfirmText !== "DELETE"}
+                  className="bg-destructive hover:bg-destructive/90"
+                >
+                  {isDeletingAccount ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Deleting...
+                    </>
+                  ) : (
+                    "Yes, Delete My Account"
+                  )}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </CardContent>
+      </Card>
 
       {/* Password Change Success Dialog */}
       <AlertDialog open={showPasswordSuccess} onOpenChange={setShowPasswordSuccess}>
