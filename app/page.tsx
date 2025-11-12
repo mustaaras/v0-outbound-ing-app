@@ -53,8 +53,8 @@ export default function LandingPage() {
                   Start Free - 30 Emails/Month
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg">
-                <Link href="/auth/login">Log in</Link>
+                            <Button asChild variant="outline" size="lg">
+                <a href="#pricing">See Pricing</a>
               </Button>
             </div>
 

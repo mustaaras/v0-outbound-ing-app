@@ -30,7 +30,7 @@ export default async function DashboardPage() {
   // Get recent templates
   const { data: recentTemplates } = await supabase
     .from("templates")
-    .select("*")
+    .select("*, strategies(name, category)")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
     .limit(3)
@@ -38,30 +38,41 @@ export default async function DashboardPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-6">
       <div className="grid gap-4 md:grid-cols-3">
-        {user.tier !== "pro" && (
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Monthly Usage</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {usage} / {limit === Number.POSITIVE_INFINITY ? "∞" : limit}
-              </div>
-              <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-muted">
-                <div
-                  className="h-full bg-primary transition-all"
-                  style={{ width: `${Math.min(usagePercentage, 100)}%` }}
-                />
-              </div>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Monthly Usage</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {user.tier === "pro" ? (
+                <>∞ Unlimited</>
+              ) : (
+                <>{usage} / {limit === Number.POSITIVE_INFINITY ? "∞" : limit}</>
+              )}
+            </div>
+            {user.tier !== "pro" && (
+              <>
+                <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-muted">
+                  <div
+                    className="h-full bg-primary transition-all"
+                    style={{ width: `${Math.min(usagePercentage, 100)}%` }}
+                  />
+                </div>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  {limit === Number.POSITIVE_INFINITY
+                    ? "Unlimited generations"
+                    : `${remaining} generation${remaining !== 1 ? "s" : ""} remaining`}
+                </p>
+              </>
+            )}
+            {user.tier === "pro" && (
               <p className="mt-2 text-xs text-muted-foreground">
-                {limit === Number.POSITIVE_INFINITY
-                  ? "Unlimited generations"
-                  : `${remaining} generation${remaining !== 1 ? "s" : ""} remaining`}
+                Generate as many emails as you need
               </p>
-            </CardContent>
-          </Card>
-        )}
+            )}
+          </CardContent>
+        </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Total Templates</CardTitle>
@@ -99,10 +110,22 @@ export default async function DashboardPage() {
             <div className="space-y-3">
               {recentTemplates.map((template) => (
                 <div key={template.id} className="flex items-start justify-between rounded-lg border p-3">
-                  <div className="space-y-1">
+                  <div className="space-y-1 flex-1">
                     <div className="font-medium text-sm line-clamp-1">{template.subject || "Untitled"}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {new Date(template.created_at).toLocaleDateString()}
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <span>{new Date(template.created_at).toLocaleDateString()}</span>
+                      {template.strategies && (
+                        <>
+                          <span>•</span>
+                          <span className="line-clamp-1">{template.strategies.name}</span>
+                          {template.strategies.category && (
+                            <>
+                              <span>•</span>
+                              <span>{template.strategies.category}</span>
+                            </>
+                          )}
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>

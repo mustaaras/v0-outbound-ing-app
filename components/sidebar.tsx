@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { Home, Wand2, Archive, Crown, LogOut, Settings, Users, Coins, Rocket } from "lucide-react"
+import { Home, Wand2, Archive, Crown, LogOut, Settings, Users, Coins, Rocket, Shield } from "lucide-react"
 import type { User } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -15,19 +15,29 @@ interface SidebarProps {
   user: User
 }
 
-const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: Home },
-  { name: "Search Contacts", href: "/search-buyers", icon: Users, badge: "beta" },
-  { name: "Email Generator", href: "/generator", icon: Wand2 },
-  { name: "Archive", href: "/archive", icon: Archive },
-  { name: "Settings", href: "/settings", icon: Settings },
-  { name: "Upgrade", href: "/upgrade", icon: Rocket },
-  { name: "Pricing", href: "/pricing", icon: Coins }, // Use a different icon to distinguish from Upgrade
-]
+const getNavigation = (userEmail: string) => {
+  const baseNavigation = [
+    { name: "Dashboard", href: "/dashboard", icon: Home },
+    { name: "Search Contacts", href: "/search-buyers", icon: Users, badge: "beta" },
+    { name: "Email Generator", href: "/generator", icon: Wand2 },
+    { name: "Archive", href: "/archive", icon: Archive },
+    { name: "Settings", href: "/settings", icon: Settings },
+    { name: "Upgrade", href: "/upgrade", icon: Rocket },
+    { name: "Pricing", href: "/pricing", icon: Coins },
+  ]
+  
+  // Add admin link only for admin user
+  if (userEmail === "mustafaaras91@gmail.com") {
+    baseNavigation.splice(5, 0, { name: "Admin", href: "/admin", icon: Shield })
+  }
+  
+  return baseNavigation
+}
 
 export function Sidebar({ user }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
+  const navigation = getNavigation(user.email)
 
   const handleLogout = async () => {
     const supabase = createClient()
@@ -84,12 +94,12 @@ export function Sidebar({ user }: SidebarProps) {
         <div className="mb-4 rounded-lg bg-muted p-3">
           <div className="text-xs font-medium text-muted-foreground">Account</div>
           <div className="mt-1 truncate text-sm font-medium">{user.email}</div>
-          {user.tier === "pro" && (
-            <Badge className="mt-2" variant="default">
-              <Crown className="mr-1 h-3 w-3" />
-              Pro Plan
-            </Badge>
-          )}
+          <Badge className="mt-2" variant={user.tier === "pro" ? "default" : user.tier === "light" ? "secondary" : "outline"}>
+            {user.tier === "pro" && <Crown className="mr-1 h-3 w-3" />}
+            {user.tier === "light" && <Rocket className="mr-1 h-3 w-3" />}
+            {user.tier === "free" && <Coins className="mr-1 h-3 w-3" />}
+            {user.tier === "pro" ? "Pro Plan" : user.tier === "light" ? "Light Plan" : "Free Plan"}
+          </Badge>
         </div>
         <div className="flex items-center gap-2">
           <ThemeToggle />

@@ -40,7 +40,7 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
   const [emailLength, setEmailLength] = useState<string>("Medium")
   const [goal, setGoal] = useState<string>("Get a reply")
   const [language, setLanguage] = useState<string>("English")
-  const [showAdvancedOptions, setShowAdvancedOptions] = useState<boolean>(false)
+  // Removed showAdvancedOptions state - always visible now
   
   // Premium features
   const [generateVariants, setGenerateVariants] = useState<boolean>(false)
@@ -487,25 +487,12 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
 
         {selectedStrategies.length > 0 && (
           <div className="space-y-4 rounded-lg border-2 border-primary/20 bg-primary/5 p-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <Label className="text-base font-semibold">🎯 Customize Your Email</Label>
-                <p className="text-sm text-muted-foreground">Fine-tune how your email is generated</p>
-              </div>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowAdvancedOptions(!showAdvancedOptions)}
-                className="text-xs gap-1"
-              >
-                {showAdvancedOptions ? "Hide Options" : "Show Advanced"}
-                <ChevronDown className={`h-4 w-4 transition-transform ${showAdvancedOptions ? "rotate-180" : ""}`} />
-              </Button>
+            <div className="space-y-1">
+              <Label className="text-base font-semibold">🎯 Customize Your Email</Label>
+              <p className="text-sm text-muted-foreground">Fine-tune how your email is generated</p>
             </div>
 
-            {showAdvancedOptions && (
-              <div className="space-y-4 pt-2">
+            <div className="space-y-4 pt-2">
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Tone</Label>
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
@@ -598,7 +585,6 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
                 </div>
               )}
             </div>
-            )}
           </div>
         )}
 

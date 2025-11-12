@@ -30,12 +30,12 @@ import {
 interface SettingsFormProps {
   user: User
   hasPassword: boolean
+  renewalDate?: string | null
 }
 
-export function SettingsForm({ user, hasPassword }: SettingsFormProps) {
-  // Simple admin check: only show cost tracking to specific email
-  const isAdmin = user.email === "aras@yourdomain.com" // Change to your admin email
+export function SettingsForm({ user, hasPassword, renewalDate }: SettingsFormProps) {
   const [isChangingPassword, setIsChangingPassword] = useState(false)
+  const [showPasswordSuccess, setShowPasswordSuccess] = useState(false)
   const [newPassword, setNewPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [isManagingSubscription, setIsManagingSubscription] = useState(false)
@@ -67,10 +67,7 @@ export function SettingsForm({ user, hasPassword }: SettingsFormProps) {
     const result = await changePassword(newPassword)
 
     if (result.success) {
-      toast({
-        title: "Success",
-        description: "Password changed successfully",
-      })
+      setShowPasswordSuccess(true)
       setNewPassword("")
       setConfirmPassword("")
     } else {
@@ -169,32 +166,6 @@ export function SettingsForm({ user, hasPassword }: SettingsFormProps) {
 
   return (
     <div className="space-y-6">
-      {/* Cost Tracking (Admin Only) */}
-      {isAdmin && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-yellow-700" />
-              Cost Tracking (Admin Only)
-            </CardTitle>
-            <CardDescription>Estimated monthly costs for infrastructure and AI usage</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="flex flex-col gap-2">
-              <div>
-                <span className="font-semibold">Vercel:</span> ~$20/month (Pro tier, adjust as needed)
-              </div>
-              <div>
-                <span className="font-semibold">Supabase:</span> ~$25/month (Starter tier, adjust as needed)
-              </div>
-              <div>
-                <span className="font-semibold">AI Gateway:</span> Usage-based, e.g. $0.60/user/month (estimate)
-              </div>
-              <div className="text-xs text-muted-foreground">Update these numbers as your usage grows. Expand for more detail as needed.</div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
       {/* Account Information */}
       <Card>
         <CardHeader>
@@ -215,11 +186,16 @@ export function SettingsForm({ user, hasPassword }: SettingsFormProps) {
 
           <div>
             <Label>Subscription Plan</Label>
-            <div className="mt-2">
-              <Badge className="text-sm" variant={tierDisplay.variant}>
+            <div className="mt-2 flex flex-col gap-2">
+              <Badge className="text-sm w-fit" variant={tierDisplay.variant}>
                 {tierDisplay.icon}
                 {tierDisplay.label} - {tierDisplay.description}
               </Badge>
+              {renewalDate && user.tier !== "free" && (
+                <p className="text-xs text-muted-foreground">
+                  Renews on {renewalDate}
+                </p>
+              )}
             </div>
           </div>
         </CardContent>
@@ -345,6 +321,21 @@ export function SettingsForm({ user, hasPassword }: SettingsFormProps) {
           </CardContent>
         </Card>
       )}
+
+      {/* Password Change Success Dialog */}
+      <AlertDialog open={showPasswordSuccess} onOpenChange={setShowPasswordSuccess}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Password Changed Successfully</AlertDialogTitle>
+            <AlertDialogDescription>
+              Your password has been updated. You can now use your new password to log in.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction>Got it</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
