@@ -269,9 +269,9 @@ export default function LandingPage() {
                 <div className="text-left">
                   <h3 className="font-semibold">Search Contacts</h3>
                   <ul className="mt-2 space-y-2 text-sm text-muted-foreground">
-                    <li>Free: Not included</li>
-                    <li>Light: 50 saved emails per month</li>
-                    <li>Pro: 150 saved emails per month</li>
+                    <li>Free: 60 searches per month</li>
+                    <li>Light: Unlimited searches</li>
+                    <li>Pro: Unlimited + advanced enrichment</li>
                   </ul>
                 </div>
               </div>
@@ -289,6 +289,9 @@ export default function LandingPage() {
           <Link href="/faq" className="hover:text-foreground">
             FAQ
           </Link>
+          <a href="mailto:your-gmail@gmail.com" className="hover:text-foreground">
+            Contact
+          </a>
         </div>
       </footer>
     </div>
