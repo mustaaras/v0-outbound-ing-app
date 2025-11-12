@@ -7,7 +7,7 @@ import PasswordResetEmail from "@/emails/password-reset"
 import UsageWarningEmail from "@/emails/usage-warning"
 import { devLog, errorLog } from "@/lib/logger"
 
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "Outbounding <noreply@outbounding.com>"
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "Outbounding <noreply@outbound.ing>"
 
 export async function sendWelcomeEmail(email: string, firstName: string) {
   try {
@@ -95,7 +95,7 @@ export async function sendSubscriptionCancelledEmail(
           </p>
           <p style="color: #484848; font-size: 16px; line-height: 26px;">
             We're sorry to see you go! If you change your mind, you can always resubscribe from your 
-            <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://outbounding.com'}/upgrade" style="color: #000; text-decoration: underline;">upgrade page</a>.
+            <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://outbound.ing'}/upgrade" style="color: #000; text-decoration: underline;">upgrade page</a>.
           </p>
           <p style="color: #484848; font-size: 16px; line-height: 26px; margin-top: 40px;">
             Thanks for using Outbounding!<br/>

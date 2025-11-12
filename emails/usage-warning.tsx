@@ -68,7 +68,7 @@ export default function UsageWarningEmail({
               </Section>
               
               <Section style={buttonContainer}>
-                <Button style={button} href={`${process.env.NEXT_PUBLIC_APP_URL || 'https://outbounding.vercel.app'}/upgrade`}>
+                <Button style={button} href={`${process.env.NEXT_PUBLIC_APP_URL || 'https://outbound.ing'}/upgrade`}>
                   Upgrade to Pro - $39/month
                 </Button>
               </Section>
@@ -86,7 +86,7 @@ export default function UsageWarningEmail({
               </Text>
               
               <Section style={buttonContainer}>
-                <Button style={button} href={`${process.env.NEXT_PUBLIC_APP_URL || 'https://outbounding.vercel.app'}/upgrade`}>
+                <Button style={button} href={`${process.env.NEXT_PUBLIC_APP_URL || 'https://outbound.ing'}/upgrade`}>
                   Upgrade to Pro - $39/month
                 </Button>
               </Section>
