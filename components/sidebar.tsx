@@ -17,7 +17,7 @@ interface SidebarProps {
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
-  { name: "Search Contacts", href: "/search-buyers", icon: Users },
+  { name: "Search Contacts", href: "/search-buyers", icon: Users, badge: "beta" },
   { name: "Email Generator", href: "/generator", icon: Wand2 },
   { name: "Archive", href: "/archive", icon: Archive },
   { name: "Settings", href: "/settings", icon: Settings },
@@ -65,6 +65,11 @@ export function Sidebar({ user }: SidebarProps) {
             >
               <Icon className="h-4 w-4" />
               {item.name}
+              {item.badge && (
+                <Badge variant="secondary" className="ml-1 text-[10px] px-1.5 py-0 h-4">
+                  {item.badge}
+                </Badge>
+              )}
               {item.name === "Upgrade" && user.tier === "free" && (
                 <Badge variant="secondary" className="ml-auto">
                   Free

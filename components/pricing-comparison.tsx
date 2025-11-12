@@ -107,57 +107,116 @@ export function PricingComparison({ currentTier }: PricingComparisonProps) {
 
   return (
     <div className="rounded-xl border bg-card overflow-hidden">
-      <div className="grid grid-cols-1 md:grid-cols-[240px_repeat(3,1fr)]">
-        <div className="p-4 md:p-6 border-b md:border-b-0 md:border-r bg-muted/40">
-          <h3 className="text-sm font-semibold">Compare Plans</h3>
-          <p className="mt-1 text-xs text-muted-foreground">Compare features across all tiers.</p>
-        </div>
-        {tiers.map((t) => (
-          <div
-            key={t.tier}
-            className={cn(
-              "p-4 md:p-6 border-b md:border-b-0 md:border-r flex flex-col gap-2 text-center",
-              currentTier === t.tier ? "bg-primary/5" : "bg-background",
-            )}
-          >
-            <div className="text-sm font-semibold flex items-center justify-center gap-1">
-              {t.tier === "pro" ? (
-                <Crown className="h-4 w-4 text-primary" />
-              ) : t.tier === "light" ? (
-                <Zap className="h-4 w-4 text-green-600" />
-              ) : (
-                <Coins className="h-4 w-4 text-muted-foreground" />
-              )}
-              {t.name}
+      {/* Mobile: Horizontal scroll */}
+      <div className="md:hidden overflow-x-auto">
+        <div className="inline-flex min-w-full">
+          {/* Header column */}
+          <div className="w-48 flex-shrink-0 border-r bg-muted/40">
+            <div className="p-4 border-b h-32">
+              <h3 className="text-sm font-semibold">Compare Plans</h3>
+              <p className="mt-1 text-xs text-muted-foreground">Swipe to compare</p>
             </div>
-            <div className="text-lg font-bold">${t.price}</div>
-            <div className="text-xs text-muted-foreground">per month</div>
-            {currentTier === t.tier && (
-              <div className="inline-flex items-center justify-center rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-                Current Plan
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-
-      <div className="divide-y">
-        {featureRows.map((row) => (
-          <div key={row.key} className="grid grid-cols-1 md:grid-cols-[240px_repeat(3,1fr)]">
-            <div className="p-3 md:p-4 text-sm font-medium bg-muted/30 flex items-center">{row.label}</div>
-            {tiers.map((t) => (
-              <div
-                key={t.tier + row.key}
-                className={cn(
-                  "p-3 md:p-4 text-xs md:text-sm flex items-center justify-center",
-                  currentTier === t.tier ? "bg-primary/5" : "",
-                )}
-              >
-                {row.render(t.tier)}
+            {featureRows.map((row) => (
+              <div key={row.key} className="p-3 text-xs font-medium bg-muted/30 border-b min-h-[52px] flex items-center">
+                {row.label}
               </div>
             ))}
           </div>
-        ))}
+          {/* Plan columns */}
+          {tiers.map((t) => (
+            <div key={t.tier} className="w-32 flex-shrink-0 border-r last:border-r-0">
+              <div className={cn(
+                "p-4 border-b h-32 flex flex-col gap-1 justify-center text-center",
+                currentTier === t.tier ? "bg-primary/5" : "bg-background"
+              )}>
+                <div className="text-xs font-semibold flex items-center justify-center gap-1">
+                  {t.tier === "pro" ? (
+                    <Crown className="h-3 w-3 text-primary" />
+                  ) : t.tier === "light" ? (
+                    <Zap className="h-3 w-3 text-green-600" />
+                  ) : (
+                    <Coins className="h-3 w-3 text-muted-foreground" />
+                  )}
+                  <span className="text-xs">{t.name}</span>
+                </div>
+                <div className="text-sm font-bold">${t.price}</div>
+                <div className="text-[10px] text-muted-foreground">per month</div>
+                {currentTier === t.tier && (
+                  <div className="inline-flex items-center justify-center rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
+                    Current
+                  </div>
+                )}
+              </div>
+              {featureRows.map((row) => (
+                <div
+                  key={row.key}
+                  className={cn(
+                    "p-3 text-xs border-b min-h-[52px] flex items-center justify-center",
+                    currentTier === t.tier ? "bg-primary/5" : ""
+                  )}
+                >
+                  {row.render(t.tier)}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Desktop: Grid layout */}
+      <div className="hidden md:block">
+        <div className="grid grid-cols-[240px_repeat(3,1fr)]">
+          <div className="p-4 md:p-6 border-b md:border-b-0 md:border-r bg-muted/40">
+            <h3 className="text-sm font-semibold">Compare Plans</h3>
+            <p className="mt-1 text-xs text-muted-foreground">Compare features across all tiers.</p>
+          </div>
+          {tiers.map((t) => (
+            <div
+              key={t.tier}
+              className={cn(
+                "p-4 md:p-6 border-b md:border-b-0 md:border-r flex flex-col gap-2 text-center",
+                currentTier === t.tier ? "bg-primary/5" : "bg-background",
+              )}
+            >
+              <div className="text-sm font-semibold flex items-center justify-center gap-1">
+                {t.tier === "pro" ? (
+                  <Crown className="h-4 w-4 text-primary" />
+                ) : t.tier === "light" ? (
+                  <Zap className="h-4 w-4 text-green-600" />
+                ) : (
+                  <Coins className="h-4 w-4 text-muted-foreground" />
+                )}
+                {t.name}
+              </div>
+              <div className="text-lg font-bold">${t.price}</div>
+              <div className="text-xs text-muted-foreground">per month</div>
+              {currentTier === t.tier && (
+                <div className="inline-flex items-center justify-center rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+                  Current Plan
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        <div className="divide-y">
+          {featureRows.map((row) => (
+            <div key={row.key} className="grid grid-cols-[240px_repeat(3,1fr)]">
+              <div className="p-3 md:p-4 text-sm font-medium bg-muted/30 flex items-center">{row.label}</div>
+              {tiers.map((t) => (
+                <div
+                  key={t.tier + row.key}
+                  className={cn(
+                    "p-3 md:p-4 text-xs md:text-sm flex items-center justify-center",
+                    currentTier === t.tier ? "bg-primary/5" : "",
+                  )}
+                >
+                  {row.render(t.tier)}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   )
