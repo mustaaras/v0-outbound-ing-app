@@ -159,7 +159,7 @@ export default function ContactsList({ userTier }: { userTier: string }) {
       recipientTitle: contact.title || '',
     })
     
-    router.push(`/dashboard/generator?${params.toString()}`)
+    router.push(`/generator?${params.toString()}`)
   }
 
   async function handleDelete(contactId: string) {

@@ -2,6 +2,7 @@
 
 import type React from "react"
 import { useState, useMemo, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -49,8 +50,24 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
   // Multi-channel feature removed with Ultra tier
   const [multiChannelResults, setMultiChannelResults] = useState<Record<string, string> | null>(null)
   const [additionalNotes, setAdditionalNotes] = useState<string>("")
+  const [recipientTitle, setRecipientTitle] = useState<string>("")
+  const [recipientCompany, setRecipientCompany] = useState<string>("")
 
   const { toast } = useToast()
+  const searchParams = useSearchParams()
+
+  // Read URL parameters from contacts page
+  useEffect(() => {
+    const urlRecipientEmail = searchParams.get('recipientEmail')
+    const urlRecipientName = searchParams.get('recipientName')
+    const urlRecipientCompany = searchParams.get('recipientCompany')
+    const urlRecipientTitle = searchParams.get('recipientTitle')
+    
+    if (urlRecipientEmail) setRecipientEmail(urlRecipientEmail)
+    if (urlRecipientName) setRecipientName(urlRecipientName)
+    if (urlRecipientCompany) setRecipientCompany(urlRecipientCompany)
+    if (urlRecipientTitle) setRecipientTitle(urlRecipientTitle)
+  }, [searchParams])
 
   // Prefill recipient fields if a buyer was selected from Search Buyers
   useEffect(() => {
@@ -264,6 +281,8 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
         category: activeCategory,
         recipientName: recipientName || undefined,
         recipientEmail: recipientEmail || undefined,
+        recipientTitle: recipientTitle || undefined,
+        recipientCompany: recipientCompany || undefined,
         sellerSignature: sellerSignature || undefined,
         strategyIds: selectedStrategies,
         userId,
@@ -404,6 +423,28 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
             value={recipientEmail}
             onChange={(e) => setRecipientEmail(e.target.value)}
           />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="recipient-title">Recipient Title (Optional)</Label>
+            <Input
+              id="recipient-title"
+              placeholder="CEO, Marketing Director, etc."
+              value={recipientTitle}
+              onChange={(e) => setRecipientTitle(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="recipient-company">Company (Optional)</Label>
+            <Input
+              id="recipient-company"
+              placeholder="Acme Inc"
+              value={recipientCompany}
+              onChange={(e) => setRecipientCompany(e.target.value)}
+            />
+          </div>
         </div>
 
         <div className="space-y-2">

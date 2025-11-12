@@ -10,6 +10,8 @@ interface GenerateTemplateInput {
   category: string
   recipientName?: string
   recipientEmail?: string
+  recipientTitle?: string
+  recipientCompany?: string
   sellerSignature?: string
   strategyIds: string[]
   userId: string
