@@ -1,50 +1,76 @@
-// Contact Generator: Smart domain matching for product keywords
-export async function findContactEmails({ keyword, maxResults = 20 }: { keyword: string; maxResults?: number }) {
-  if (!keyword || keyword.length < 2) return []
-  
+// Generate domain candidates from keyword (without checking for emails)
+function generateDomainsFromKeyword(keyword: string): string[] {
   const candidates: string[] = []
-  const base = keyword.toLowerCase().replace(/[^a-z0-9]/g, "") // Remove special chars
+  const base = keyword.toLowerCase().replace(/[^a-z0-9]/g, "")
   
-  devLog("[contact-gen] Searching for keyword:", keyword, "base:", base)
+  if (base.length < 2) return []
   
-  // Build comprehensive candidate list with prioritized extensions
-  const primaryExtensions = [".com", ".io", ".ai"] // Most common for tech
+  const primaryExtensions = [".com", ".io", ".ai"]
   const secondaryExtensions = [".net", ".org", ".app", ".co", ".dev"]
   
   // 1. Exact match (highest priority)
   primaryExtensions.forEach(ext => candidates.push(`${base}${ext}`))
   secondaryExtensions.forEach(ext => candidates.push(`${base}${ext}`))
   
-  // 2. Common variations with "labs", "hq", "tech"
-  const suffixes = ["labs", "hq", "tech", "app", "tools", "platform"]
+  // 2. For multi-word keywords, try individual words and combinations
+  const words = keyword.toLowerCase().split(/\s+/)
+  if (words.length > 1) {
+    // First word only
+    primaryExtensions.forEach(ext => candidates.push(`${words[0]}${ext}`))
+    // Last word only
+    primaryExtensions.forEach(ext => candidates.push(`${words[words.length - 1]}${ext}`))
+    // First + last word combined
+    if (words.length >= 2) {
+      const combined = words[0] + words[words.length - 1]
+      primaryExtensions.forEach(ext => candidates.push(`${combined}${ext}`))
+    }
+  }
+  
+  // 3. Common variations with suffixes
+  const suffixes = ["labs", "hq", "tech", "hub", "pro", "tools"]
   suffixes.forEach(suffix => {
     primaryExtensions.forEach(ext => candidates.push(`${base}${suffix}${ext}`))
   })
   
-  // 3. keyword + ai/gpt variations
-  primaryExtensions.forEach(ext => {
-    candidates.push(`${base}ai${ext}`)
-    candidates.push(`ai${base}${ext}`)
-    candidates.push(`${base}gpt${ext}`)
-    candidates.push(`gpt${base}${ext}`)
-  })
-  
-  // 4. "get" + keyword (e.g., "getweb3.com")
-  primaryExtensions.forEach(ext => candidates.push(`get${base}${ext}`))
-  
-  // 5. "use" + keyword (e.g., "useweb3.com")
-  primaryExtensions.forEach(ext => candidates.push(`use${base}${ext}`))
-  
-  // 6. Word split variations for longer keywords
-  if (base.length > 4) {
-    const parts = [base.slice(0, 4), base.slice(4)]
-    primaryExtensions.forEach(ext => {
-      candidates.push(`${parts[0]}${parts[1]}${ext}`)
-      candidates.push(`${parts[1]}${parts[0]}${ext}`)
+  // 4. Prefixes (only for shorter keywords)
+  if (base.length <= 12) {
+    const prefixes = ["get", "use", "my", "the"]
+    prefixes.forEach(prefix => {
+      primaryExtensions.forEach(ext => candidates.push(`${prefix}${base}${ext}`))
     })
   }
+  
+  // 5. AI/GPT variations (only for tech-related shorter keywords)
+  if (base.length <= 10) {
+    primaryExtensions.forEach(ext => {
+      candidates.push(`${base}ai${ext}`)
+      candidates.push(`ai${base}${ext}`)
+    })
+  }
+  
+  // 6. Word splits for longer keywords
+  if (base.length > 6 && base.length <= 12) {
+    const mid = Math.floor(base.length / 2)
+    const part1 = base.slice(0, mid)
+    const part2 = base.slice(mid)
+    primaryExtensions.forEach(ext => {
+      candidates.push(`${part1}${part2}${ext}`)
+      candidates.push(`${part2}${part1}${ext}`)
+    })
+  }
+  
+  return Array.from(new Set(candidates))
+}
 
-  const uniqueDomains = Array.from(new Set(candidates))
+// Contact Generator: Smart domain matching for product keywords
+export async function findContactEmails({ keyword, maxResults = 20 }: { keyword: string; maxResults?: number }) {
+  if (!keyword || keyword.length < 2) return []
+  
+  const base = keyword.toLowerCase().replace(/[^a-z0-9]/g, "") // Remove special chars
+  
+  devLog("[contact-gen] Searching for keyword:", keyword, "base:", base)
+  
+  const uniqueDomains = generateDomainsFromKeyword(keyword)
   devLog("[contact-gen] Checking", uniqueDomains.length, "candidate domains")
 
   // Try domains in parallel batches with global timeout
@@ -1066,8 +1092,8 @@ export async function extractPublicEmailsEnhanced(params: {
   
   // Get domains from keyword
   if (params.keyword && params.keyword.trim()) {
-    const matchedDomains = await findContactEmails({ keyword: params.keyword.trim(), maxResults: 5 })
-    normalizedDomainsList.push(...matchedDomains.map(r => r.domain))
+    const keywordDomains = generateDomainsFromKeyword(params.keyword.trim())
+    normalizedDomainsList.push(...keywordDomains)
   }
   
   const uniqueDomains = Array.from(new Set(normalizedDomainsList))
@@ -1083,8 +1109,8 @@ export async function extractPublicEmailsEnhanced(params: {
   const all: PublicEmailResult[] = []
   const seen = new Set<string>()
   
-  // Run all methods in parallel for each domain
-  const domainPromises = uniqueDomains.slice(0, 30).map(async (domain) => {
+  // Run all methods in parallel for each domain - check up to 50 domains
+  const domainPromises = uniqueDomains.slice(0, 50).map(async (domain) => {
     const domainResults: PublicEmailResult[] = []
     
     try {
@@ -1122,7 +1148,7 @@ export async function extractPublicEmailsEnhanced(params: {
   const resultsArrays = await Promise.race([
     Promise.all(domainPromises),
     new Promise<PublicEmailResult[][]>((resolve) => 
-      setTimeout(() => resolve([]), 35000) // Increased from 25s to 35s for more thorough search
+      setTimeout(() => resolve([]), 45000) // Increased to 45s for checking 50 domains
     )
   ])
   

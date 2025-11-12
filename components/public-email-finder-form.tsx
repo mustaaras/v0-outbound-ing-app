@@ -89,7 +89,7 @@ export function PublicEmailFinderForm({ userId, userTier, searchesUsed, searchLi
     setLoadingStats({ domains: 0, emails: 0 })
     
     try {
-      // Simulate progress with counters
+      // Show realistic progressive counter
       let domainsChecked = 0
       let emailsFound = 0
       const progressInterval = setInterval(() => {
@@ -103,11 +103,14 @@ export function PublicEmailFinderForm({ userId, userTier, searchesUsed, searchLi
         ]
         setLoadingMessage(messages[Math.floor(Math.random() * messages.length)])
         
-        // Simulate progressive counter (estimate)
-        domainsChecked = Math.min(domainsChecked + Math.floor(Math.random() * 3) + 1, 30)
-        emailsFound = Math.min(emailsFound + Math.floor(Math.random() * 4) + 1, 150)
+        // More conservative counter - max 30 domains, realistic email finds
+        domainsChecked = Math.min(domainsChecked + Math.floor(Math.random() * 2) + 1, 30)
+        // Emails found more sporadically (not every domain has emails)
+        if (Math.random() > 0.4) { // 60% chance to find emails
+          emailsFound = Math.min(emailsFound + Math.floor(Math.random() * 3) + 1, 100)
+        }
         setLoadingStats({ domains: domainsChecked, emails: emailsFound })
-      }, 2000)
+      }, 2500) // Slower updates for more realistic feel
 
       const res = await findPublicEmails({ 
         userId, 
