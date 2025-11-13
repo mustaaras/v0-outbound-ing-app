@@ -11,11 +11,6 @@ export interface LocationSearchResult {
   placesWithWebsites: number
   placesWithPhones: number
   places: GooglePlace[]
-  emailPatterns?: Array<{
-    domain: string
-    businessName: string
-    patterns: string[]
-  }>
   scrapedEmails?: Array<{
     businessName: string
     website: string
@@ -31,21 +26,6 @@ export async function processLocationSearch(places: GooglePlace[]): Promise<Loca
     const domains = GoogleMapsUtils.extractDomainsFromPlaces(places)
     const placesWithWebsites = places.filter(p => p.website).length
     const placesWithPhones = places.filter(p => p.formatted_phone_number).length
-
-    // Generate email patterns for businesses with websites
-    const emailPatterns = places
-      .filter(p => p.website) // Only businesses with websites
-      .map(place => {
-        const domain = GoogleMapsUtils.extractDomain(place.website!)
-        if (!domain) return null
-
-        return {
-          domain,
-          businessName: place.name,
-          patterns: GoogleMapsUtils.generateEmailPatterns(domain, place.name)
-        }
-      })
-      .filter((item): item is NonNullable<typeof item> => item !== null)
 
     // Scrape websites for real email addresses (limit to first 5 to avoid rate limits)
     const scrapedEmails = []
@@ -84,7 +64,6 @@ export async function processLocationSearch(places: GooglePlace[]): Promise<Loca
       placesWithWebsites,
       placesWithPhones,
       places, // Return full place data
-      emailPatterns,
       scrapedEmails,
     }
 

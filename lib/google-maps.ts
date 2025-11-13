@@ -109,39 +109,6 @@ export class GoogleMapsUtils {
   }
 
   /**
-   * Generate common email patterns for a domain
-   * This uses heuristics - not guaranteed to work but better than nothing
-   */
-  static generateEmailPatterns(domain: string, businessName?: string): string[] {
-    const patterns: string[] = []
-
-    // Common business email patterns
-    patterns.push(`info@${domain}`)
-    patterns.push(`contact@${domain}`)
-    patterns.push(`hello@${domain}`)
-    patterns.push(`sales@${domain}`)
-    patterns.push(`support@${domain}`)
-    patterns.push(`admin@${domain}`)
-    patterns.push(`office@${domain}`)
-
-    // Name-based patterns if business name provided
-    if (businessName) {
-      const cleanName = businessName.toLowerCase()
-        .replace(/[^a-z0-9\s]/g, '') // Remove special chars
-        .replace(/\s+/g, '') // Remove spaces
-        .substring(0, 20) // Limit length
-
-      if (cleanName.length > 0) {
-        patterns.push(`${cleanName}@${domain}`)
-        patterns.push(`${cleanName}office@${domain}`)
-        patterns.push(`${cleanName}contact@${domain}`)
-      }
-    }
-
-    return [...new Set(patterns)] // Remove duplicates
-  }
-
-  /**
    * Simple email validation
    */
   static isValidEmailFormat(email: string): boolean {

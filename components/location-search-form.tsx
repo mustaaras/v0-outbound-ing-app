@@ -27,11 +27,6 @@ interface ProcessingResult {
   placesWithWebsites: number
   placesWithPhones: number
   places: GooglePlace[]
-  emailPatterns?: Array<{
-    domain: string
-    businessName: string
-    patterns: string[]
-  }>
   scrapedEmails?: Array<{
     businessName: string
     website: string
@@ -62,6 +57,8 @@ export function LocationSearchForm({ isLoading: externalLoading }: LocationSearc
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<google.maps.Map | null>(null)
   const markersRef = useRef<google.maps.Marker[]>([])
+  const locationInputRef = useRef<HTMLInputElement>(null)
+  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null)
 
   const { toast } = useToast()
 
@@ -160,18 +157,35 @@ export function LocationSearchForm({ isLoading: externalLoading }: LocationSearc
   useEffect(() => {
     if (mapsLoaded && googleMaps && mapRef.current && !mapInstanceRef.current) {
       try {
-        // Default to a central location (can be updated based on user location)
-        const defaultLocation = { lat: 40.7128, lng: -74.0060 } // New York City
+        // Start with a world view - user can zoom in to their area of interest
+        const defaultLocation = { lat: 20, lng: 0 } // Center of the world
 
         mapInstanceRef.current = new googleMaps.Map(mapRef.current, {
           center: defaultLocation,
-          zoom: 12,
+          zoom: 2, // World view
           mapTypeControl: false,
           streetViewControl: false,
           fullscreenControl: false,
         })
 
         devLog("[v0] Google Maps initialized")
+
+        // Initialize autocomplete for location input
+        if (locationInputRef.current) {
+          autocompleteRef.current = new googleMaps.places.Autocomplete(locationInputRef.current, {
+            types: ['(cities)'], // Restrict to cities for better UX
+            fields: ['formatted_address', 'geometry', 'name']
+          })
+
+          // Listen for place selection
+          autocompleteRef.current.addListener('place_changed', () => {
+            const place = autocompleteRef.current?.getPlace()
+            if (place && place.formatted_address) {
+              setLocation(place.formatted_address)
+              devLog("[v0] Location selected from autocomplete:", place.formatted_address)
+            }
+          })
+        }
       } catch (error) {
         errorLog("[v0] Failed to initialize map:", error)
       }
@@ -237,7 +251,7 @@ export function LocationSearchForm({ isLoading: externalLoading }: LocationSearc
     if (!searchQuery.trim() && !location.trim()) {
       toast({
         title: "Error",
-        description: "Please enter a search query or location.",
+        description: "Please enter a search query (e.g., 'restaurants') and/or location (e.g., 'New York, NY').",
         variant: "destructive",
       })
       return
@@ -249,13 +263,19 @@ export function LocationSearchForm({ isLoading: externalLoading }: LocationSearc
       const service = new googleMaps.places.PlacesService(document.createElement('div'))
 
       // Build search request
-      const request: google.maps.places.TextSearchRequest = {
-        query: searchQuery.trim(),
+      let queryText = searchQuery.trim()
+
+      // Include location in the query if provided
+      if (location.trim()) {
+        queryText = `${queryText} in ${location.trim()}`
       }
 
-      // Add location bias if provided
+      const request: google.maps.places.TextSearchRequest = {
+        query: queryText,
+      }
+
+      // Try to geocode the location for additional location bias
       if (location.trim()) {
-        // Try to geocode the location first
         const geocoder = new googleMaps.Geocoder()
         const geocodeResult = await new Promise<google.maps.LatLng | null>((resolve) => {
           geocoder.geocode({ address: location.trim() }, (results, status) => {
@@ -270,6 +290,15 @@ export function LocationSearchForm({ isLoading: externalLoading }: LocationSearc
         if (geocodeResult) {
           request.location = geocodeResult
           request.radius = parseInt(radius) || 5000
+
+          // Update map center to the geocoded location
+          if (mapInstanceRef.current) {
+            mapInstanceRef.current.setCenter(geocodeResult)
+            mapInstanceRef.current.setZoom(12)
+          }
+        } else {
+          // If geocoding fails, still try the search with location in query
+          devLog("[v0] Geocoding failed for location:", location.trim(), "but proceeding with query-based search")
         }
       }
 
@@ -466,7 +495,7 @@ export function LocationSearchForm({ isLoading: externalLoading }: LocationSearc
             Location-Based Business Search
           </CardTitle>
           <CardDescription>
-            Find businesses in specific locations using Google Maps. Results will be processed for contact information.
+            Find businesses in any city or location using Google Maps. Enter a search term like "restaurants" and select a location from the autocomplete dropdown to find businesses anywhere in the world.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -486,8 +515,9 @@ export function LocationSearchForm({ isLoading: externalLoading }: LocationSearc
                 <Label htmlFor="location">Location</Label>
                 <div className="flex gap-2">
                   <Input
+                    ref={locationInputRef}
                     id="location"
-                    placeholder="e.g., New York, NY or 40.7128,-74.0060"
+                    placeholder="Start typing a city name (autocomplete available)"
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                   />
@@ -651,36 +681,6 @@ export function LocationSearchForm({ isLoading: externalLoading }: LocationSearc
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {processingResults.emailPatterns && processingResults.emailPatterns.length > 0 && (
-              <div className="mb-6">
-                <h3 className="text-sm font-semibold mb-3">📧 Potential Email Patterns</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {processingResults.emailPatterns.slice(0, 6).map((patternSet, index) => (
-                    <div key={index} className="p-3 border rounded-lg bg-muted/30">
-                      <p className="text-xs font-medium text-muted-foreground mb-2">
-                        {patternSet.businessName} ({patternSet.domain})
-                      </p>
-                      <div className="space-y-1">
-                        {patternSet.patterns.slice(0, 3).map((email, emailIndex) => (
-                          <p key={emailIndex} className="text-xs font-mono text-blue-600">
-                            {email}
-                          </p>
-                        ))}
-                        {patternSet.patterns.length > 3 && (
-                          <p className="text-xs text-muted-foreground">
-                            +{patternSet.patterns.length - 3} more patterns
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <p className="text-xs text-muted-foreground mt-3">
-                  ⚠️ These are generated patterns - verify emails manually. For accurate emails, consider using a professional email finder service.
-                </p>
-              </div>
-            )}
-
             {processingResults.scrapedEmails && processingResults.scrapedEmails.length > 0 && (
               <div className="mb-6">
                 <h3 className="text-sm font-semibold mb-3">✨ Real Emails Found (Website Scraping)</h3>
