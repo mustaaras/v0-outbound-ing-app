@@ -1,12 +1,13 @@
 "use client"
 
 import { useState, useCallback, useRef, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Loader2, MapPin, Search, Building2, Globe, Crown } from "lucide-react"
+import { Loader2, MapPin, Search, Building2, Globe, Crown, Send } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { GooglePlace, LocationSearchParams, LocationSearchResult } from "@/lib/google-maps"
 import { processLocationSearch, validateLocationSearchAccess } from "@/app/actions/location-search"
@@ -61,6 +62,16 @@ export function LocationSearchForm({ isLoading: externalLoading }: LocationSearc
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null)
 
   const { toast } = useToast()
+  const router = useRouter()
+
+  const sendEmailToGenerator = useCallback((email: string, businessName: string) => {
+    const params = new URLSearchParams({
+      recipientEmail: email,
+      recipientName: businessName,
+      recipientCompany: businessName,
+    })
+    router.push(`/generator?${params.toString()}`)
+  }, [router])
 
   // Load Google Maps API
   useEffect(() => {
@@ -315,6 +326,7 @@ export function LocationSearchForm({ isLoading: externalLoading }: LocationSearc
             // Get detailed information for each place to ensure we have websites and phone numbers
             const detailedPlaces: GooglePlace[] = []
 
+            // LIMIT: Maximum 10 places from Google Places API to avoid excessive API usage
             for (const result of results.slice(0, 10)) { // Limit to first 10 for performance
               try {
                 // Get place details for complete information
@@ -705,9 +717,20 @@ export function LocationSearchForm({ isLoading: externalLoading }: LocationSearc
                       {scraped.emails.length > 0 ? (
                         <div className="space-y-1">
                           {scraped.emails.map((email, emailIndex) => (
-                            <p key={emailIndex} className="text-xs font-mono text-green-700 dark:text-green-300 font-semibold">
-                              📧 {email}
-                            </p>
+                            <div key={emailIndex} className="flex items-center justify-between">
+                              <p className="text-xs font-mono text-green-700 dark:text-green-300 font-semibold">
+                                📧 {email}
+                              </p>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-6 px-2 text-xs"
+                                onClick={() => sendEmailToGenerator(email, scraped.businessName)}
+                              >
+                                <Send className="h-3 w-3 mr-1" />
+                                Send Email
+                              </Button>
+                            </div>
                           ))}
                         </div>
                       ) : (

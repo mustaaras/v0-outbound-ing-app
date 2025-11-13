@@ -152,10 +152,25 @@ export class GoogleMapsUtils {
         return { emails: [], success: false, error: `HTTP ${response.status}` }
       }
 
+      // Check content type to avoid scraping images, PDFs, etc.
+      const contentType = response.headers.get('content-type') || ''
+      if (!contentType.includes('text/html') && !contentType.includes('application/xhtml')) {
+        return { emails: [], success: false, error: 'Not an HTML page' }
+      }
+
       const html = await response.text()
 
-      // Look for contact pages
+      // Skip if this looks like an image or binary content
+      if (html.length < 100 || html.includes('<html') === false) {
+        return { emails: [], success: false, error: 'Invalid HTML content' }
+      }
+
+      // Look for contact pages - but filter out image URLs
       const contactUrls = this.findContactPages(html, website)
+        .filter(url => !url.includes('.png') && !url.includes('.jpg') && !url.includes('.jpeg') && 
+                     !url.includes('.gif') && !url.includes('.svg') && !url.includes('.webp') &&
+                     !url.includes('.pdf') && !url.includes('.doc') && !url.includes('.docx'))
+
       let allEmails: string[] = []
 
       // Scrape main page
@@ -171,8 +186,20 @@ export class GoogleMapsUtils {
             signal: AbortSignal.timeout(8000),
           })
 
+          // Check content type for contact pages too
+          const contactContentType = contactResponse.headers.get('content-type') || ''
+          if (!contactContentType.includes('text/html') && !contactContentType.includes('application/xhtml')) {
+            continue // Skip non-HTML content
+          }
+
           if (contactResponse.ok) {
             const contactHtml = await contactResponse.text()
+            
+            // Skip if this looks like an image or binary content
+            if (contactHtml.length < 100 || contactHtml.includes('<html') === false) {
+              continue
+            }
+            
             const contactEmails = this.extractEmailsFromText(contactHtml)
             allEmails = allEmails.concat(contactEmails)
           }
@@ -185,7 +212,10 @@ export class GoogleMapsUtils {
       // Remove duplicates and filter valid emails
       const uniqueEmails = [...new Set(allEmails)]
         .filter(email => this.isValidEmailFormat(email))
-        .filter(email => !email.includes('noreply') && !email.includes('no-reply'))
+        .filter(email => !email.includes('noreply') && !email.includes('no-reply') && 
+                        !email.includes('donotreply') && !email.includes('do-not-reply') &&
+                        !email.includes('example.com') && !email.includes('test.com') &&
+                        !email.includes('sample.com'))
         .slice(0, 5) // Limit to 5 emails per site
 
       return { emails: uniqueEmails, success: true }
