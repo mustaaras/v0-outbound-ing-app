@@ -125,12 +125,75 @@ export async function findContactEmails({ keyword, maxResults = 20 }: { keyword:
 import "server-only"
 
 import { devLog, errorLog } from "@/lib/logger"
+import { createClient } from "@/lib/supabase/server"
 
 export interface PublicEmailResult {
   domain: string
   email: string
   type: "generic" | "personal"
   sourceUrl: string
+}
+
+/**
+ * Get cached emails from database for given domains
+ */
+async function getCachedEmails(domains: string[]): Promise<PublicEmailResult[]> {
+  if (domains.length === 0) return []
+  
+  try {
+    const supabase = await createClient()
+    const { data, error } = await supabase
+      .from('email_cache')
+      .select('domain, email, email_type, source_url')
+      .in('domain', domains)
+      .eq('is_valid', true)
+      .order('verification_count', { ascending: false })
+      .limit(150)
+    
+    if (error) {
+      errorLog('[email-cache] Error fetching cached emails:', error)
+      return []
+    }
+    
+    return (data || []).map(row => ({
+      domain: row.domain,
+      email: row.email,
+      type: row.email_type as "generic" | "personal",
+      sourceUrl: row.source_url
+    }))
+  } catch (e) {
+    errorLog('[email-cache] Exception fetching cached emails:', e)
+    return []
+  }
+}
+
+/**
+ * Save newly found emails to cache
+ */
+async function cacheEmails(results: PublicEmailResult[]): Promise<void> {
+  if (results.length === 0) return
+  
+  try {
+    const supabase = await createClient()
+    const rows = results.map(r => ({
+      domain: r.domain,
+      email: r.email,
+      email_type: r.type,
+      source_url: r.sourceUrl
+    }))
+    
+    // Use upsert to handle duplicates (increment verification_count)
+    await supabase
+      .from('email_cache')
+      .upsert(rows, {
+        onConflict: 'email,domain',
+        ignoreDuplicates: false
+      })
+    
+    devLog('[email-cache] Cached', results.length, 'emails')
+  } catch (e) {
+    errorLog('[email-cache] Exception caching emails:', e)
+  }
 }
 
 interface ExtractOptions {
@@ -1106,11 +1169,19 @@ export async function extractPublicEmailsEnhanced(params: {
   
   devLog("[email-enhanced] Starting enhanced search for", uniqueDomains.length, "domains")
   
-  const all: PublicEmailResult[] = []
-  const seen = new Set<string>()
+  // Check cache first
+  const cachedResults = await getCachedEmails(uniqueDomains)
+  const cachedDomains = new Set(cachedResults.map(r => r.domain))
+  const domainsToSearch = uniqueDomains.filter(d => !cachedDomains.has(d))
+  
+  devLog("[email-enhanced] Found", cachedResults.length, "cached emails from", cachedDomains.size, "domains")
+  devLog("[email-enhanced] Need to search", domainsToSearch.length, "new domains")
+  
+  const all: PublicEmailResult[] = [...cachedResults]
+  const seen = new Set<string>(cachedResults.map(r => r.email.toLowerCase()))
   
   // Run all methods in parallel for each domain - check up to 50 domains
-  const domainPromises = uniqueDomains.slice(0, 50).map(async (domain) => {
+  const domainPromises = domainsToSearch.slice(0, 50).map(async (domain) => {
     const domainResults: PublicEmailResult[] = []
     
     try {
@@ -1152,14 +1223,21 @@ export async function extractPublicEmailsEnhanced(params: {
   ])
   
   // Flatten and limit total
+  const newResults: PublicEmailResult[] = []
   for (const domainResults of resultsArrays) {
     for (const result of domainResults) {
       if (all.length >= totalCap) break
       all.push(result)
+      newResults.push(result) // Track new results for caching
     }
     if (all.length >= totalCap) break
   }
   
-  devLog("[email-enhanced] Found", all.length, "total emails from", uniqueDomains.length, "domains")
+  // Cache newly found emails for future searches
+  if (newResults.length > 0) {
+    await cacheEmails(newResults)
+  }
+  
+  devLog("[email-enhanced] Found", all.length, "total emails (", cachedResults.length, "cached,", newResults.length, "new)")
   return { results: all }
 }
