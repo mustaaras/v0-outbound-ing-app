@@ -32,6 +32,12 @@ interface ProcessingResult {
     businessName: string
     patterns: string[]
   }>
+  scrapedEmails?: Array<{
+    businessName: string
+    website: string
+    emails: string[]
+    success: boolean
+  }>
 }
 
 interface LocationSearchFormProps {
@@ -671,6 +677,49 @@ export function LocationSearchForm({ isLoading: externalLoading }: LocationSearc
                 </div>
                 <p className="text-xs text-muted-foreground mt-3">
                   ⚠️ These are generated patterns - verify emails manually. For accurate emails, consider using a professional email finder service.
+                </p>
+              </div>
+            )}
+
+            {processingResults.scrapedEmails && processingResults.scrapedEmails.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-sm font-semibold mb-3">✨ Real Emails Found (Website Scraping)</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {processingResults.scrapedEmails.map((scraped, index) => (
+                    <div key={index} className="p-3 border rounded-lg bg-green-50 dark:bg-green-950/20">
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-xs font-medium text-muted-foreground">
+                          {scraped.businessName}
+                        </p>
+                        <span className={`text-xs px-2 py-1 rounded ${
+                          scraped.success
+                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                            : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                        }`}>
+                          {scraped.success ? '✅ Found' : '❌ Failed'}
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground mb-2">
+                        🌐 {scraped.website}
+                      </p>
+                      {scraped.emails.length > 0 ? (
+                        <div className="space-y-1">
+                          {scraped.emails.map((email, emailIndex) => (
+                            <p key={emailIndex} className="text-xs font-mono text-green-700 dark:text-green-300 font-semibold">
+                              📧 {email}
+                            </p>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-xs text-muted-foreground italic">
+                          No emails found on website
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground mt-3">
+                  🎯 Real emails scraped from business websites! These are verified contact addresses.
                 </p>
               </div>
             )}

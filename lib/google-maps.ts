@@ -148,6 +148,133 @@ export class GoogleMapsUtils {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     return emailRegex.test(email)
   }
+
+  /**
+   * Extract emails from website content
+   */
+  static extractEmailsFromText(text: string): string[] {
+    const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g
+    const matches = text.match(emailRegex) || []
+    return [...new Set(matches)] // Remove duplicates
+  }
+
+  /**
+   * Scrape website for contact information
+   * Note: This is a basic implementation. In production, consider using a proper scraping service.
+   */
+  static async scrapeWebsiteForContacts(website: string): Promise<{
+    emails: string[]
+    success: boolean
+    error?: string
+  }> {
+    try {
+      // Basic validation
+      if (!website.startsWith('http')) {
+        website = 'https://' + website
+      }
+
+      const response = await fetch(website, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; OutboundBot/1.0)',
+        },
+        // Timeout after 10 seconds
+        signal: AbortSignal.timeout(10000),
+      })
+
+      if (!response.ok) {
+        return { emails: [], success: false, error: `HTTP ${response.status}` }
+      }
+
+      const html = await response.text()
+
+      // Look for contact pages
+      const contactUrls = this.findContactPages(html, website)
+      let allEmails: string[] = []
+
+      // Scrape main page
+      allEmails = allEmails.concat(this.extractEmailsFromText(html))
+
+      // Try to scrape contact pages (limit to 2 to avoid too many requests)
+      for (const contactUrl of contactUrls.slice(0, 2)) {
+        try {
+          const contactResponse = await fetch(contactUrl, {
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (compatible; OutboundBot/1.0)',
+            },
+            signal: AbortSignal.timeout(8000),
+          })
+
+          if (contactResponse.ok) {
+            const contactHtml = await contactResponse.text()
+            const contactEmails = this.extractEmailsFromText(contactHtml)
+            allEmails = allEmails.concat(contactEmails)
+          }
+        } catch (error) {
+          // Continue if contact page fails
+          continue
+        }
+      }
+
+      // Remove duplicates and filter valid emails
+      const uniqueEmails = [...new Set(allEmails)]
+        .filter(email => this.isValidEmailFormat(email))
+        .filter(email => !email.includes('noreply') && !email.includes('no-reply'))
+        .slice(0, 5) // Limit to 5 emails per site
+
+      return { emails: uniqueEmails, success: true }
+    } catch (error) {
+      return {
+        emails: [],
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      }
+    }
+  }
+
+  /**
+   * Find contact page URLs from website HTML
+   */
+  static findContactPages(html: string, baseUrl: string): string[] {
+    const contactUrls: string[] = []
+
+    try {
+      const url = new URL(baseUrl)
+      const baseDomain = url.origin
+
+      // Common contact page patterns
+      const patterns = [
+        /href=["']([^"']*contact[^"']*)["']/gi,
+        /href=["']([^"']*about[^"']*)["']/gi,
+        /href=["']([^"']*reach[^"']*)["']/gi,
+        /href=["']([^"']*connect[^"']*)["']/gi,
+      ]
+
+      for (const pattern of patterns) {
+        let match
+        while ((match = pattern.exec(html)) !== null) {
+          let href = match[1]
+          if (href.startsWith('/')) {
+            href = baseDomain + href
+          } else if (!href.startsWith('http')) {
+            href = baseDomain + '/' + href
+          }
+
+          if (href.includes('contact') || href.includes('about')) {
+            contactUrls.push(href)
+          }
+        }
+      }
+
+      // Add common contact URLs
+      contactUrls.push(`${baseDomain}/contact`)
+      contactUrls.push(`${baseDomain}/about`)
+      contactUrls.push(`${baseDomain}/contact-us`)
+
+      return [...new Set(contactUrls)]
+    } catch {
+      return []
+    }
+  }
 }
 
 // Placeholder for future client-side Google Maps integration
