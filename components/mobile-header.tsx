@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { getUnreadAdminMessagesCount } from "@/app/actions/admin-reply"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Menu, X, Home, Wand2, Archive, Settings, Users, Coins, Rocket, Crown, LogOut, Shield, BookUser, HelpCircle } from "lucide-react"
@@ -40,9 +41,23 @@ const getNavigation = (userEmail: string) => {
 
 export function MobileHeader({ user }: MobileHeaderProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const [unreadCount, setUnreadCount] = useState(0)
   const pathname = usePathname()
   const router = useRouter()
   const navigation = getNavigation(user.email)
+
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      const { count } = await getUnreadAdminMessagesCount()
+      setUnreadCount(count)
+    }
+
+    fetchUnreadCount()
+
+    // Refresh count every 30 seconds
+    const interval = setInterval(fetchUnreadCount, 30000)
+    return () => clearInterval(interval)
+  }, [])
 
   const handleLogout = async () => {
     const supabase = createClient()
@@ -75,6 +90,7 @@ export function MobileHeader({ user }: MobileHeaderProps) {
             {navigation.map((item) => {
               const isActive = pathname === item.href
               const Icon = item.icon
+              const isSupportTab = item.name === "Help & Support"
 
               return (
                 <Link
@@ -94,6 +110,13 @@ export function MobileHeader({ user }: MobileHeaderProps) {
                     <Badge variant="secondary" className="ml-1 text-[10px] px-1.5 py-0 h-4">
                       {item.badge}
                     </Badge>
+                  )}
+                  {isSupportTab && unreadCount > 0 && (
+                    <div className="ml-auto">
+                      <div className="flex h-2 w-2 items-center justify-center rounded-full bg-red-500">
+                        <div className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
+                      </div>
+                    </div>
                   )}
                   {item.name === "Upgrade" && user.tier === "free" && (
                     <Badge variant="secondary" className="ml-auto">

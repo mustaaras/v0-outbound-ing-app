@@ -2,7 +2,6 @@
 
 import { createServiceClient } from "@/lib/supabase/server"
 import { getCurrentUser } from "@/lib/auth-utils"
-import { sendAdminReplyEmail } from "@/lib/email/send"
 import { errorLog, devLog } from "@/lib/logger"
 
 export async function sendAdminReply(supportMessageId: string, message: string) {
@@ -51,15 +50,6 @@ export async function sendAdminReply(supportMessageId: string, message: string) 
       throw new Error("Failed to save admin reply")
     }
 
-    // Send email notification to user
-    try {
-      await sendAdminReplyEmail((supportMessage as any).users.email, message.trim())
-      devLog("[Admin Reply] Email sent successfully to:", (supportMessage as any).users.email)
-    } catch (emailError) {
-      errorLog("[Admin Reply] Failed to send email notification:", emailError)
-      // Don't fail the whole operation if email fails
-    }
-
     devLog("[Admin Reply] Admin reply sent successfully:", reply.id)
     return { success: true, reply }
 
@@ -69,5 +59,42 @@ export async function sendAdminReply(supportMessageId: string, message: string) 
       success: false,
       error: error instanceof Error ? error.message : "Unknown error occurred"
     }
+  }
+}
+
+export async function getUnreadAdminMessagesCount() {
+  try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return { count: 0 }
+    }
+
+    const supabase = await createServiceClient()
+
+    // Get all admin replies for this user's support messages
+    const { data: adminReplies, error } = await supabase
+      .from("admin_replies")
+      .select(`
+        id,
+        created_at,
+        support_message_id,
+        support_messages!inner(user_id)
+      `)
+      .eq("support_messages.user_id", user.id)
+
+    if (error) {
+      errorLog("[Unread Messages] Failed to fetch admin replies:", error)
+      return { count: 0 }
+    }
+
+    // For now, we'll consider all admin replies as "unread" since we don't have a read status
+    // In a future enhancement, we could add a read_at timestamp
+    const count = adminReplies?.length || 0
+
+    return { count }
+
+  } catch (error) {
+    errorLog("[Unread Messages] Error:", error)
+    return { count: 0 }
   }
 }

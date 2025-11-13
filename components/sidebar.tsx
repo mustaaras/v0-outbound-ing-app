@@ -8,6 +8,8 @@ import type { User } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { createClient } from "@/lib/supabase/client"
+import { useEffect, useState } from "react"
+import { getUnreadAdminMessagesCount } from "@/app/actions/admin-reply"
 import { useRouter } from "next/navigation"
 import { ThemeToggle } from "@/components/theme-toggle"
 
@@ -42,8 +44,21 @@ const getNavigation = (userEmail: string) => {
 export function Sidebar({ user }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
+  const [unreadCount, setUnreadCount] = useState(0)
   let navigation = getNavigation(user.email)
-  // Add Support tab for paid tiers only
+
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      const { count } = await getUnreadAdminMessagesCount()
+      setUnreadCount(count)
+    }
+
+    fetchUnreadCount()
+
+    // Refresh count every 30 seconds
+    const interval = setInterval(fetchUnreadCount, 30000)
+    return () => clearInterval(interval)
+  }, [])
   
 
   const handleLogout = async () => {
@@ -70,6 +85,7 @@ export function Sidebar({ user }: SidebarProps) {
         {navigation.map((item) => {
           const isActive = pathname === item.href
           const Icon = item.icon
+          const isSupportTab = item.name === "Help & Support"
 
           return (
             <Link
@@ -88,6 +104,13 @@ export function Sidebar({ user }: SidebarProps) {
                 <Badge variant="secondary" className="ml-1 text-[10px] px-1.5 py-0 h-4">
                   {item.badge}
                 </Badge>
+              )}
+              {isSupportTab && unreadCount > 0 && (
+                <div className="ml-auto">
+                  <div className="flex h-2 w-2 items-center justify-center rounded-full bg-red-500">
+                    <div className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
+                  </div>
+                </div>
               )}
               {item.name === "Upgrade" && user.tier === "free" && (
                 <Badge variant="secondary" className="ml-auto">
