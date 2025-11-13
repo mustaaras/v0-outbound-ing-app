@@ -8,9 +8,11 @@ export default function TermsPage() {
       <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <span className="text-lg font-bold">O</span>
-            </div>
+            <img
+              src="/logos/logo-o-new.svg"
+              alt="Outbound.ing Logo"
+              className="h-8 w-8"
+            />
             <span className="text-lg font-semibold">Outbound.ing</span>
           </Link>
           <Button asChild variant="ghost" size="sm">
@@ -26,7 +28,7 @@ export default function TermsPage() {
         <div className="mx-auto max-w-4xl space-y-8">
           <div className="space-y-4">
             <h1 className="text-4xl font-bold tracking-tight">Terms of Service</h1>
-            <p className="text-muted-foreground">Last updated: November 9, 2025</p>
+            <p className="text-muted-foreground">Last updated: November 14, 2025</p>
           </div>
 
           <div className="space-y-6 text-base leading-relaxed">
@@ -41,7 +43,7 @@ export default function TermsPage() {
             <section className="space-y-3">
               <h2 className="text-2xl font-semibold">2. Description of Service</h2>
               <p>
-                Outbound.ing provides AI-powered cold email generation tools for sales and outreach purposes. The
+                Outbound.ing provides AI-powered email generation tools for sales and outreach purposes. The
                 Service includes access to 150+ sales strategies across 14 industry categories (including Local Services,
                 Hospitality & Food Service, Healthcare & Wellness, Retail & Shopping, and Fitness & Personal Care),
                 customizable email templates, location-based business contact search with Google Places integration,
@@ -54,13 +56,13 @@ export default function TermsPage() {
               <p>We offer three subscription tiers:</p>
               <ul className="list-disc space-y-2 pl-6">
                 <li>
-                  <strong>Free Plan:</strong> 30 email generations per month, 60 location searches per month, access to basic strategies
+                  <strong>Free Plan:</strong> 30 email generations per month, 20 location searches per month, access to basic strategies
                 </li>
                 <li>
                   <strong>Light Plan:</strong> 300 email generations per month, unlimited location searches, access to all strategies, A/B testing variants, additional instructions (200 characters), billed at $15/month or $12/month annually (20% discount)
                 </li>
                 <li>
-                  <strong>Pro Plan:</strong> Unlimited email generations, unlimited location searches with advanced features (up to 10 websites per search, 3 emails per website), access to all strategies, A/B testing variants, multi-language support, additional instructions (300 characters), billed at $39/month or $31.20/month annually (20% discount)
+                  <strong>Pro Plan:</strong> Unlimited email generations, unlimited location searches with advanced features (up to 10 websites per search, 3 emails per website), access to all strategies, A/B testing variants, multi-language support, additional instructions (300 characters), billed at $29/month or $23.20/month annually (20% discount)
                 </li>
               </ul>
               <p className="pt-2">
@@ -101,7 +103,7 @@ export default function TermsPage() {
               <p>
                 The contact search feature collects business information from public sources including Google Places API
                 and business websites. We automatically extract up to 3 email addresses per website for Pro users and
-                limit searches to prevent abuse. Free users get 60 searches per month, Light users get unlimited searches,
+                limit searches to prevent abuse. Free users get 20 searches per month, Light users get unlimited searches,
                 and Pro users get unlimited searches with advanced features. All collected data is used solely for
                 providing the contact search service and is not shared with third parties for marketing purposes.
               </p>
