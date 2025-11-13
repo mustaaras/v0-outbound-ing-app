@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { getUnreadAdminMessagesCount } from "@/app/actions/admin-reply"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Menu, X, Home, Wand2, Archive, Settings, Users, Coins, Rocket, Crown, LogOut, Shield, BookUser, HelpCircle } from "lucide-react"
+import { Menu, X, Home, Wand2, Archive, Settings, Users, Coins, Rocket, Crown, LogOut, Shield, BookUser, MessageSquare } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import type { User } from "@/lib/types"
@@ -28,7 +28,7 @@ const getNavigation = (userEmail: string) => {
     { name: "Settings", href: "/settings", icon: Settings },
     { name: "Upgrade", href: "/upgrade", icon: Rocket },
     { name: "Pricing", href: "/pricing", icon: Coins },
-    { name: "Help & Support", href: "/help", icon: HelpCircle },
+    { name: "Support Chat", href: "/support", icon: MessageSquare },
   ]
   
   // Add admin link only for admin user
@@ -90,7 +90,7 @@ export function MobileHeader({ user }: MobileHeaderProps) {
             {navigation.map((item) => {
               const isActive = pathname === item.href
               const Icon = item.icon
-              const isSupportTab = item.name === "Help & Support"
+              const isSupportTab = item.name === "Support Chat"
 
               return (
                 <Link
