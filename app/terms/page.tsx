@@ -43,7 +43,7 @@ export default function TermsPage() {
               <p>
                 Outbound.ing provides AI-powered cold email generation tools for sales and outreach purposes. The
                 Service includes access to 101 sales strategies across multiple industries, customizable email
-                templates, and generation limits based on your subscription tier.
+                templates, location-based business search with contact extraction, support chat, and generation limits based on your subscription tier.
               </p>
             </section>
 
@@ -52,13 +52,13 @@ export default function TermsPage() {
               <p>We offer three subscription tiers:</p>
               <ul className="list-disc space-y-2 pl-6">
                 <li>
-                  <strong>Free Plan:</strong> 30 email generations per month at no cost
+                  <strong>Free Plan:</strong> 30 email generations per month, 60 location searches per month
                 </li>
                 <li>
-                  <strong>Light Plan:</strong> 300 email generations per month at $15/month (or $12/month billed annually)
+                  <strong>Light Plan:</strong> 300 email generations per month at $15/month (or $12/month billed annually), unlimited location searches
                 </li>
                 <li>
-                  <strong>Pro Plan:</strong> Unlimited email generations at $39/month (or $31.20/month billed annually)
+                  <strong>Pro Plan:</strong> Unlimited email generations at $39/month (or $31.20/month billed annually), unlimited location searches with advanced features (up to 10 websites per search, 3 emails per website)
                 </li>
               </ul>
               <p className="pt-2">
@@ -89,7 +89,18 @@ export default function TermsPage() {
               <h2 className="text-2xl font-semibold">5. Usage Limits</h2>
               <p>
                 Your monthly email generation limit resets on the same day each month as your subscription start date.
-                Unused generations do not roll over to the next month.
+                Unused generations do not roll over to the next month. Location search limits also reset monthly and
+                are tier-dependent as outlined in Section 3.
+              </p>
+            </section>
+
+            <section className="space-y-3">
+              <h2 className="text-2xl font-semibold">5.1 Contact Search & Data Collection</h2>
+              <p>
+                The contact search feature collects business information from public sources including Google Places
+                and business websites. We automatically extract up to 3 email addresses per website for Pro users and
+                limit searches to prevent abuse. All collected data is used solely for providing the contact search
+                service and is not shared with third parties for marketing purposes.
               </p>
             </section>
 

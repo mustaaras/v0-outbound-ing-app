@@ -24,10 +24,10 @@ const getNavigation = (userEmail: string) => {
     { name: "My Contacts", href: "/contacts", icon: BookUser },
     { name: "Email Generator", href: "/generator", icon: Wand2 },
     { name: "Archive", href: "/archive", icon: Archive },
-    { name: "Support Chat", href: "/support", icon: MessageSquare },
     { name: "Settings", href: "/settings", icon: Settings },
     { name: "Upgrade", href: "/upgrade", icon: Rocket },
     { name: "Pricing", href: "/pricing", icon: Coins },
+    { name: "Support", href: "/support", icon: MessageSquare },
   ]
 
   // Add admin link only for admin user
@@ -98,7 +98,7 @@ export function Sidebar({ user }: SidebarProps) {
         {navigation.map((item) => {
           const isActive = pathname === item.href
           const Icon = item.icon
-          const isSupportTab = item.name === "Support Chat"
+          const isSupportTab = item.name === "Support"
 
           return (
             <Link

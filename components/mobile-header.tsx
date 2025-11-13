@@ -28,7 +28,7 @@ const getNavigation = (userEmail: string) => {
     { name: "Settings", href: "/settings", icon: Settings },
     { name: "Upgrade", href: "/upgrade", icon: Rocket },
     { name: "Pricing", href: "/pricing", icon: Coins },
-    { name: "Support Chat", href: "/support", icon: MessageSquare },
+    { name: "Support", href: "/support", icon: MessageSquare },
   ]
   
   // Add admin link only for admin user
@@ -90,7 +90,7 @@ export function MobileHeader({ user }: MobileHeaderProps) {
             {navigation.map((item) => {
               const isActive = pathname === item.href
               const Icon = item.icon
-              const isSupportTab = item.name === "Support Chat"
+              const isSupportTab = item.name === "Support"
 
               return (
                 <Link

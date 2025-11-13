@@ -35,7 +35,7 @@ export default function LandingPage() {
           <div className="mx-auto flex max-w-5xl flex-col items-center gap-8">
             <div className="inline-flex items-center gap-2 rounded-full border bg-muted px-4 py-2 text-sm">
               <Sparkles className="h-4 w-4 text-primary" />
-              <span>100+ AI-Powered Sales Strategies</span>
+              <span>100+ AI-Powered Sales Strategies + Contact Search</span>
             </div>
 
             <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
@@ -46,7 +46,7 @@ export default function LandingPage() {
 
             <p className="text-balance max-w-2xl text-lg text-muted-foreground sm:text-xl">
               AI-powered cold outreach emails for SaaS, domains, real estate, freelancing, affiliate marketing, B2B
-              services, recruiting, and more. Choose from 100+ proven strategies.
+              services, recruiting, and more. Find contacts with our location-based business search and choose from 100+ proven strategies.
             </p>
 
             <div className="flex flex-col gap-3 sm:flex-row">
@@ -125,9 +125,9 @@ export default function LandingPage() {
                   <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
                     <Users className="h-6 w-6 text-primary" />
                   </div>
-                  <h3 className="text-xl font-semibold">Multi-Industry Support</h3>
+                  <h3 className="text-xl font-semibold">Find Contacts Instantly</h3>
                   <p className="text-sm text-muted-foreground">
-                    B2B services, freelancing, investment, domain sales - whatever you sell, we have strategies for it
+                    Search businesses by location and automatically extract contact emails from up to 10 websites with our advanced scraping technology
                   </p>
                 </div>
 
@@ -137,7 +137,7 @@ export default function LandingPage() {
                   </div>
                   <h3 className="text-xl font-semibold">Direct Email Integration</h3>
                   <p className="text-sm text-muted-foreground">
-                    One click to open your email client with everything pre-filled and ready to send
+                    One click to open your email client with everything pre-filled and ready to send, or use our built-in support chat for help
                   </p>
                 </div>
 
@@ -202,7 +202,7 @@ export default function LandingPage() {
                       "9 industry categories",
                       "Basic customization",
                       "Email support",
-                      "Email Finder – 60 searches/month",
+                      "Location Search – 60 searches/month",
                     ].map((f) => (
                       <li key={f} className="flex items-start gap-2">
                         <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
@@ -265,6 +265,7 @@ export default function LandingPage() {
                     <li>101 premium strategies across 9 industries</li>
                     <li>Archive access and full customization</li>
                     <li>Direct email handoff—ready to send</li>
+                    <li>Advanced contact search with website scraping</li>
                   </ul>
                 </div>
                 <div className="text-left">
@@ -272,7 +273,7 @@ export default function LandingPage() {
                   <ul className="mt-2 space-y-2 text-sm text-muted-foreground">
                     <li>Free: 60 searches per month</li>
                     <li>Light: Unlimited searches</li>
-                    <li>Pro: Unlimited + advanced enrichment</li>
+                    <li>Pro: Unlimited + advanced enrichment (up to 10 websites, 3 emails each)</li>
                   </ul>
                 </div>
               </div>

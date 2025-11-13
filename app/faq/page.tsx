@@ -39,7 +39,8 @@ export default function FAQPage() {
                 Outbound.ing is an AI-powered platform that helps you generate professional cold emails for sales and
                 outreach. With 101 proven strategies across 9 industries (SaaS, domains, real estate, freelancing,
                 affiliate marketing, B2B services, recruiting, and more), you can create personalized emails that get
-                responses and close deals.
+                responses and close deals. We also provide location-based business search to help you find contact
+                information for potential leads.
               </AccordionContent>
             </AccordionItem>
 
@@ -50,13 +51,13 @@ export default function FAQPage() {
               <AccordionContent className="text-muted-foreground">
                 <ul className="space-y-2">
                   <li>
-                    <strong>Free Plan:</strong> 30 email generations per month
+                    <strong>Free Plan:</strong> 30 email generations per month, 60 location searches per month
                   </li>
                   <li>
-                    <strong>Light Plan:</strong> 300 emails/month at $15/month (or $12/month billed annually - save 20%)
+                    <strong>Light Plan:</strong> 300 emails/month at $15/month (or $12/month billed annually - save 20%), unlimited location searches
                   </li>
                   <li>
-                    <strong>Pro Plan:</strong> Unlimited emails at $39/month (or $31.20/month billed annually - save 20%)
+                    <strong>Pro Plan:</strong> Unlimited emails at $39/month (or $31.20/month billed annually - save 20%), unlimited location searches with advanced features (up to 10 websites per search, 3 emails per website)
                   </li>
                 </ul>
                 <p className="mt-2">All paid plans include access to all 101 premium strategies. Monthly plans renew automatically each month, annual plans renew yearly.</p>
@@ -118,6 +119,15 @@ export default function FAQPage() {
               </AccordionContent>
             </AccordionItem>
 
+            <AccordionItem value="contact-search" className="rounded-lg border bg-card px-6">
+              <AccordionTrigger className="text-left font-semibold hover:no-underline">
+                How does the contact search feature work?
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground">
+                Our location-based contact search helps you find email addresses for businesses in specific areas. Simply enter a location and business type, and we'll search Google Places for relevant businesses. For each business with a website, we automatically scrape up to 3 email addresses from their contact pages. Pro users can search up to 10 websites per query with advanced deduplication to avoid duplicate results. Free users get 60 searches per month, while paid plans offer unlimited searches.
+              </AccordionContent>
+            </AccordionItem>
+
             <AccordionItem value="customize" className="rounded-lg border bg-card px-6">
               <AccordionTrigger className="text-left font-semibold hover:no-underline">
                 Can I customize the generated emails?
@@ -166,8 +176,8 @@ export default function FAQPage() {
                 How do I get support?
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground">
-                If you have questions or need help, please contact us through your account dashboard. We typically
-                respond within 24 hours during business days.
+                If you have questions or need help, please use the Support chat in your account dashboard. We typically
+                respond within 24 hours during business days. You can also email us at support@outbound.ing for urgent issues.
               </AccordionContent>
             </AccordionItem>
           </Accordion>
