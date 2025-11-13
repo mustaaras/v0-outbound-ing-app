@@ -64,7 +64,7 @@ export default function LandingPage() {
             <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <Target className="h-4 w-4" />
-                <span>9 Categories</span>
+                <span>14 Categories</span>
               </div>
               <div className="flex items-center gap-2">
                 <Zap className="h-4 w-4" />
@@ -199,7 +199,7 @@ export default function LandingPage() {
                     {[
                       "30 emails per month",
                       "Pick 1 strategy at a time",
-                      "9 industry categories",
+                      "14 industry categories",
                       "Basic customization",
                       "Email support",
                       "Location Search – 60 searches/month",
@@ -262,7 +262,7 @@ export default function LandingPage() {
                 <div className="text-left">
                   <h3 className="font-semibold">What’s included</h3>
                   <ul className="mt-2 space-y-2 text-sm text-muted-foreground">
-                    <li>101 premium strategies across 9 industries</li>
+                    <li>101 premium strategies across 14 industries</li>
                     <li>Archive access and full customization</li>
                     <li>Direct email handoff—ready to send</li>
                     <li>Advanced contact search with website scraping</li>

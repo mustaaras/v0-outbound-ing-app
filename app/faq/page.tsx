@@ -112,9 +112,10 @@ export default function FAQPage() {
                 What are the 101 strategies?
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground">
-                Our 101 strategies are proven cold email approaches organized across 9 categories: SaaS/B2B Software,
+                Our 101+ strategies are proven cold email approaches organized across 14 categories: SaaS/B2B Software,
                 Domains & Digital Assets, Real Estate, Freelancing & Agencies, Affiliate Marketing, B2B Services,
-                Recruiting & HR, Investment & Funding, and General Sales. Each strategy is optimized for specific
+                Recruiting & HR, Investment & Funding, General Sales, Local Services, Hospitality & Food Service,
+                Healthcare & Wellness, Retail & Shopping, and Fitness & Personal Care. Each strategy is optimized for specific
                 industries and goals like booking calls, getting replies, making sales, or introducing products.
               </AccordionContent>
             </AccordionItem>
