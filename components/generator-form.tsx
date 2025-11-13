@@ -374,10 +374,10 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
   return (
     <div className="space-y-6">
       <form onSubmit={handleSubmit} className="rounded-lg border bg-card p-6 space-y-6">
-        <div className="mb-32">
+        <div className="mb-40 md:mb-48">
           <Tabs value={activeCategory} onValueChange={setActiveCategory}>
             <TabsList
-              className="grid grid-rows-3 grid-flow-col auto-cols-fr gap-2 h-auto w-full p-1 sm:flex sm:flex-wrap sm:gap-2 sm:h-9"
+              className="grid grid-rows-5 grid-flow-col auto-cols-fr gap-2 h-auto w-full p-1 sm:flex sm:flex-wrap sm:gap-2 sm:h-9"
             >
               {categories.map((cat) => (
                 <TabsTrigger
