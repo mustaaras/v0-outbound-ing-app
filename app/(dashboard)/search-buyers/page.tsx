@@ -85,12 +85,7 @@ export default async function SearchBuyersPage() {
         </TabsContent>
 
         <TabsContent value="location" className="space-y-6 mt-6">
-          <LocationSearchForm
-            onPlacesFound={async (places) => {
-              // This will be handled by the client component
-              console.log('Places found:', places)
-            }}
-          />
+          <LocationSearchForm />
         </TabsContent>
 
         <TabsContent value="public" className="space-y-6 mt-6">

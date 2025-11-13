@@ -22,11 +22,10 @@ declare global {
 }
 
 interface LocationSearchFormProps {
-  onPlacesFound?: (places: GooglePlace[]) => void
   isLoading?: boolean
 }
 
-export function LocationSearchForm({ onPlacesFound, isLoading: externalLoading }: LocationSearchFormProps) {
+export function LocationSearchForm({ isLoading: externalLoading }: LocationSearchFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [location, setLocation] = useState("")
@@ -307,7 +306,6 @@ export function LocationSearchForm({ onPlacesFound, isLoading: externalLoading }
       } else {
         setPlaces(result.places)
         addMarkersToMap(result.places)
-        onPlacesFound?.(result.places)
 
         // Process places for domain extraction and contact search
         processPlaces(result.places)
@@ -328,7 +326,7 @@ export function LocationSearchForm({ onPlacesFound, isLoading: externalLoading }
     } finally {
       setIsLoading(false)
     }
-  }, [googleMaps, mapsLoaded, searchQuery, location, businessType, radius, addMarkersToMap, onPlacesFound, processPlaces, toast])
+  }, [googleMaps, mapsLoaded, searchQuery, location, businessType, radius, addMarkersToMap, processPlaces, toast])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
