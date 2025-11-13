@@ -6,8 +6,9 @@ import { createClient } from "@/lib/supabase/server"
 import { SNOV_SEARCH_LIMITS, PUBLIC_EMAIL_SEARCH_LIMITS } from "@/lib/types"
 import { SearchContactsForm } from "@/components/search-buyers-form"
 import { PublicEmailFinderForm } from "@/components/public-email-finder-form"
+import { LocationSearchForm } from "@/components/location-search-form"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Building2, Globe } from "lucide-react"
+import { Building2, Globe, MapPin } from "lucide-react"
 import { SavedContactsList } from "@/components/saved-contacts-list"
 
 export const dynamic = "force-dynamic"
@@ -59,10 +60,14 @@ export default async function SearchBuyersPage() {
       </div>
 
       <Tabs defaultValue="api" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="api">
             <Building2 className="mr-2 h-4 w-4" />
             Verified Contacts
+          </TabsTrigger>
+          <TabsTrigger value="location">
+            <MapPin className="mr-2 h-4 w-4" />
+            Location Search
           </TabsTrigger>
           <TabsTrigger value="public">
             <Globe className="mr-2 h-4 w-4" />
@@ -79,9 +84,18 @@ export default async function SearchBuyersPage() {
           />
         </TabsContent>
 
+        <TabsContent value="location" className="space-y-6 mt-6">
+          <LocationSearchForm
+            onPlacesFound={async (places) => {
+              // This will be handled by the client component
+              console.log('Places found:', places)
+            }}
+          />
+        </TabsContent>
+
         <TabsContent value="public" className="space-y-6 mt-6">
-          <PublicEmailFinderForm 
-            userId={(user as any).id} 
+          <PublicEmailFinderForm
+            userId={(user as any).id}
             userTier={(user as any).tier}
             searchesUsed={publicEmailSearchesUsed}
             searchLimit={publicEmailSearchLimit}

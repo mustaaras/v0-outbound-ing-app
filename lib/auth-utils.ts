@@ -140,3 +140,67 @@ export async function canGenerateTemplate(
     limit,
   }
 }
+
+export async function getUserSnovSearches(userId: string): Promise<number> {
+  try {
+    const supabase: any = await createClient()
+    const currentMonth = new Date().toISOString().slice(0, 7) // YYYY-MM format
+
+    const { data, error } = await withTimeout<any>(
+      supabase.from("snov_searches").select("search_count").eq("user_id", userId).eq("month", currentMonth).maybeSingle(),
+      5000,
+    )
+
+      if (error) {
+        errorLog("[v0] Error fetching snov searches:", error)
+        return 0
+      }
+
+    if (!data) return 0
+    return data.search_count
+  } catch (error) {
+      errorLog("[v0] getUserSnovSearches error:", error)
+    return 0
+  }
+}
+
+export async function incrementSnovSearchCount(userId: string): Promise<void> {
+  const supabase = await createClient()
+  const currentMonth = new Date().toISOString().slice(0, 7)
+
+  const { data: existing } = await supabase
+    .from("snov_searches")
+    .select("*")
+    .eq("user_id", userId)
+    .eq("month", currentMonth)
+    .maybeSingle()
+
+  const newCount = existing ? existing.search_count + 1 : 1
+
+  if (existing) {
+    await supabase
+      .from("snov_searches")
+      .update({ search_count: newCount })
+      .eq("user_id", userId)
+      .eq("month", currentMonth)
+  } else {
+    // Create new snov search record
+    await supabase.from("snov_searches").insert({ user_id: userId, month: currentMonth, search_count: newCount })
+  }
+}
+
+export async function canPerformSnovSearch(
+  userId: string,
+  tier: string,
+): Promise<{ canSearch: boolean; searches: number; limit: number }> {
+  // Fallback: treat any legacy 'ultra' tier value as 'pro'
+  const effectiveTier = tier === "ultra" ? "pro" : tier
+  const searches = await getUserSnovSearches(userId)
+  const limit = effectiveTier === "pro" ? 100 : 0 // Only Pro users can perform Snov searches
+
+  return {
+    canSearch: searches < limit,
+    searches,
+    limit,
+  }
+}
