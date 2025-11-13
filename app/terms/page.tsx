@@ -42,8 +42,10 @@ export default function TermsPage() {
               <h2 className="text-2xl font-semibold">2. Description of Service</h2>
               <p>
                 Outbound.ing provides AI-powered cold email generation tools for sales and outreach purposes. The
-                Service includes access to 101 sales strategies across multiple industries, customizable email
-                templates, location-based business search with contact extraction, support chat, and generation limits based on your subscription tier.
+                Service includes access to 150+ sales strategies across 14 industry categories (including Local Services,
+                Hospitality & Food Service, Healthcare & Wellness, Retail & Shopping, and Fitness & Personal Care),
+                customizable email templates, location-based business contact search with Google Places integration,
+                support chat, and generation limits based on your subscription tier.
               </p>
             </section>
 
@@ -52,13 +54,13 @@ export default function TermsPage() {
               <p>We offer three subscription tiers:</p>
               <ul className="list-disc space-y-2 pl-6">
                 <li>
-                  <strong>Free Plan:</strong> 30 email generations per month, 60 location searches per month
+                  <strong>Free Plan:</strong> 30 email generations per month, 60 location searches per month, access to basic strategies
                 </li>
                 <li>
-                  <strong>Light Plan:</strong> 300 email generations per month at $15/month (or $12/month billed annually), unlimited location searches
+                  <strong>Light Plan:</strong> 300 email generations per month, unlimited location searches, access to all strategies, A/B testing variants, additional instructions (200 characters), billed at $15/month or $12/month annually (20% discount)
                 </li>
                 <li>
-                  <strong>Pro Plan:</strong> Unlimited email generations at $39/month (or $31.20/month billed annually), unlimited location searches with advanced features (up to 10 websites per search, 3 emails per website)
+                  <strong>Pro Plan:</strong> Unlimited email generations, unlimited location searches with advanced features (up to 10 websites per search, 3 emails per website), access to all strategies, A/B testing variants, multi-language support, additional instructions (300 characters), billed at $39/month or $31.20/month annually (20% discount)
                 </li>
               </ul>
               <p className="pt-2">
@@ -97,10 +99,11 @@ export default function TermsPage() {
             <section className="space-y-3">
               <h2 className="text-2xl font-semibold">5.1 Contact Search & Data Collection</h2>
               <p>
-                The contact search feature collects business information from public sources including Google Places
+                The contact search feature collects business information from public sources including Google Places API
                 and business websites. We automatically extract up to 3 email addresses per website for Pro users and
-                limit searches to prevent abuse. All collected data is used solely for providing the contact search
-                service and is not shared with third parties for marketing purposes.
+                limit searches to prevent abuse. Free users get 60 searches per month, Light users get unlimited searches,
+                and Pro users get unlimited searches with advanced features. All collected data is used solely for
+                providing the contact search service and is not shared with third parties for marketing purposes.
               </p>
             </section>
 
@@ -174,6 +177,9 @@ export default function TermsPage() {
           <span>© 2025 Outbound.ing. All rights reserved.</span>
           <Link href="/terms" className="hover:text-foreground">
             Terms of Service
+          </Link>
+          <Link href="/privacy" className="hover:text-foreground">
+            Privacy Policy
           </Link>
           <Link href="/faq" className="hover:text-foreground">
             FAQ
