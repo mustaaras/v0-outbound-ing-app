@@ -1,8 +1,7 @@
 "use server"
 
-import { getCurrentUser, canPerformSnovSearch, incrementSnovSearchCount } from "@/lib/auth-utils"
+import { getCurrentUser, canPerformLocationSearch, incrementLocationSearchCount } from "@/lib/auth-utils"
 import { GoogleMapsUtils, GooglePlace } from "@/lib/google-maps"
-import { getSnovClient } from "@/lib/snov"
 import { devLog, errorLog } from "@/lib/logger"
 
 export interface LocationSearchResult {
@@ -20,7 +19,21 @@ export interface LocationSearchResult {
 }
 
 export async function processLocationSearch(places: GooglePlace[]): Promise<LocationSearchResult> {
-  // No user authentication required for basic Google Places data
+  // Check user authentication and increment search count
+  const user = await getCurrentUser()
+  if (!user) {
+    throw new Error("User not authenticated")
+  }
+
+  // Check if user can perform search
+  const { canSearch } = await canPerformLocationSearch(user.id, user.tier)
+  if (!canSearch) {
+    throw new Error("Monthly location search limit reached. Upgrade to continue searching.")
+  }
+
+  // Increment search count
+  await incrementLocationSearchCount(user.id)
+
   try {
     // Extract domains from places with websites
     const domains = GoogleMapsUtils.extractDomainsFromPlaces(places)
@@ -84,7 +97,7 @@ export async function validateLocationSearchAccess(): Promise<{
     throw new Error("User not authenticated")
   }
 
-  const { canSearch, searches, limit } = await canPerformSnovSearch(user.id, user.tier)
+  const { canSearch, searches, limit } = await canPerformLocationSearch(user.id, user.tier)
 
   return {
     canSearch,

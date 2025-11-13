@@ -3,7 +3,7 @@
 import { extractPublicEmailsEnhanced } from "@/lib/public-email"
 import { errorLog, devLog } from "@/lib/logger"
 import { createClient } from "@/lib/supabase/server"
-import { PUBLIC_EMAIL_SEARCH_LIMITS } from "@/lib/types"
+// import { PUBLIC_EMAIL_SEARCH_LIMITS } from "@/lib/types"
 
 export interface PublicEmailFinderInput {
   userId: string
@@ -61,7 +61,8 @@ export async function findPublicEmails(input: PublicEmailFinderInput): Promise<P
     }
 
     // Check usage limits
-    const searchLimit = PUBLIC_EMAIL_SEARCH_LIMITS[input.userTier as keyof typeof PUBLIC_EMAIL_SEARCH_LIMITS] || 30
+    // const searchLimit = PUBLIC_EMAIL_SEARCH_LIMITS[input.userTier as keyof typeof PUBLIC_EMAIL_SEARCH_LIMITS] || 30
+    const searchLimit = 30 // Default limit since this feature is deprecated
     const searchesUsed = await getPublicEmailSearchCount(input.userId)
     const searchesRemaining = Math.max(0, searchLimit - searchesUsed)
 

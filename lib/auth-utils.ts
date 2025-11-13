@@ -141,35 +141,71 @@ export async function canGenerateTemplate(
   }
 }
 
-export async function getUserSnovSearches(userId: string): Promise<number> {
+export async function canSaveContact(
+  userId: string,
+  tier: string,
+): Promise<{ canSave: boolean; currentCount: number; limit: number }> {
+  try {
+    const supabase: any = await createClient()
+
+    // Count total saved contacts (active + archived)
+    const { count, error } = await withTimeout<any>(
+      supabase
+        .from("saved_buyers")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", userId),
+      5000,
+    )
+
+    if (error) {
+      errorLog("[v0] Error counting saved contacts:", error)
+      return { canSave: false, currentCount: 0, limit: 0 }
+    }
+
+    const effectiveTier = tier === "ultra" ? "pro" : tier
+    const limit = effectiveTier === "pro" || effectiveTier === "light" ? 999999 : 50
+    const currentCount = count || 0
+
+    return {
+      canSave: currentCount < limit,
+      currentCount,
+      limit,
+    }
+  } catch (error) {
+    errorLog("[v0] canSaveContact error:", error)
+    return { canSave: false, currentCount: 0, limit: 0 }
+  }
+}
+
+export async function getUserLocationSearches(userId: string): Promise<number> {
   try {
     const supabase: any = await createClient()
     const currentMonth = new Date().toISOString().slice(0, 7) // YYYY-MM format
 
     const { data, error } = await withTimeout<any>(
-      supabase.from("snov_searches").select("search_count").eq("user_id", userId).eq("month", currentMonth).maybeSingle(),
+      supabase.from("location_searches").select("search_count").eq("user_id", userId).eq("month", currentMonth).maybeSingle(),
       5000,
     )
 
       if (error) {
-        errorLog("[v0] Error fetching snov searches:", error)
+        errorLog("[v0] Error fetching location searches:", error)
         return 0
       }
 
     if (!data) return 0
     return data.search_count
   } catch (error) {
-      errorLog("[v0] getUserSnovSearches error:", error)
+      errorLog("[v0] getUserLocationSearches error:", error)
     return 0
   }
 }
 
-export async function incrementSnovSearchCount(userId: string): Promise<void> {
+export async function incrementLocationSearchCount(userId: string): Promise<void> {
   const supabase = await createClient()
   const currentMonth = new Date().toISOString().slice(0, 7)
 
   const { data: existing } = await supabase
-    .from("snov_searches")
+    .from("location_searches")
     .select("*")
     .eq("user_id", userId)
     .eq("month", currentMonth)
@@ -179,24 +215,24 @@ export async function incrementSnovSearchCount(userId: string): Promise<void> {
 
   if (existing) {
     await supabase
-      .from("snov_searches")
+      .from("location_searches")
       .update({ search_count: newCount })
       .eq("user_id", userId)
       .eq("month", currentMonth)
   } else {
-    // Create new snov search record
-    await supabase.from("snov_searches").insert({ user_id: userId, month: currentMonth, search_count: newCount })
+    // Create new location search record
+    await supabase.from("location_searches").insert({ user_id: userId, month: currentMonth, search_count: newCount })
   }
 }
 
-export async function canPerformSnovSearch(
+export async function canPerformLocationSearch(
   userId: string,
   tier: string,
 ): Promise<{ canSearch: boolean; searches: number; limit: number }> {
   // Fallback: treat any legacy 'ultra' tier value as 'pro'
   const effectiveTier = tier === "ultra" ? "pro" : tier
-  const searches = await getUserSnovSearches(userId)
-  const limit = effectiveTier === "pro" ? 100 : 0 // Only Pro users can perform Snov searches
+  const searches = await getUserLocationSearches(userId)
+  const limit = effectiveTier === "pro" || effectiveTier === "light" ? 999999 : 20
 
   return {
     canSearch: searches < limit,

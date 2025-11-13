@@ -34,9 +34,10 @@ export const WelcomeEmail = ({ firstName, email }: WelcomeEmailProps) => (
           <Text style={featuresHeading}>What you can do now:</Text>
           <Text style={feature}>✓ Generate 30 emails per month (Free Plan)</Text>
           <Text style={feature}>✓ Access to free strategies across 9 industries</Text>
+          <Text style={feature}>✓ Location-based business search (20 searches/month)</Text>
           <Text style={feature}>✓ Customize tone, length, and goals</Text>
+          <Text style={feature}>✓ Save up to 50 contacts</Text>
           <Text style={feature}>✓ Save your emails in your archive</Text>
-          <Text style={feature}>✓ Find 60 email addresses per month</Text>
         </Section>
         
         <Section style={buttonContainer}>

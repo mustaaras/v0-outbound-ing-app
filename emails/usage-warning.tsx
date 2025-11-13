@@ -57,19 +57,20 @@ export default function UsageWarningEmail({
           {tier === 'free' && (
             <>
               <Text style={text}>
-                <strong>Want unlimited email generations?</strong>
+                <strong>Want unlimited email generations and business discovery?</strong>
               </Text>
               
               <Section style={benefitsList}>
                 <Text style={benefitItem}>✅ Unlimited email generation</Text>
-                <Text style={benefitItem}>✅ A/B test variants</Text>
+                <Text style={benefitItem}>✅ Unlimited location-based business search</Text>
+                <Text style={benefitItem}>✅ A/B test variants (3 per email)</Text>
                 <Text style={benefitItem}>✅ Multiple languages</Text>
                 <Text style={benefitItem}>✅ Priority support</Text>
               </Section>
               
               <Section style={buttonContainer}>
                 <Button style={button} href={`${process.env.NEXT_PUBLIC_APP_URL || 'https://outbound.ing'}/upgrade`}>
-                  Upgrade to Pro - $39/month
+                  Upgrade to Pro - $29/month
                 </Button>
               </Section>
             </>
@@ -78,16 +79,16 @@ export default function UsageWarningEmail({
           {tier === 'light' && (
             <>
               <Text style={text}>
-                <strong>Need more generations?</strong>
+                <strong>Need more generations and advanced features?</strong>
               </Text>
               
               <Text style={text}>
-                Upgrade to Pro for unlimited email generation, A/B testing, and multi-language support.
+                Upgrade to Pro for unlimited email generation, unlimited location-based business search, A/B testing, and multi-language support.
               </Text>
               
               <Section style={buttonContainer}>
                 <Button style={button} href={`${process.env.NEXT_PUBLIC_APP_URL || 'https://outbound.ing'}/upgrade`}>
-                  Upgrade to Pro - $39/month
+                  Upgrade to Pro - $29/month
                 </Button>
               </Section>
             </>

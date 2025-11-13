@@ -3,7 +3,7 @@
 import React from "react"
 import { Check, Zap, Crown, Coins } from "lucide-react"
 import { PRODUCTS } from "@/lib/products"
-import { PUBLIC_EMAIL_SEARCH_LIMITS, SNOV_SEARCH_LIMITS, TIER_LIMITS } from "@/lib/types"
+import { LOCATION_SEARCH_LIMITS, SAVED_CONTACTS_LIMITS, TIER_LIMITS } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
 interface PricingComparisonProps {
@@ -72,15 +72,23 @@ const featureRows: FeatureRow[] = [
     render: () => <Check className="mx-auto h-4 w-4 text-primary" />,
   },
   {
-    key: "publicEmailFinder",
-    label: "Public Email Finder / month",
+    key: "locationSearch",
+    label: "Location-based business search / month",
     render: (tier) => {
-      const limit = PUBLIC_EMAIL_SEARCH_LIMITS[tier as keyof typeof PUBLIC_EMAIL_SEARCH_LIMITS]
+      const limit = LOCATION_SEARCH_LIMITS[tier as keyof typeof LOCATION_SEARCH_LIMITS]
       if (limit === 999999) return "Unlimited"
-      return String(limit || 60)
+      return String(limit || 20)
     },
   },
-  // Removed Verified Contacts feature row
+  {
+    key: "savedContacts",
+    label: "Saved Contacts",
+    render: (tier) => {
+      const limit = SAVED_CONTACTS_LIMITS[tier as keyof typeof SAVED_CONTACTS_LIMITS]
+      if (limit === 999999) return "Unlimited"
+      return String(limit || 50)
+    },
+  },
 
   {
     key: "support",

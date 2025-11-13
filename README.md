@@ -6,8 +6,10 @@ Outbound.ing is an AI-powered SaaS platform for generating high-converting cold 
 ## Features
 
 - **AI Email Generator:** Create personalized cold emails using 100+ proven strategies, custom tone, length, and goals.
-- **Tiered Access:** Free, Light, and Pro plans with usage limits and premium features.
-- **Buyer Search:** Find and enrich prospects with Snov.io integration.
+- **Location-Based Business Search:** Find businesses worldwide using Google Maps Places API with real email scraping from websites.
+- **Tiered Access:** Free (20 searches/month), Light (unlimited), and Pro (unlimited) plans with usage limits and premium features.
+- **A/B Testing:** Generate 3 email variants for Pro users to optimize conversions.
+- **Multi-Language Support:** Generate emails in any language (Pro feature).
 - **Feedback & Support:** Built-in contact, support, and feedback system to improve quality and user experience.
 - **Modern UI:** Next.js 16, React 19, Tailwind CSS, Radix UI, and dark mode support.
 
@@ -18,7 +20,7 @@ Outbound.ing is an AI-powered SaaS platform for generating high-converting cold 
 - Supabase (PostgreSQL + Auth)
 - Stripe (subscriptions)
 - OpenAI GPT-4o-mini (via Vercel AI SDK)
-- Snov.io API (prospect search)
+- Google Maps Places API (business search)
 - Resend (email delivery)
 - Tailwind CSS 4, Radix UI
 

@@ -1,14 +1,9 @@
 import { getCurrentUser } from "@/lib/auth-utils"
 import { redirect } from "next/navigation"
-import { getUserSearchCount } from "@/app/actions/search-buyers"
-import { getPublicEmailSearchCount } from "@/app/actions/public-email-finder"
 import { createClient } from "@/lib/supabase/server"
-import { SNOV_SEARCH_LIMITS, PUBLIC_EMAIL_SEARCH_LIMITS } from "@/lib/types"
-import { SearchContactsForm } from "@/components/search-buyers-form"
-import { PublicEmailFinderForm } from "@/components/public-email-finder-form"
 import { LocationSearchForm } from "@/components/location-search-form"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Building2, Globe, MapPin } from "lucide-react"
+import { MapPin } from "lucide-react"
 import { SavedContactsList } from "@/components/saved-contacts-list"
 
 export const dynamic = "force-dynamic"
@@ -21,8 +16,6 @@ export default async function SearchBuyersPage() {
     redirect("/auth/login")
   }
 
-  const searchesUsed = await getUserSearchCount((user as any).id)
-  const publicEmailSearchesUsed = await getPublicEmailSearchCount((user as any).id)
   // Fetch saved buyers for display (exclude archived by default)
   const supabase = await createClient()
   const { data: savedBuyers } = await supabase
@@ -37,9 +30,6 @@ export default async function SearchBuyersPage() {
     .eq("user_id", (user as any).id)
     .eq("archived", true)
     .order("created_at", { ascending: false })
-  const userTier = (user as any).tier === "ultra" ? "pro" : (user as any).tier
-  const searchLimit = SNOV_SEARCH_LIMITS[userTier as keyof typeof SNOV_SEARCH_LIMITS] || 0
-  const publicEmailSearchLimit = PUBLIC_EMAIL_SEARCH_LIMITS[userTier as keyof typeof PUBLIC_EMAIL_SEARCH_LIMITS] || 30
 
   // Domain summary for active contacts
   const domainSummary = (savedBuyers || []).reduce<Record<string, number>>((acc, c: any) => {
@@ -59,44 +49,18 @@ export default async function SearchBuyersPage() {
         </div>
       </div>
 
-      <Tabs defaultValue="api" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="api">
-            <Building2 className="mr-2 h-4 w-4" />
-            Verified Contacts
-          </TabsTrigger>
-          <TabsTrigger value="location">
-            <MapPin className="mr-2 h-4 w-4" />
-            Location Search
-          </TabsTrigger>
-          <TabsTrigger value="public">
-            <Globe className="mr-2 h-4 w-4" />
-            Email Finder
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="api" className="space-y-6 mt-6">
-          <SearchContactsForm
-            userId={(user as any).id}
-            userTier={(user as any).tier}
-            searchesUsed={searchesUsed}
-            searchLimit={searchLimit}
-          />
-        </TabsContent>
-
-        <TabsContent value="location" className="space-y-6 mt-6">
-          <LocationSearchForm />
-        </TabsContent>
-
-        <TabsContent value="public" className="space-y-6 mt-6">
-          <PublicEmailFinderForm
-            userId={(user as any).id}
-            userTier={(user as any).tier}
-            searchesUsed={publicEmailSearchesUsed}
-            searchLimit={publicEmailSearchLimit}
-          />
-        </TabsContent>
-      </Tabs>
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-xl font-semibold flex items-center gap-2">
+            <MapPin className="h-5 w-5" />
+            Location-Based Business Search
+          </h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Find businesses in any city worldwide using Google Maps. Results will be processed for contact information.
+          </p>
+        </div>
+        <LocationSearchForm />
+      </div>
 
       <div className="space-y-4">
         <div className="flex items-center justify-between">

@@ -3,7 +3,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { getSnovClient, type SnovBuyer } from "@/lib/snov"
 import { errorLog, devLog } from "@/lib/logger"
-import { SNOV_SEARCH_LIMITS } from "@/lib/types"
+// import { SNOV_SEARCH_LIMITS } from "@/lib/types"
 
 interface SearchBuyersInput {
   userId: string
@@ -117,7 +117,8 @@ export async function canPerformSearch(
   userId: string,
   userTier: string,
 ): Promise<{ canSearch: boolean; searchesUsed: number; searchLimit: number; searchesRemaining: number }> {
-  const searchLimit = SNOV_SEARCH_LIMITS[userTier as keyof typeof SNOV_SEARCH_LIMITS] || 0
+  // const searchLimit = SNOV_SEARCH_LIMITS[userTier as keyof typeof SNOV_SEARCH_LIMITS] || 0
+  const searchLimit = 0 // This feature is deprecated
   const searchesUsed = await getUserSearchCount(userId)
   const searchesRemaining = Math.max(0, searchLimit - searchesUsed)
 

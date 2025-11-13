@@ -50,28 +50,19 @@ export const TIER_LIMITS = {
   pro: 999999,
 } as const
 
-export const SNOV_SEARCH_LIMITS = {
-  free: 0,
-  light: 0,
-  pro: 100,
-} as const
-
-export const PUBLIC_EMAIL_SEARCH_LIMITS = {
-  free: 60,
+export const SAVED_CONTACTS_LIMITS = {
+  free: 50,
   light: 999999,
   pro: 999999,
 } as const
 
-export interface SnovSearch {
-  id: string
-  user_id: string
-  month: string
-  search_count: number
-  created_at: string
-  updated_at: string
-}
+export const LOCATION_SEARCH_LIMITS = {
+  free: 20,
+  light: 999999,
+  pro: 999999,
+} as const
 
-export interface PublicEmailSearch {
+export interface LocationSearch {
   id: string
   user_id: string
   month: string
