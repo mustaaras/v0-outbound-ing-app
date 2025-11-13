@@ -1230,7 +1230,7 @@ export async function extractPublicEmailsEnhanced(params: {
   
   // Get domains from keyword
   if (params.keyword && params.keyword.trim()) {
-    const keywordDomains = generateDomainsFromKeyword(params.keyword.trim())
+    const keywordDomains = resolveDomainsFromKeyword(params.keyword.trim())
     normalizedDomainsList.push(...keywordDomains)
   }
   
