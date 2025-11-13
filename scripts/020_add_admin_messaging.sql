@@ -14,8 +14,24 @@ CREATE TABLE IF NOT EXISTS admin_replies (
 CREATE INDEX IF NOT EXISTS idx_admin_replies_support_message_id ON admin_replies(support_message_id);
 CREATE INDEX IF NOT EXISTS idx_admin_replies_created_at ON admin_replies(created_at DESC);
 
--- Enable RLS
-ALTER TABLE admin_replies ENABLE ROW LEVEL SECURITY;
+-- Enable RLS (only if not already enabled)
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_class c
+    JOIN pg_namespace n ON n.oid = c.relnamespace
+    WHERE c.relname = 'admin_replies'
+    AND n.nspname = 'public'
+    AND c.relrowsecurity = true
+  ) THEN
+    ALTER TABLE admin_replies ENABLE ROW LEVEL SECURITY;
+  END IF;
+END $$;
+
+-- Drop existing policies if they exist and recreate them
+DROP POLICY IF EXISTS "Admins can view all admin replies" ON admin_replies;
+DROP POLICY IF EXISTS "Admins can insert admin replies" ON admin_replies;
+DROP POLICY IF EXISTS "Users can view admin replies to their messages" ON admin_replies;
 
 -- Policy: Admins can view all admin replies
 CREATE POLICY "Admins can view all admin replies" ON admin_replies
