@@ -20,7 +20,7 @@ export function FeedbackBox({ userTier }: { userTier: string }) {
       if (!selected) throw new Error("Please select a rating")
       const { submitFeedback } = await import("@/app/actions/feedback")
       // Note: submitFeedback will associate with current user on server side
-      await submitFeedback({ userId: "", rating: selected, comment })
+      await submitFeedback({ rating: selected, comment })
       setDone(true)
     } catch (err: any) {
       setError(err?.message || "Failed to submit feedback")

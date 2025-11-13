@@ -16,7 +16,7 @@ export function SupportBox({ userTier }: { userTier: string }) {
     try {
       const { submitSupportMessage } = await import("@/app/actions/support")
       // submitSupportMessage will check current user on server side
-      await submitSupportMessage({ userId: "", message })
+      await submitSupportMessage({ message })
       setDone(true)
     } catch (err: any) {
       setError(err?.message || "Failed to send support message")

@@ -18,6 +18,7 @@ export default function LandingPage() {
             <span className="text-lg font-semibold">Outbound.ing</span>
           </Link>
           <div className="flex items-center gap-4">
+            <Link href="/contact" className="text-sm font-medium hover:text-primary transition-colors">Contact</Link>
             <Button asChild variant="ghost">
               <Link href="/auth/login">Log in</Link>
             </Button>
