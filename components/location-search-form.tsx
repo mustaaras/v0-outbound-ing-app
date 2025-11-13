@@ -262,28 +262,91 @@ export function LocationSearchForm({ isLoading: externalLoading }: LocationSearc
       devLog("[v0] Google Places search request:", request)
 
       const result = await new Promise<LocationSearchResult>((resolve) => {
-        service.textSearch(request, (results, status) => {
+        service.textSearch(request, async (results, status) => {
           if (status === googleMaps.places.PlacesServiceStatus.OK && results) {
-            const places: GooglePlace[] = results.map(result => ({
-              place_id: result.place_id!,
-              name: result.name!,
-              formatted_address: result.formatted_address,
-              formatted_phone_number: result.formatted_phone_number, // Phone number!
-              website: result.website,
-              types: result.types,
-              rating: result.rating,
-              user_ratings_total: result.user_ratings_total,
-              price_level: result.price_level,
-              business_status: result.business_status,
-              vicinity: result.vicinity,
-              location: result.geometry?.location ? {
-                lat: result.geometry.location.lat(),
-                lng: result.geometry.location.lng(),
-              } : undefined,
-            }))
+            // Get detailed information for each place to ensure we have websites and phone numbers
+            const detailedPlaces: GooglePlace[] = []
+
+            for (const result of results.slice(0, 10)) { // Limit to first 10 for performance
+              try {
+                // Get place details for complete information
+                const details = await new Promise<google.maps.places.PlaceResult | null>((resolveDetails) => {
+                  const detailRequest = {
+                    placeId: result.place_id!,
+                    fields: ['name', 'formatted_address', 'formatted_phone_number', 'website', 'types', 'rating', 'user_ratings_total', 'price_level', 'business_status']
+                  }
+                  service.getDetails(detailRequest, (place, status) => {
+                    if (status === googleMaps.places.PlacesServiceStatus.OK && place) {
+                      resolveDetails(place)
+                    } else {
+                      resolveDetails(null)
+                    }
+                  })
+                })
+
+                if (details) {
+                  detailedPlaces.push({
+                    place_id: result.place_id!,
+                    name: details.name || result.name!,
+                    formatted_address: details.formatted_address || result.formatted_address,
+                    formatted_phone_number: details.formatted_phone_number,
+                    website: details.website,
+                    types: details.types || result.types,
+                    rating: details.rating || result.rating,
+                    user_ratings_total: details.user_ratings_total || result.user_ratings_total,
+                    price_level: details.price_level,
+                    business_status: details.business_status,
+                    vicinity: result.vicinity,
+                    location: result.geometry?.location ? {
+                      lat: result.geometry.location.lat(),
+                      lng: result.geometry.location.lng(),
+                    } : undefined,
+                  })
+                } else {
+                  // Fallback to basic result if details fail
+                  detailedPlaces.push({
+                    place_id: result.place_id!,
+                    name: result.name!,
+                    formatted_address: result.formatted_address,
+                    formatted_phone_number: result.formatted_phone_number,
+                    website: result.website,
+                    types: result.types,
+                    rating: result.rating,
+                    user_ratings_total: result.user_ratings_total,
+                    price_level: result.price_level,
+                    business_status: result.business_status,
+                    vicinity: result.vicinity,
+                    location: result.geometry?.location ? {
+                      lat: result.geometry.location.lat(),
+                      lng: result.geometry.location.lng(),
+                    } : undefined,
+                  })
+                }
+              } catch (error) {
+                devLog(`[v0] Error getting details for place ${result.place_id}:`, error)
+                // Still include basic result
+                detailedPlaces.push({
+                  place_id: result.place_id!,
+                  name: result.name!,
+                  formatted_address: result.formatted_address,
+                  formatted_phone_number: result.formatted_phone_number,
+                  website: result.website,
+                  types: result.types,
+                  rating: result.rating,
+                  user_ratings_total: result.user_ratings_total,
+                  price_level: result.price_level,
+                  business_status: result.business_status,
+                  vicinity: result.vicinity,
+                  location: result.geometry?.location ? {
+                    lat: result.geometry.location.lat(),
+                    lng: result.geometry.location.lng(),
+                  } : undefined,
+                })
+              }
+            }
 
             resolve({
-              places,
+              places: detailedPlaces,
               status: status.toString(),
             })
           } else {
