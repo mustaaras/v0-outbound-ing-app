@@ -1114,18 +1114,17 @@ export async function extractPublicEmailsEnhanced(params: {
     const domainResults: PublicEmailResult[] = []
     
     try {
-      // Run all methods in parallel
-      const [scrapedEmails, dnsEmails, patternEmails] = await Promise.all([
+      // Run scraping and DNS checks in parallel (removed pattern check - was generating false positives)
+      const [scrapedEmails, dnsEmails] = await Promise.all([
         extractPublicEmailsForDomain(domain, { 
           pagesPerDomain: params.pagesPerDomain ?? 8, 
           timeoutMs: 4000 
         }).catch(() => []),
-        getDnsEmails(domain).catch(() => []),
-        checkCommonEmailPatterns(domain).catch(() => [])
+        getDnsEmails(domain).catch(() => [])
       ])
       
-      // Combine all results
-      const combined = [...scrapedEmails, ...dnsEmails, ...patternEmails]
+      // Combine results (only verified sources)
+      const combined = [...scrapedEmails, ...dnsEmails]
       
       // Deduplicate and limit per domain
       let addedForDomain = 0
