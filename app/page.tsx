@@ -17,12 +17,12 @@ export default function LandingPage() {
             />
             <span className="text-lg font-semibold">Outbound.ing</span>
           </Link>
-          <div className="flex items-center gap-4">
-            <Link href="/contact" className="text-sm font-medium hover:text-primary transition-colors">Contact</Link>
-            <Button asChild variant="ghost">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <Link href="/contact" className="text-sm font-medium hover:text-primary transition-colors hidden sm:block">Contact</Link>
+            <Button asChild variant="ghost" size="sm">
               <Link href="/auth/login">Log in</Link>
             </Button>
-            <Button asChild>
+            <Button asChild size="sm">
               <Link href="/auth/signup">Sign up</Link>
             </Button>
           </div>
