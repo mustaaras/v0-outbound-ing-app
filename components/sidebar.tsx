@@ -22,13 +22,11 @@ const getNavigation = (userEmail: string) => {
     { name: "My Contacts", href: "/contacts", icon: BookUser },
     { name: "Email Generator", href: "/generator", icon: Wand2 },
     { name: "Archive", href: "/archive", icon: Archive },
-  { name: "Feedback", href: "/settings#feedback", icon: Crown },
     { name: "Settings", href: "/settings", icon: Settings },
     { name: "Upgrade", href: "/upgrade", icon: Rocket },
     { name: "Pricing", href: "/pricing", icon: Coins },
   ]
 
-  // Add Support tab for paid tiers only
   // Add admin link only for admin user
   if (userEmail === "mustafaaras91@gmail.com") {
     return [
@@ -45,13 +43,7 @@ export function Sidebar({ user }: SidebarProps) {
   const router = useRouter()
   let navigation = getNavigation(user.email)
   // Add Support tab for paid tiers only
-  if (user.tier === "pro" || user.tier === "light") {
-    navigation = [
-      ...navigation.slice(0, 6),
-      { name: "Support", href: "/settings#support", icon: Shield },
-      ...navigation.slice(6)
-    ]
-  }
+  
 
   const handleLogout = async () => {
     const supabase = createClient()
