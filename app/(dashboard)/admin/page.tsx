@@ -28,7 +28,14 @@ export default async function AdminPage() {
       users!inner(email, tier)
     `)
     .order("created_at", { ascending: false })
-    .limit(10)
+    .limit(50)
+
+  // Fetch admin replies
+  const { data: adminReplies } = await serviceSupabase
+    .from("admin_replies")
+    .select("id, message, created_at, support_message_id")
+    .order("created_at", { ascending: false })
+    .limit(100)
 
   // Fetch recent feedback with user data (using service role to bypass RLS)
   const { data: feedbackMessages } = await serviceSupabase
@@ -151,7 +158,7 @@ export default async function AdminPage() {
       {/* User Messages */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {/* Support Messages */}
-        <SupportMessagesSection supportMessages={supportMessages || []} />
+        <SupportMessagesSection supportMessages={supportMessages || []} adminReplies={adminReplies || []} />
 
         {/* Feedback */}
         <Card>
