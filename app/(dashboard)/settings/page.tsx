@@ -4,8 +4,6 @@ import { SettingsForm } from "@/components/settings-form"
 import { createClient } from "@/lib/supabase/server"
 import { FeedbackChart } from "@/components/feedback-chart"
 import { SupportStats } from "@/components/support-stats"
-import { FeedbackBox } from "@/components/feedback-box"
-import { SupportBox } from "@/components/support-box"
 import getStripe from "@/lib/stripe"
 
 export default async function SettingsPage() {
@@ -83,19 +81,6 @@ export default async function SettingsPage() {
           <div id="support">
             <SupportStats total={(totalSupportCount ?? 0) as number} last30Days={last30} />
           </div>
-        </div>
-      </div>
-
-      <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div id="feedback-box">
-          <FeedbackBox userTier={user.tier} />
-        </div>
-        <div id="support-box">
-          {user.tier === "light" || user.tier === "pro" ? (
-            <SupportBox userTier={user.tier} />
-          ) : (
-            <div className="rounded-lg border bg-muted p-4 text-sm">Support is available for Light & Pro users. <a className="underline" href="/upgrade">Upgrade</a> to contact support directly.</div>
-          )}
         </div>
       </div>
     </div>
