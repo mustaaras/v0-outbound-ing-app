@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Menu, X, Home, Wand2, Archive, Settings, Users, Coins, Rocket, Crown, LogOut, Shield, BookUser } from "lucide-react"
+import { Menu, X, Home, Wand2, Archive, Settings, Users, Coins, Rocket, Crown, LogOut, Shield, BookUser, HelpCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import type { User } from "@/lib/types"
@@ -27,11 +27,12 @@ const getNavigation = (userEmail: string) => {
     { name: "Settings", href: "/settings", icon: Settings },
     { name: "Upgrade", href: "/upgrade", icon: Rocket },
     { name: "Pricing", href: "/pricing", icon: Coins },
+    { name: "Help & Support", href: "/help", icon: HelpCircle },
   ]
   
   // Add admin link only for admin user
   if (userEmail === "mustafaaras91@gmail.com") {
-    baseNavigation.splice(6, 0, { name: "Admin", href: "/admin", icon: Shield })
+    baseNavigation.splice(8, 0, { name: "Admin", href: "/admin", icon: Shield })
   }
   
   return baseNavigation
@@ -51,7 +52,7 @@ export function MobileHeader({ user }: MobileHeaderProps) {
   }
 
   return (
-    <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-background px-4 md:hidden">
+    <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-background px-4 lg:hidden">
       <Link href="/dashboard" className="flex items-center gap-2 font-semibold">
         <img
           src="/logos/logo-o-new.svg"

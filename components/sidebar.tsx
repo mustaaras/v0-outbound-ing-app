@@ -22,18 +22,18 @@ const getNavigation = (userEmail: string) => {
     { name: "My Contacts", href: "/contacts", icon: BookUser },
     { name: "Email Generator", href: "/generator", icon: Wand2 },
     { name: "Archive", href: "/archive", icon: Archive },
-    { name: "Help & Support", href: "/help", icon: HelpCircle },
     { name: "Settings", href: "/settings", icon: Settings },
     { name: "Upgrade", href: "/upgrade", icon: Rocket },
     { name: "Pricing", href: "/pricing", icon: Coins },
+    { name: "Help & Support", href: "/help", icon: HelpCircle },
   ]
 
   // Add admin link only for admin user
   if (userEmail === "mustafaaras91@gmail.com") {
     return [
-      ...baseNavigation.slice(0, 7),
+      ...baseNavigation.slice(0, 8),
       { name: "Admin", href: "/admin", icon: Shield },
-      ...baseNavigation.slice(7)
+      ...baseNavigation.slice(8)
     ];
   }
   return baseNavigation;
@@ -54,7 +54,7 @@ export function Sidebar({ user }: SidebarProps) {
   }
 
   return (
-    <aside className="hidden w-64 flex-col border-r bg-background md:flex">
+    <aside className="hidden xl:flex w-64 flex-col border-r bg-background">
       <div className="flex h-16 items-center border-b px-6">
         <Link href="/dashboard" className="flex items-center gap-2 font-semibold">
           <img

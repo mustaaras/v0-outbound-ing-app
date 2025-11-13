@@ -191,3 +191,50 @@ export async function sendUsageWarningEmail(
     return { success: false, error }
   }
 }
+
+export async function sendAdminReplyEmail(email: string, replyMessage: string) {
+  try {
+    const resend = getResend()
+
+    const { data, error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to: email,
+      subject: "Support Reply - Outbounding",
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+          <h1 style="color: #1a1a1a; font-size: 28px;">Support Reply</h1>
+          <p style="color: #484848; font-size: 16px; line-height: 26px;">Hi there,</p>
+          <p style="color: #484848; font-size: 16px; line-height: 26px;">
+            We've received your support message and here's our response:
+          </p>
+          <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <p style="color: #1a1a1a; font-size: 16px; line-height: 26px; margin: 0; white-space: pre-wrap;">${replyMessage.replace(/\n/g, '<br>')}</p>
+          </div>
+          <p style="color: #484848; font-size: 16px; line-height: 26px;">
+            If you have any additional questions or need further assistance, please don't hesitate to reply to this email.
+          </p>
+          <p style="color: #484848; font-size: 16px; line-height: 26px; margin-top: 40px;">
+            Best regards,<br/>
+            The Outbounding Support Team
+          </p>
+          <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 40px 0;">
+          <p style="color: #888; font-size: 12px; line-height: 20px;">
+            This is an automated response to your support inquiry. You can also reply directly to this email for further assistance.
+          </p>
+        </div>
+      `,
+      replyTo: REPLY_TO,
+    })
+
+    if (error) {
+      errorLog("[Email] Failed to send admin reply email:", error)
+      return { success: false, error }
+    }
+
+    devLog("[Email] Admin reply email sent successfully:", data)
+    return { success: true, data }
+  } catch (error) {
+    errorLog("[Email] Error sending admin reply email:", error)
+    return { success: false, error }
+  }
+}

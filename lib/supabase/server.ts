@@ -25,3 +25,23 @@ export async function createClient() {
     },
   })
 }
+
+/**
+ * Create a Supabase service role client that bypasses RLS policies
+ * Use only for admin operations that need to access all user data
+ */
+export function createServiceClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+
+  return createServerClient(supabaseUrl, supabaseServiceKey, {
+    cookies: {
+      getAll() {
+        return []
+      },
+      setAll() {
+        // Service role client doesn't need cookie handling
+      },
+    },
+  })
+}

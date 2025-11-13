@@ -2,8 +2,9 @@ import { getCurrentUser } from "@/lib/auth-utils"
 import { redirect } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Shield, DollarSign, TrendingUp, Users, MessageSquare, Star } from "lucide-react"
-import { createClient } from "@/lib/supabase/server"
+import { createClient, createServiceClient } from "@/lib/supabase/server"
 import { Badge } from "@/components/ui/badge"
+import { SupportMessagesSection } from "@/components/support-messages-section"
 
 export default async function AdminPage() {
   const user = await getCurrentUser()
@@ -14,18 +15,32 @@ export default async function AdminPage() {
   }
 
   const supabase = await createClient()
+  const serviceSupabase = createServiceClient()
 
-  // Fetch recent support messages
-  const { data: supportMessages } = await supabase
+  // Fetch recent support messages with user data (using service role to bypass RLS)
+  const { data: supportMessages } = await serviceSupabase
     .from("support_messages")
-    .select("id, message, created_at, user_id, users(email, tier)")
+    .select(`
+      id, 
+      message, 
+      created_at, 
+      user_id,
+      users!inner(email, tier)
+    `)
     .order("created_at", { ascending: false })
     .limit(10)
 
-  // Fetch recent feedback
-  const { data: feedbackMessages } = await supabase
+  // Fetch recent feedback with user data (using service role to bypass RLS)
+  const { data: feedbackMessages } = await serviceSupabase
     .from("feedback")
-    .select("id, rating, comment, created_at, user_id, users(email, tier)")
+    .select(`
+      id, 
+      rating, 
+      comment, 
+      created_at, 
+      user_id,
+      users!inner(email, tier)
+    `)
     .order("created_at", { ascending: false })
     .limit(10)
 
@@ -136,39 +151,7 @@ export default async function AdminPage() {
       {/* User Messages */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {/* Support Messages */}
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <MessageSquare className="h-5 w-5" />
-              Recent Support Messages
-            </CardTitle>
-            <CardDescription>Latest support requests from users</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {supportMessages && supportMessages.length > 0 ? (
-              <div className="space-y-4">
-                {supportMessages.map((msg: any) => (
-                  <div key={msg.id} className="border rounded-lg p-3 bg-muted/50">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-sm">{msg.users?.email || 'Unknown'}</span>
-                        <Badge variant="outline" className="text-xs">
-                          {msg.users?.tier || 'free'}
-                        </Badge>
-                      </div>
-                      <span className="text-xs text-muted-foreground">
-                        {new Date(msg.created_at).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <p className="text-sm">{msg.message}</p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">No support messages yet</p>
-            )}
-          </CardContent>
-        </Card>
+        <SupportMessagesSection supportMessages={supportMessages || []} />
 
         {/* Feedback */}
         <Card>
