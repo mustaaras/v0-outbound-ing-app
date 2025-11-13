@@ -1,31 +1,72 @@
-# Outbound.ing app
 
-*Automatically synced with your [v0.app](https://v0.app) deployments*
+# <img src="public/logos/logo-o-new.svg" alt="Outbound.ing Logo" width="48" height="48" style="vertical-align:middle;"/> Outbound.ing
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/mustafaaras91-6787s-projects/v0-outbound-ing-app)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.app-black?style=for-the-badge)](https://v0.app/chat/iNXp2NeypkJ)
+Outbound.ing is an AI-powered SaaS platform for generating high-converting cold email templates and searching for buyers. Built for sales teams, founders, and agencies who want to personalize outreach and close more deals.
 
-## Overview
+## Features
 
-This repository will stay in sync with your deployed chats on [v0.app](https://v0.app).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.app](https://v0.app).
+- **AI Email Generator:** Create personalized cold emails using 100+ proven strategies, custom tone, length, and goals.
+- **Tiered Access:** Free, Light, and Pro plans with usage limits and premium features.
+- **Buyer Search:** Find and enrich prospects with Snov.io integration.
+- **Feedback & Support:** Built-in contact, support, and feedback system to improve quality and user experience.
+- **Modern UI:** Next.js 16, React 19, Tailwind CSS, Radix UI, and dark mode support.
 
-## Deployment
+## Tech Stack
 
-Your project is live at:
+- Next.js 16 (App Router)
+- React 19
+- Supabase (PostgreSQL + Auth)
+- Stripe (subscriptions)
+- OpenAI GPT-4o-mini (via Vercel AI SDK)
+- Snov.io API (prospect search)
+- Resend (email delivery)
+- Tailwind CSS 4, Radix UI
 
-**[https://vercel.com/mustafaaras91-6787s-projects/v0-outbound-ing-app](https://vercel.com/mustafaaras91-6787s-projects/v0-outbound-ing-app)**
+## Directory Structure
 
-## Build your app
+```
+app/
+	(dashboard)/
+		dashboard/
+		generator/
+		search-buyers/
+		archive/
+		settings/
+		pricing/
+		support/
+		feedback/
+	actions/
+	api/
+	auth/
+	...
+components/
+lib/
+public/
+scripts/
+styles/
+tools/
+```
 
-Continue building your app on:
+## Getting Started
 
-**[https://v0.app/chat/iNXp2NeypkJ](https://v0.app/chat/iNXp2NeypkJ)**
+1. Clone the repo
+2. Install dependencies: `pnpm install`
+3. Add your environment variables to `.env.local`
+4. Start the dev server: `pnpm dev`
 
-## How It Works
+## Logo
 
-1. Create and modify your project using [v0.app](https://v0.app)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repositorry
-# Search Buyers Integration
+![Outbound.ing Logo](public/logos/logo-o-new.svg)
+
+## Contact & Support
+
+- Use the contact page on the landing site for general inquiries
+- Dashboard users can access support and feedback pages
+
+## Feedback
+
+We value your feedback! Use the dashboard feedback page to help us improve Outbound.ing.
+
+---
+
+© 2025 Outbound.ing. All rights reserved.
