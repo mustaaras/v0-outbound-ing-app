@@ -135,6 +135,71 @@ export interface PublicEmailResult {
 }
 
 /**
+ * Validate email format and domain
+ */
+function isValidEmailFormat(email: string): boolean {
+  // RFC 5322 compliant email regex (simplified)
+  const emailRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
+  
+  if (!emailRegex.test(email)) return false
+  
+  const [localPart, domain] = email.split('@')
+  
+  // Check local part length
+  if (!localPart || localPart.length > 64) return false
+  
+  // Check domain length
+  if (!domain || domain.length > 255) return false
+  
+  // Check for valid domain extension
+  if (!domain.includes('.') || domain.endsWith('.')) return false
+  
+  // Reject common typos and invalid domains
+  const invalidDomains = ['example.com', 'test.com', 'localhost', 'email.com']
+  if (invalidDomains.includes(domain.toLowerCase())) return false
+  
+  return true
+}
+
+/**
+ * Check if email source is verifiable (has actual URL)
+ */
+function hasVerifiableSource(result: PublicEmailResult): boolean {
+  // Only cache emails from web scraping (verifiable URLs)
+  // Don't cache DNS-only results (less reliable)
+  return result.sourceUrl.startsWith('http')
+}
+
+/**
+ * Filter and validate results before caching
+ */
+function filterValidResults(results: PublicEmailResult[]): PublicEmailResult[] {
+  return results.filter(result => {
+    // Must have valid email format
+    if (!isValidEmailFormat(result.email)) {
+      devLog('[email-validation] Rejected invalid format:', result.email)
+      return false
+    }
+    
+    // Must have verifiable source (actual webpage URL)
+    if (!hasVerifiableSource(result)) {
+      devLog('[email-validation] Rejected unverifiable source:', result.email, result.sourceUrl)
+      return false
+    }
+    
+    // Email and domain must match
+    const emailDomain = result.email.split('@')[1]?.toLowerCase()
+    const resultDomain = result.domain.toLowerCase()
+    if (!emailDomain || !resultDomain.includes(emailDomain.replace('www.', ''))) {
+      devLog('[email-validation] Rejected domain mismatch:', result.email, 'vs', result.domain)
+      return false
+    }
+    
+    return true
+  })
+}
+
+/**
  * Get cached emails from database for given domains
  */
 async function getCachedEmails(domains: string[]): Promise<PublicEmailResult[]> {
@@ -168,14 +233,24 @@ async function getCachedEmails(domains: string[]): Promise<PublicEmailResult[]> 
 }
 
 /**
- * Save newly found emails to cache
+ * Save newly found emails to cache (only valid, verifiable emails)
  */
 async function cacheEmails(results: PublicEmailResult[]): Promise<void> {
   if (results.length === 0) return
   
+  // Filter to only valid, verifiable emails
+  const validResults = filterValidResults(results)
+  
+  if (validResults.length === 0) {
+    devLog('[email-cache] No valid emails to cache (all filtered out)')
+    return
+  }
+  
+  devLog('[email-cache] Validated', validResults.length, 'of', results.length, 'emails for caching')
+  
   try {
     const supabase = await createClient()
-    const rows = results.map(r => ({
+    const rows = validResults.map(r => ({
       domain: r.domain,
       email: r.email,
       email_type: r.type,
@@ -190,7 +265,7 @@ async function cacheEmails(results: PublicEmailResult[]): Promise<void> {
         ignoreDuplicates: false
       })
     
-    devLog('[email-cache] Cached', results.length, 'emails')
+    devLog('[email-cache] Successfully cached', validResults.length, 'validated emails')
   } catch (e) {
     errorLog('[email-cache] Exception caching emails:', e)
   }
