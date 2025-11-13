@@ -671,7 +671,7 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
         )}
 
         {/* Additional Notes - Light & Pro */}
-  {(userTier === "light" || userTier === "pro") && selectedStrategies.length > 0 && (
+  {(userTier === "light" || userTier === "pro") && (
           <div className="space-y-4 rounded-lg border-2 border-blue-500/20 bg-blue-500/5 p-6">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
