@@ -68,7 +68,7 @@ export default function LandingPage() {
               </div>
               <div className="flex items-center gap-2">
                 <Zap className="h-4 w-4" />
-                <span>101 Strategies</span>
+                <span>100+ Strategies</span>
               </div>
               <div className="flex items-center gap-2">
                 <Users className="h-4 w-4" />
@@ -104,7 +104,7 @@ export default function LandingPage() {
                   <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
                     <Zap className="h-6 w-6 text-primary" />
                   </div>
-                  <h3 className="text-xl font-semibold">101 Sales Strategies</h3>
+                  <h3 className="text-xl font-semibold">100+ Sales Strategies</h3>
                   <p className="text-sm text-muted-foreground">
                     Choose from proven strategies across 9 categories: SaaS, Affiliate Marketing, Real Estate,
                     Recruiting, and more
@@ -148,7 +148,7 @@ export default function LandingPage() {
                                     <h3 className="text-xl font-semibold">Flexible Pricing Plans</h3>
                   <p className="text-sm text-muted-foreground">
                     Start free with 30 emails/month. Upgrade to Light for 300 emails at $15/month, Pro for unlimited emails
-                    at $39/month. 20% off annual billing.
+                    at $29/month. 20% off annual billing.
                   </p>
                 </div>
               </div>
