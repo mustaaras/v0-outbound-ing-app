@@ -216,7 +216,7 @@ export class GoogleMapsUtils {
                         !email.includes('donotreply') && !email.includes('do-not-reply') &&
                         !email.includes('example.com') && !email.includes('test.com') &&
                         !email.includes('sample.com'))
-        .slice(0, 5) // Limit to 5 emails per site
+        .slice(0, 10) // Limit to 10 emails per site
 
       return { emails: uniqueEmails, success: true }
     } catch (error) {

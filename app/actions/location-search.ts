@@ -40,13 +40,26 @@ export async function processLocationSearch(places: GooglePlace[]): Promise<Loca
     const placesWithWebsites = places.filter(p => p.website).length
     const placesWithPhones = places.filter(p => p.formatted_phone_number).length
 
-    // Scrape websites for real email addresses (limit to first 5 to avoid rate limits)
+    // Scrape websites for real email addresses (limit to first 10 to avoid rate limits)
     // CONFIGURABLE LIMITS:
-    // - MAX_SCRAPE_PLACES: Maximum number of websites to scrape per search (default: 5)
-    // - MAX_EMAILS_PER_SITE: Maximum emails to extract per website (default: 5) - configured in google-maps.ts
+    // - MAX_SCRAPE_PLACES: Maximum number of websites to scrape per search (default: 10)
+    // - MAX_EMAILS_PER_SITE: Maximum emails to extract per website (default: 10) - configured in google-maps.ts
     // - GOOGLE_PLACES_LIMIT: Maximum places returned from Google Places API (default: 10) - configured in location-search-form.tsx
     const scrapedEmails = []
-    const placesToScrape = places.filter(p => p.website).slice(0, 5) // Limit for performance
+    
+    // Deduplicate websites to avoid scraping the same site multiple times
+    const uniqueWebsites = new Set<string>()
+    const placesToScrape = places
+      .filter(p => p.website && p.website.trim() !== '')
+      .filter(p => {
+        const domain = GoogleMapsUtils.extractDomain(p.website!)
+        if (domain && !uniqueWebsites.has(domain)) {
+          uniqueWebsites.add(domain)
+          return true
+        }
+        return false
+      })
+      .slice(0, 10) // Limit to 10 unique websites for performance
 
     devLog(`[v0] Starting website scraping for ${placesToScrape.length} businesses...`)
 
