@@ -1,7 +1,9 @@
 import { getCurrentUser } from "@/lib/auth-utils"
 import { redirect } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Shield, DollarSign, TrendingUp, Users } from "lucide-react"
+import { Shield, DollarSign, TrendingUp, Users, MessageSquare, Star } from "lucide-react"
+import { createClient } from "@/lib/supabase/server"
+import { Badge } from "@/components/ui/badge"
 
 export default async function AdminPage() {
   const user = await getCurrentUser()
@@ -10,6 +12,29 @@ export default async function AdminPage() {
   if (!user || user.email !== "mustafaaras91@gmail.com") {
     redirect("/dashboard")
   }
+
+  const supabase = await createClient()
+
+  // Fetch recent support messages
+  const { data: supportMessages } = await supabase
+    .from("support_messages")
+    .select("id, message, created_at, user_id, users(email, tier)")
+    .order("created_at", { ascending: false })
+    .limit(10)
+
+  // Fetch recent feedback
+  const { data: feedbackMessages } = await supabase
+    .from("feedback")
+    .select("id, rating, comment, created_at, user_id, users(email, tier)")
+    .order("created_at", { ascending: false })
+    .limit(10)
+
+  // Fetch contact messages
+  const { data: contactMessages } = await supabase
+    .from("contact_messages")
+    .select("id, name, email, message, created_at")
+    .order("created_at", { ascending: false })
+    .limit(10)
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
@@ -107,6 +132,122 @@ export default async function AdminPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* User Messages */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {/* Support Messages */}
+        <Card className="md:col-span-2">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <MessageSquare className="h-5 w-5" />
+              Recent Support Messages
+            </CardTitle>
+            <CardDescription>Latest support requests from users</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {supportMessages && supportMessages.length > 0 ? (
+              <div className="space-y-4">
+                {supportMessages.map((msg: any) => (
+                  <div key={msg.id} className="border rounded-lg p-3 bg-muted/50">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-sm">{msg.users?.email || 'Unknown'}</span>
+                        <Badge variant="outline" className="text-xs">
+                          {msg.users?.tier || 'free'}
+                        </Badge>
+                      </div>
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(msg.created_at).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <p className="text-sm">{msg.message}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">No support messages yet</p>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Feedback */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Star className="h-5 w-5" />
+              Recent Feedback
+            </CardTitle>
+            <CardDescription>User ratings and comments</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {feedbackMessages && feedbackMessages.length > 0 ? (
+              <div className="space-y-4">
+                {feedbackMessages.map((fb: any) => (
+                  <div key={fb.id} className="border rounded-lg p-3 bg-muted/50">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-sm">{fb.users?.email || 'Unknown'}</span>
+                        <Badge variant="outline" className="text-xs">
+                          {fb.users?.tier || 'free'}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {[...Array(5)].map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`h-3 w-3 ${
+                              i < parseInt(fb.rating.split(' - ')[0]) || fb.rating.includes('Great')
+                                ? 'fill-yellow-400 text-yellow-400'
+                                : 'text-gray-300'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                    <p className="text-sm font-medium mb-1">{fb.rating}</p>
+                    {fb.comment && <p className="text-sm text-muted-foreground">{fb.comment}</p>}
+                    <p className="text-xs text-muted-foreground mt-2">
+                      {new Date(fb.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">No feedback yet</p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Contact Messages */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Contact Form Submissions</CardTitle>
+          <CardDescription>Messages from the public contact page</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {contactMessages && contactMessages.length > 0 ? (
+            <div className="space-y-4">
+              {contactMessages.map((msg: any) => (
+                <div key={msg.id} className="border rounded-lg p-3 bg-muted/50">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-sm">{msg.name}</span>
+                      <span className="text-sm text-muted-foreground">({msg.email})</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(msg.created_at).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <p className="text-sm">{msg.message}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">No contact messages yet</p>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Monthly Summary */}
       <Card>
