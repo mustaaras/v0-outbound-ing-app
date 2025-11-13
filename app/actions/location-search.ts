@@ -10,7 +10,12 @@ export interface LocationSearchResult {
   totalPlaces: number
   placesWithWebsites: number
   placesWithPhones: number
-  places: GooglePlace[] // Return full place data
+  places: GooglePlace[]
+  emailPatterns?: Array<{
+    domain: string
+    businessName: string
+    patterns: string[]
+  }>
 }
 
 export async function processLocationSearch(places: GooglePlace[]): Promise<LocationSearchResult> {
@@ -21,7 +26,22 @@ export async function processLocationSearch(places: GooglePlace[]): Promise<Loca
     const placesWithWebsites = places.filter(p => p.website).length
     const placesWithPhones = places.filter(p => p.formatted_phone_number).length
 
-    devLog(`[v0] Extracted ${domains.length} domains from ${placesWithWebsites} places with websites, ${placesWithPhones} with phones`)
+    // Generate email patterns for businesses with websites
+    const emailPatterns = places
+      .filter(p => p.website) // Only businesses with websites
+      .map(place => {
+        const domain = GoogleMapsUtils.extractDomain(place.website!)
+        if (!domain) return null
+
+        return {
+          domain,
+          businessName: place.name,
+          patterns: GoogleMapsUtils.generateEmailPatterns(domain, place.name)
+        }
+      })
+      .filter((item): item is NonNullable<typeof item> => item !== null)
+
+    devLog(`[v0] Extracted ${domains.length} domains from ${placesWithWebsites} places with websites, generated ${emailPatterns.length} email pattern sets`)
 
     const result: LocationSearchResult = {
       domains,
@@ -29,6 +49,7 @@ export async function processLocationSearch(places: GooglePlace[]): Promise<Loca
       placesWithWebsites,
       placesWithPhones,
       places, // Return full place data
+      emailPatterns,
     }
 
     return result

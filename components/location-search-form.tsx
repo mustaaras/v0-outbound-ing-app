@@ -21,6 +21,19 @@ declare global {
   }
 }
 
+interface ProcessingResult {
+  domains: string[]
+  totalPlaces: number
+  placesWithWebsites: number
+  placesWithPhones: number
+  places: GooglePlace[]
+  emailPatterns?: Array<{
+    domain: string
+    businessName: string
+    patterns: string[]
+  }>
+}
+
 interface LocationSearchFormProps {
   isLoading?: boolean
 }
@@ -32,7 +45,7 @@ export function LocationSearchForm({ isLoading: externalLoading }: LocationSearc
   const [businessType, setBusinessType] = useState("")
   const [radius, setRadius] = useState("5000") // 5km default
   const [places, setPlaces] = useState<GooglePlace[]>([])
-  const [processingResults, setProcessingResults] = useState<any>(null)
+  const [processingResults, setProcessingResults] = useState<ProcessingResult | null>(null)
   const [mapsLoaded, setMapsLoaded] = useState(false)
   const [googleMaps, setGoogleMaps] = useState<typeof google.maps | null>(null)
   const [userAccess, setUserAccess] = useState<{
@@ -632,6 +645,35 @@ export function LocationSearchForm({ isLoading: externalLoading }: LocationSearc
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {processingResults.emailPatterns && processingResults.emailPatterns.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-sm font-semibold mb-3">📧 Potential Email Patterns</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {processingResults.emailPatterns.slice(0, 6).map((patternSet, index) => (
+                    <div key={index} className="p-3 border rounded-lg bg-muted/30">
+                      <p className="text-xs font-medium text-muted-foreground mb-2">
+                        {patternSet.businessName} ({patternSet.domain})
+                      </p>
+                      <div className="space-y-1">
+                        {patternSet.patterns.slice(0, 3).map((email, emailIndex) => (
+                          <p key={emailIndex} className="text-xs font-mono text-blue-600">
+                            {email}
+                          </p>
+                        ))}
+                        {patternSet.patterns.length > 3 && (
+                          <p className="text-xs text-muted-foreground">
+                            +{patternSet.patterns.length - 3} more patterns
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground mt-3">
+                  ⚠️ These are generated patterns - verify emails manually. For accurate emails, consider using a professional email finder service.
+                </p>
+              </div>
+            )}
             {processingResults.places && processingResults.places.length > 0 ? (
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
