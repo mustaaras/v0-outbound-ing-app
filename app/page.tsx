@@ -39,13 +39,13 @@ export default function LandingPage() {
             </div>
 
             <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-              Generate Perfect Cold Emails
+              Generate Perfect Emails
               <br />
               <span className="text-primary">Across Every Industry</span>
             </h1>
 
             <p className="text-balance max-w-2xl text-lg text-muted-foreground sm:text-xl">
-              AI-powered cold outreach emails for SaaS, domains, real estate, freelancing, affiliate marketing, B2B
+              AI-powered outreach emails for SaaS, domains, real estate, freelancing, affiliate marketing, B2B
               services, recruiting, and more. Find contacts with our location-based business search and choose from 100+ proven strategies.
             </p>
 
@@ -202,7 +202,7 @@ export default function LandingPage() {
                       "14 industry categories",
                       "Basic customization",
                       "Email support",
-                      "Location Search – 60 searches/month",
+                      "Location based contact search - 20/month",
                     ].map((f) => (
                       <li key={f} className="flex items-start gap-2">
                         <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
@@ -262,7 +262,7 @@ export default function LandingPage() {
                 <div className="text-left">
                   <h3 className="font-semibold">What’s included</h3>
                   <ul className="mt-2 space-y-2 text-sm text-muted-foreground">
-                    <li>101 premium strategies across 14 industries</li>
+                    <li>150+ premium strategies across 14 industries</li>
                     <li>Archive access and full customization</li>
                     <li>Direct email handoff—ready to send</li>
                     <li>Advanced contact search with website scraping</li>
@@ -271,7 +271,7 @@ export default function LandingPage() {
                 <div className="text-left">
                   <h3 className="font-semibold">Search Contacts</h3>
                   <ul className="mt-2 space-y-2 text-sm text-muted-foreground">
-                    <li>Free: 60 searches per month</li>
+                    <li>Free: 20 searches per month</li>
                     <li>Light: Unlimited searches</li>
                     <li>Pro: Unlimited + advanced enrichment (up to 10 websites, 3 emails each)</li>
                   </ul>
