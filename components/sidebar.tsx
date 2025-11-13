@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { Home, Wand2, Archive, Crown, LogOut, Settings, Users, Coins, Rocket, Shield, BookUser, HelpCircle } from "lucide-react"
+import { Home, Wand2, Archive, Crown, LogOut, Settings, Users, Coins, Rocket, Shield, BookUser, MessageSquare } from "lucide-react"
 import type { User } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -24,10 +24,10 @@ const getNavigation = (userEmail: string) => {
     { name: "My Contacts", href: "/contacts", icon: BookUser },
     { name: "Email Generator", href: "/generator", icon: Wand2 },
     { name: "Archive", href: "/archive", icon: Archive },
+    { name: "Support Chat", href: "/support", icon: MessageSquare },
     { name: "Settings", href: "/settings", icon: Settings },
     { name: "Upgrade", href: "/upgrade", icon: Rocket },
     { name: "Pricing", href: "/pricing", icon: Coins },
-    { name: "Help & Support", href: "/help", icon: HelpCircle },
   ]
 
   // Add admin link only for admin user
@@ -85,7 +85,7 @@ export function Sidebar({ user }: SidebarProps) {
         {navigation.map((item) => {
           const isActive = pathname === item.href
           const Icon = item.icon
-          const isSupportTab = item.name === "Help & Support"
+          const isSupportTab = item.name === "Support Chat"
 
           return (
             <Link

@@ -1,6 +1,6 @@
 "use server"
 
-import { createServiceClient } from "@/lib/supabase/server"
+import { createClient, createServiceClient } from "@/lib/supabase/server"
 import { getCurrentUser } from "@/lib/auth-utils"
 import { errorLog, devLog } from "@/lib/logger"
 
@@ -16,10 +16,10 @@ export async function sendAdminReply(supportMessageId: string, message: string) 
       throw new Error("Message cannot be empty")
     }
 
-    const serviceSupabase = createServiceClient()
+    const supabase = await createClient()
 
     // Get the original support message to find the user
-    const { data: supportMessage, error: fetchError } = await serviceSupabase
+    const { data: supportMessage, error: fetchError } = await supabase
       .from("support_messages")
       .select(`
         id,
@@ -35,7 +35,7 @@ export async function sendAdminReply(supportMessageId: string, message: string) 
     }
 
     // Insert the admin reply
-    const { data: reply, error: insertError } = await serviceSupabase
+    const { data: reply, error: insertError } = await supabase
       .from("admin_replies")
       .insert({
         support_message_id: supportMessageId,
@@ -69,9 +69,9 @@ export async function getUnreadAdminMessagesCount() {
       return { count: 0 }
     }
 
-    const supabase = await createServiceClient()
+    const supabase = await createClient()
 
-    // Get all admin replies for this user's support messages
+    // Get all admin replies for this user's support messages using join
     const { data: adminReplies, error } = await supabase
       .from("admin_replies")
       .select(`

@@ -27,10 +27,14 @@ export default function SupportPage() {
 
   async function loadConversations() {
     setLoading(true);
+    setError(null);
     try {
+      console.log("Loading conversations...");
       const data = await getSupportConversations();
+      console.log("Conversations loaded:", data);
       setConversations(data);
     } catch (err: any) {
+      console.error("Error loading conversations:", err);
       setError(err?.message || "Failed to load conversations.");
     } finally {
       setLoading(false);
@@ -42,12 +46,15 @@ export default function SupportPage() {
     setError(null);
     setSubmitting(true);
     try {
+      console.log("Sending message:", message);
       const { submitSupportMessage } = await import("@/app/actions/support")
       await submitSupportMessage({ message });
+      console.log("Message sent successfully");
       setMessage("");
       // Reload conversations to show the new message
       await loadConversations();
     } catch (err: any) {
+      console.error("Error sending message:", err);
       setError(err?.message || "Failed to send support message.");
     } finally {
       setSubmitting(false);
@@ -80,7 +87,17 @@ export default function SupportPage() {
             </CardHeader>
             <CardContent className="flex-1 overflow-y-auto space-y-4">
               {loading ? (
-                <div className="text-center text-muted-foreground py-8">Loading conversations...</div>
+                <div className="text-center text-muted-foreground py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                  Loading conversations...
+                </div>
+              ) : error ? (
+                <div className="text-center text-red-600 py-8">
+                  <p className="mb-4">{error}</p>
+                  <Button onClick={loadConversations} variant="outline">
+                    Try Again
+                  </Button>
+                </div>
               ) : conversations.length > 0 ? (
                 conversations.map((msg) => (
                   <div

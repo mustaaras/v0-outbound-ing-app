@@ -24,6 +24,10 @@ export async function getSupportConversations(): Promise<ConversationMessage[]> 
   const user = await getCurrentUser()
   if (!user) throw new Error("Not authenticated")
 
+  console.log("Fetching conversations for user:", user.id)
+  console.log("User email:", user.email)
+  console.log("User object:", JSON.stringify(user, null, 2))
+
   const supabase = await createClient()
 
   // Fetch user messages
@@ -33,16 +37,35 @@ export async function getSupportConversations(): Promise<ConversationMessage[]> 
     .eq("user_id", user.id)
     .order("created_at", { ascending: true })
 
-  if (userError) throw new Error(userError.message)
+  if (userError) {
+    console.error("Error fetching user messages:", userError)
+    throw new Error(userError.message)
+  }
 
-  // Fetch admin replies for user's messages
+  console.log("User messages found:", userMessages?.length || 0)
+  console.log("User message IDs:", userMessages?.map(m => m.id))
+
+  // Fetch admin replies for user's messages (using join to bypass potential RLS issues)
   const { data: adminReplies, error: adminError } = await supabase
     .from("admin_replies")
-    .select("id, message, created_at, support_message_id")
-    .in("support_message_id", userMessages?.map(m => m.id) || [])
+    .select(`
+      id, 
+      message, 
+      created_at, 
+      support_message_id,
+      support_messages!inner(user_id)
+    `)
+    .eq("support_messages.user_id", user.id)
     .order("created_at", { ascending: true })
 
-  if (adminError) throw new Error(adminError.message)
+  if (adminError) {
+    console.error("Error fetching admin replies:", adminError)
+    console.error("Admin error details:", JSON.stringify(adminError, null, 2))
+    throw new Error(adminError.message)
+  }
+
+  console.log("Admin replies found:", adminReplies?.length || 0)
+  console.log("Admin replies data:", JSON.stringify(adminReplies, null, 2))
 
   // Combine and sort all messages chronologically
   const conversations: ConversationMessage[] = []
@@ -71,6 +94,8 @@ export async function getSupportConversations(): Promise<ConversationMessage[]> 
 
   // Sort by created_at
   conversations.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+
+  console.log("Final conversations:", conversations)
 
   return conversations
 }
