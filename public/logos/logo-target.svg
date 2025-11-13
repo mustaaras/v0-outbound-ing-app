@@ -12,5 +12,4 @@
   <!-- Arrow fletching -->
   <line x1="16" y1="44" x2="20" y2="40" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
   <line x1="16" y1="48" x2="20" y2="44" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-</svg></content>
-<parameter name="filePath">/Users/aras/Documents/v0-outbound-ing-app/public/logos/logo-target.svg
+</svg>
