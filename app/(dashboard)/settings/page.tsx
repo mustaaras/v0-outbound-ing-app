@@ -77,18 +77,26 @@ export default async function SettingsPage() {
         </div>
 
         <div className="space-y-4">
-          <FeedbackChart counts={countsMap} />
-          <SupportStats total={(totalSupportCount ?? 0) as number} last30Days={last30} />
+          <div id="feedback">
+            <FeedbackChart counts={countsMap} />
+          </div>
+          <div id="support">
+            <SupportStats total={(totalSupportCount ?? 0) as number} last30Days={last30} />
+          </div>
         </div>
       </div>
 
       <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <FeedbackBox userTier={user.tier} />
-        {user.tier === "light" || user.tier === "pro" ? (
-          <SupportBox userTier={user.tier} />
-        ) : (
-          <div className="rounded-lg border bg-muted p-4 text-sm">Support is available for Light & Pro users. <a className="underline" href="/upgrade">Upgrade</a> to contact support directly.</div>
-        )}
+        <div id="feedback-box">
+          <FeedbackBox userTier={user.tier} />
+        </div>
+        <div id="support-box">
+          {user.tier === "light" || user.tier === "pro" ? (
+            <SupportBox userTier={user.tier} />
+          ) : (
+            <div className="rounded-lg border bg-muted p-4 text-sm">Support is available for Light & Pro users. <a className="underline" href="/upgrade">Upgrade</a> to contact support directly.</div>
+          )}
+        </div>
       </div>
     </div>
   )

@@ -22,7 +22,7 @@ const getNavigation = (userEmail: string) => {
     { name: "My Contacts", href: "/contacts", icon: BookUser },
     { name: "Email Generator", href: "/generator", icon: Wand2 },
     { name: "Archive", href: "/archive", icon: Archive },
-    { name: "Feedback", href: "/feedback", icon: Crown },
+  { name: "Feedback", href: "/settings#feedback", icon: Crown },
     { name: "Settings", href: "/settings", icon: Settings },
     { name: "Upgrade", href: "/upgrade", icon: Rocket },
     { name: "Pricing", href: "/pricing", icon: Coins },
@@ -48,7 +48,7 @@ export function Sidebar({ user }: SidebarProps) {
   if (user.tier === "pro" || user.tier === "light") {
     navigation = [
       ...navigation.slice(0, 6),
-      { name: "Support", href: "/support", icon: Shield },
+      { name: "Support", href: "/settings#support", icon: Shield },
       ...navigation.slice(6)
     ]
   }
