@@ -61,6 +61,19 @@ export function Sidebar({ user }: SidebarProps) {
   }, [])
   
 
+  const handleSupportClick = async () => {
+    // Mark messages as read when clicking on support chat
+    try {
+      const { markAdminMessagesAsRead } = await import("@/app/actions/admin-reply")
+      await markAdminMessagesAsRead();
+      // Refresh the unread count immediately
+      const { count } = await getUnreadAdminMessagesCount()
+      setUnreadCount(count)
+    } catch (error) {
+      console.error("Error marking support messages as read:", error)
+    }
+  }
+
   const handleLogout = async () => {
     const supabase = createClient()
     await supabase.auth.signOut()
@@ -97,6 +110,7 @@ export function Sidebar({ user }: SidebarProps) {
                   ? "bg-primary text-primary-foreground"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground",
               )}
+              onClick={isSupportTab ? handleSupportClick : undefined}
             >
               <Icon className="h-4 w-4" />
               {item.name}

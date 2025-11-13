@@ -23,7 +23,17 @@ export default function SupportPage() {
 
   useEffect(() => {
     loadConversations();
+    markMessagesAsRead();
   }, []);
+
+  async function markMessagesAsRead() {
+    try {
+      const { markAdminMessagesAsRead } = await import("@/app/actions/admin-reply")
+      await markAdminMessagesAsRead();
+    } catch (err: any) {
+      console.error("Error marking messages as read:", err);
+    }
+  }
 
   async function loadConversations() {
     setLoading(true);

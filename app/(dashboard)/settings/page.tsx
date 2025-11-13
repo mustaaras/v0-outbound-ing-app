@@ -2,8 +2,6 @@ import { getCurrentUser } from "@/lib/auth-utils"
 import { redirect } from "next/navigation"
 import { SettingsForm } from "@/components/settings-form"
 import { createClient } from "@/lib/supabase/server"
-import { FeedbackChart } from "@/components/feedback-chart"
-import { SupportStats } from "@/components/support-stats"
 import getStripe from "@/lib/stripe"
 
 export default async function SettingsPage() {
@@ -38,30 +36,6 @@ export default async function SettingsPage() {
     }
   }
 
-  // Fetch feedback rows and aggregate server-side
-  const { data: feedbackRows } = await supabase.from("feedback").select("rating")
-  const countsMap: Record<string, number> = {}
-  if (Array.isArray(feedbackRows)) {
-    feedbackRows.forEach((r: any) => {
-      const key = r.rating || "Unknown"
-      countsMap[key] = (countsMap[key] || 0) + 1
-    })
-  }
-
-  // total support messages
-  const { count: totalSupportCount } = await supabase
-    .from("support_messages")
-    .select("id", { count: "exact" })
-
-  // last 30 days count
-  const thirtyAgo = new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).toISOString()
-  const { count: last30Count } = await supabase
-    .from("support_messages")
-    .select("id", { count: "exact" })
-    .gte("created_at", thirtyAgo)
-
-  const last30 = last30Count ?? 0
-
   return (
     <div className="container mx-auto max-w-4xl py-8">
       <div className="mb-8">
@@ -69,20 +43,7 @@ export default async function SettingsPage() {
         <p className="text-muted-foreground">Manage your account preferences and security</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div>
-          <SettingsForm user={user} hasPassword={hasPassword} renewalDate={renewalDate} />
-        </div>
-
-        <div className="space-y-4">
-          <div id="feedback">
-            <FeedbackChart counts={countsMap} />
-          </div>
-          <div id="support">
-            <SupportStats total={(totalSupportCount ?? 0) as number} last30Days={last30} />
-          </div>
-        </div>
-      </div>
+      <SettingsForm user={user} hasPassword={hasPassword} renewalDate={renewalDate} />
     </div>
   )
 }

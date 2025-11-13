@@ -71,7 +71,7 @@ export async function getUnreadAdminMessagesCount() {
 
     const supabase = await createClient()
 
-    // Get all admin replies for this user's support messages using join
+    // Get all unread admin replies for this user's support messages
     const { data: adminReplies, error } = await supabase
       .from("admin_replies")
       .select(`
@@ -81,14 +81,13 @@ export async function getUnreadAdminMessagesCount() {
         support_messages!inner(user_id)
       `)
       .eq("support_messages.user_id", user.id)
+      .is("read_at", null) // Only count unread messages
 
     if (error) {
       errorLog("[Unread Messages] Failed to fetch admin replies:", error)
       return { count: 0 }
     }
 
-    // For now, we'll consider all admin replies as "unread" since we don't have a read status
-    // In a future enhancement, we could add a read_at timestamp
     const count = adminReplies?.length || 0
 
     return { count }
@@ -96,5 +95,56 @@ export async function getUnreadAdminMessagesCount() {
   } catch (error) {
     errorLog("[Unread Messages] Error:", error)
     return { count: 0 }
+  }
+}
+
+export async function markAdminMessagesAsRead() {
+  try {
+    const user = await getCurrentUser()
+    if (!user) {
+      throw new Error("User not authenticated")
+    }
+
+    const supabase = await createClient()
+
+    // First get all support message IDs for this user
+    const { data: supportMessages, error: fetchError } = await supabase
+      .from("support_messages")
+      .select("id")
+      .eq("user_id", user.id)
+
+    if (fetchError) {
+      errorLog("[Mark Read] Failed to fetch support messages:", fetchError)
+      throw new Error("Failed to fetch support messages")
+    }
+
+    if (!supportMessages || supportMessages.length === 0) {
+      // No support messages, nothing to mark as read
+      return { success: true }
+    }
+
+    const supportMessageIds = supportMessages.map(msg => msg.id)
+
+    // Mark all unread admin replies for this user as read
+    const { error } = await supabase
+      .from("admin_replies")
+      .update({ read_at: new Date().toISOString() })
+      .is("read_at", null)
+      .in("support_message_id", supportMessageIds)
+
+    if (error) {
+      errorLog("[Mark Read] Failed to mark messages as read:", error)
+      throw new Error("Failed to mark messages as read")
+    }
+
+    devLog("[Mark Read] Successfully marked admin messages as read for user:", user.id)
+    return { success: true }
+
+  } catch (error) {
+    errorLog("[Mark Read] Error marking messages as read:", error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error occurred"
+    }
   }
 }
