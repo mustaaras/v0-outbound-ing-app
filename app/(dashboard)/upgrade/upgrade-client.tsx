@@ -64,7 +64,7 @@ export function UpgradeClient({ userTier, isPaid, selectedProductId }: UpgradeCl
               </li>
               <li className="flex items-start gap-2">
                 <Check className="mt-0.5 h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">Email Finder – 60 searches/month</span>
+                <span className="text-sm">Location-based contact search 20/month</span>
               </li>
             </ul>
             <Button disabled className="w-full bg-transparent" variant="outline">

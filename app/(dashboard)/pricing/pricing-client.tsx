@@ -45,7 +45,7 @@ export function PricingClient({ userTier, userId }: PricingClientProps) {
         "9 industry categories",
         "Basic customization",
         "Email support",
-        "Email Finder  60 searches/month",
+        "Location-based contact search 20/month",
       ],
       cta: userTier === "free" ? "Current Plan" : "Downgrade",
       disabled: userTier === "free",
