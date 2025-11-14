@@ -16,10 +16,11 @@ export async function getCurrentUser(): Promise<User | null> {
   try {
     const supabase = await createClient()
 
+    const authPromise = supabase.auth.getUser() as unknown as Promise<{ data: { user: { id: string } | null }; error: unknown }>
     const {
       data: { user: authUser },
       error: authError,
-    } = await withTimeout(supabase.auth.getUser(), 5000)
+    } = await withTimeout(authPromise, 5000)
 
     if (authError) {
       errorLog("[v0] Error getting auth user:", authError)
@@ -28,10 +29,8 @@ export async function getCurrentUser(): Promise<User | null> {
 
     if (!authUser) return null
 
-    const { data: user, error } = await withTimeout(
-      supabase.from("users").select("*").eq("id", authUser.id).single(),
-      5000,
-    )
+    const queryPromise = supabase.from("users").select("*").eq("id", authUser.id).single() as unknown as Promise<{ data: User | null; error: unknown }>
+    const { data: user, error } = await withTimeout(queryPromise, 5000)
 
     if (error) {
       errorLog("[v0] Error fetching user:", error)
@@ -50,10 +49,8 @@ export async function getUserUsage(userId: string): Promise<number> {
     const supabase = await createClient()
     const currentMonth = getCurrentMonth()
 
-    const { data, error } = await withTimeout(
-      supabase.from("usage").select("count").eq("user_id", userId).eq("month", currentMonth).maybeSingle(),
-      5000,
-    )
+    const queryPromise = supabase.from("usage").select("count").eq("user_id", userId).eq("month", currentMonth).maybeSingle() as unknown as Promise<{ data: { count: number } | null; error: unknown }>
+    const { data, error } = await withTimeout(queryPromise, 5000)
 
     if (error) {
       errorLog("[v0] Error fetching usage:", error)
@@ -156,13 +153,11 @@ export async function canSaveContact(
     const supabase = await createClient()
 
     // Count total saved contacts (active + archived)
-    const { count, error } = await withTimeout(
-      supabase
-        .from("saved_buyers")
-        .select("*", { count: "exact", head: true })
-        .eq("user_id", userId),
-      5000,
-    )
+    const queryPromise = supabase
+      .from("saved_buyers")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", userId) as unknown as Promise<{ count: number | null; error: unknown }>
+    const { count, error } = await withTimeout(queryPromise, 5000)
 
     if (error) {
       errorLog("[v0] Error counting saved contacts:", error)
@@ -189,10 +184,8 @@ export async function getUserLocationSearches(userId: string): Promise<number> {
     const supabase = await createClient()
     const currentMonth = getCurrentMonth()
 
-    const { data, error } = await withTimeout(
-      supabase.from("location_searches").select("search_count").eq("user_id", userId).eq("month", currentMonth).maybeSingle(),
-      5000,
-    )
+    const queryPromise = supabase.from("location_searches").select("search_count").eq("user_id", userId).eq("month", currentMonth).maybeSingle() as unknown as Promise<{ data: { search_count: number } | null; error: unknown }>
+    const { data, error } = await withTimeout(queryPromise, 5000)
 
     if (error) {
       errorLog("[v0] Error fetching location searches:", error)
