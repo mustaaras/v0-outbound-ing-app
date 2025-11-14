@@ -128,7 +128,7 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
   }
 
   const handleStrategyToggle = (strategyId: string, tier: string) => {
-    if (tier === "pro" && userTier === "free") {
+    if ((tier === "pro" && userTier === "free") || (tier === "pro" && userTier === "light")) {
       toast({
         title: "Pro Strategy",
         description: "Upgrade to Pro to use this strategy",
@@ -471,7 +471,7 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
           <div className="grid gap-3 sm:grid-cols-2">
             {categorizedStrategies[activeCategory]?.map((strategy) => {
               const isProStrategy = strategy.tier === "pro"
-              const isLocked = isProStrategy && userTier === "free"
+              const isLocked = isProStrategy && (userTier === "free" || userTier === "light")
               const isSelected = selectedStrategies.includes(strategy.id)
 
               return (
