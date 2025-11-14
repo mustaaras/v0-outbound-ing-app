@@ -1,25 +1,34 @@
 
 # <img src="public/logos/logo-o-new.svg" alt="Outbound.ing Logo" width="48" height="48" style="vertical-align:middle;"/> Outbound.ing
 
-Outbound.ing is an AI-powered SaaS platform for generating high-converting cold outreach emails and searching for buyers. Built for sales teams, founders, and agencies who want to personalize outreach and close more deals.
+Outbound.ing is an AI-powered SaaS platform for generating personalized outreach emails and finding business contacts. Built for sales teams, founders, and agencies who want to create effective communication and close more deals.
 
 ## Features
 
-- **AI Email Generator:** Create personalized cold emails using 100+ proven strategies, custom tone, length, and goals.
-- **Location-Based Business Search:** Find businesses worldwide using Google Maps Places API with real email scraping from websites.
-- **Tiered Access:** Free (20 searches/month), Light (unlimited), and Pro (unlimited) plans with usage limits and premium features.
+- **AI Email Generator:** Create personalized outreach emails using 100+ proven strategies, custom tone, length, and goals.
+- **Advanced Contact Discovery:** Find businesses worldwide using Google Maps Places API with intelligent email extraction from websites.
+- **Smart Email Validation:** Advanced filtering removes false positives and ensures high-quality contact data.
+- **Tiered Access:** Free (30 emails/month), Light (300 emails/month), and Pro (unlimited) plans with premium features.
 - **A/B Testing:** Generate 3 email variants for Pro users to optimize conversions.
 - **Multi-Language Support:** Generate emails in any language (Pro feature).
 - **Feedback & Support:** Built-in contact, support, and feedback system to improve quality and user experience.
 - **Modern UI:** Next.js 16, React 19, Tailwind CSS, Radix UI, and dark mode support.
+
+## Latest Advancements
+
+- **Enhanced Contact Extraction:** JSON-LD structured data parsing for modern websites
+- **Intelligent Email Validation:** Strict format validation filters out invalid contacts like file extensions and tracking domains
+- **Improved Contact Detection:** Advanced algorithms find contact pages and retry logic for better success rates
+- **Live Payment Processing:** Full Stripe integration with webhook handling for seamless subscriptions
+- **Stable Infrastructure:** Error handling improvements prevent server crashes and ensure reliability
 
 ## Tech Stack
 
 - Next.js 16 (App Router)
 - React 19
 - Supabase (PostgreSQL + Auth)
-- Stripe (subscriptions)
-- OpenAI GPT-4o-mini (via Vercel AI SDK)
+- Stripe (subscriptions & webhooks)
+- Vercel AI SDK (advanced AI models)
 - Google Maps Places API (business search)
 - Resend (email delivery)
 - Tailwind CSS 4, Radix UI
