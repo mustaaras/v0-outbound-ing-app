@@ -160,12 +160,21 @@ function LoginForm() {
       const devRedirect = process.env.NEXT_PUBLIC_SUPABASE_DEV_REDIRECT_URL
       const prodRedirect = process.env.NEXT_PUBLIC_SUPABASE_REDIRECT_URL
       const isLocalhost = typeof window !== "undefined" && window.location.hostname.includes("localhost")
-      const redirectUrl = isLocalhost ? devRedirect : prodRedirect
+      let redirectUrl = isLocalhost ? devRedirect : prodRedirect
+      
+      // Fallback to current origin + /auth/callback if env vars not set
+      if (!redirectUrl && typeof window !== "undefined") {
+        redirectUrl = `${window.location.origin}/auth/callback`
+      }
 
       console.log("🔍 OAuth Debug - Hostname:", typeof window !== "undefined" ? window.location.hostname : "SSR")
       console.log("🔍 OAuth Debug - Is localhost:", isLocalhost)
       console.log("🔍 OAuth Debug - Using redirect URL:", redirectUrl)
       devLog("[v0] Starting Google OAuth login with redirect:", redirectUrl)
+
+      if (!redirectUrl) {
+        throw new Error("Redirect URL not configured. Please set NEXT_PUBLIC_SUPABASE_REDIRECT_URL or NEXT_PUBLIC_SUPABASE_DEV_REDIRECT_URL")
+      }
 
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
