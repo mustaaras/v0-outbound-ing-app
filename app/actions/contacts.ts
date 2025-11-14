@@ -128,14 +128,21 @@ export async function getSavedContactsAction(options?: {
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return { success: false, error: "Not authenticated", contacts: [] }
+      return { success: false, error: "Not authenticated", contacts: [], total: 0 }
     }
 
     const contacts = await getUserSavedContacts(user.id, options)
-    return { success: true, contacts }
+    
+    // Get total count for pagination
+    const totalOptions = { ...options }
+    delete totalOptions.limit
+    delete totalOptions.offset
+    const allContacts = await getUserSavedContacts(user.id, totalOptions)
+    
+    return { success: true, contacts, total: allContacts.length }
   } catch (error) {
     console.error("Error in getSavedContactsAction:", error)
-    return { success: false, error: "An unexpected error occurred", contacts: [] }
+    return { success: false, error: "An unexpected error occurred", contacts: [], total: 0 }
   }
 }
 

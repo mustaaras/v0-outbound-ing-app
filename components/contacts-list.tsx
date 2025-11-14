@@ -18,8 +18,9 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Plus, Mail, Building2, Send, CheckCircle2, Edit } from "lucide-react"
+import { Plus, Mail, Building2, Send, CheckCircle2, Edit, ChevronLeft, ChevronRight } from "lucide-react"
 import { ContactsImportDialog } from "@/components/contacts-import-dialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export default function ContactsList({ userTier }: { userTier: string }) {
   const [contacts, setContacts] = useState<UserContactView[]>([])
@@ -29,6 +30,9 @@ export default function ContactsList({ userTier }: { userTier: string }) {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [editingContact, setEditingContact] = useState<UserContactView | null>(null)
+  const [totalContacts, setTotalContacts] = useState(0)
+  const [pageSize, setPageSize] = useState(10)
+  const [currentPage, setCurrentPage] = useState(1)
   
   const { toast } = useToast()
   const router = useRouter()
@@ -48,17 +52,21 @@ export default function ContactsList({ userTier }: { userTier: string }) {
 
   useEffect(() => {
     loadContacts()
-  }, [filterStatus])
+  }, [filterStatus, pageSize, currentPage])
 
   async function loadContacts() {
     setLoading(true)
     try {
+      const offset = (currentPage - 1) * pageSize
       const result = await getSavedContactsAction({
         status: filterStatus === "all" ? undefined : filterStatus,
+        limit: pageSize,
+        offset: offset,
       })
 
       if (result.success) {
         setContacts(result.contacts)
+        setTotalContacts(result.total)
       } else {
         toast({
           title: "Error",
@@ -273,7 +281,7 @@ export default function ContactsList({ userTier }: { userTier: string }) {
         <CardHeader>
           <CardTitle>My Saved Contacts</CardTitle>
           <CardDescription>
-            Manage your personal contact list ({contacts.length} total)
+            Manage your personal contact list ({totalContacts} total)
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -464,6 +472,51 @@ export default function ContactsList({ userTier }: { userTier: string }) {
               <TabsTrigger value="unsubscribed">Unsubscribed</TabsTrigger>
             </TabsList>
           </Tabs>
+
+          {/* Pagination Controls */}
+          <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Show</span>
+              <Select value={pageSize.toString()} onValueChange={(value: string) => {
+                setPageSize(parseInt(value))
+                setCurrentPage(1) // Reset to first page when changing page size
+              }}>
+                <SelectTrigger className="w-20">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="5">5</SelectItem>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="20">20</SelectItem>
+                </SelectContent>
+              </Select>
+              <span className="text-sm text-muted-foreground">per page</span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">
+                {totalContacts > 0 ? `${(currentPage - 1) * pageSize + 1}-${Math.min(currentPage * pageSize, totalContacts)} of ${totalContacts}` : '0 contacts'}
+              </span>
+              <div className="flex gap-1">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  disabled={currentPage === 1 || loading}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(prev => prev + 1)}
+                  disabled={currentPage * pageSize >= totalContacts || loading}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
 
           {/* Contacts List */}
           {loading ? (

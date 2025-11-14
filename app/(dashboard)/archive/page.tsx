@@ -1,5 +1,5 @@
 import { getCurrentUser } from "@/lib/auth-utils"
-import { createClient } from "@/lib/supabase/server"
+import { getTemplatesAction } from "@/app/actions/templates"
 import { ArchiveList } from "@/components/archive-list"
 
 export default async function ArchivePage() {
@@ -9,12 +9,8 @@ export default async function ArchivePage() {
     return null
   }
 
-  const supabase = await createClient()
-  const { data: templates } = await supabase
-    .from("templates")
-    .select("*")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false })
+  // Get initial templates with pagination
+  const result = await getTemplatesAction({ limit: 10, offset: 0 })
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
@@ -23,7 +19,7 @@ export default async function ArchivePage() {
         <p className="mt-2 text-muted-foreground">View and manage all your generated templates</p>
       </div>
 
-      <ArchiveList templates={templates || []} />
+      <ArchiveList initialTemplates={result.templates || []} initialTotal={result.total || 0} />
     </div>
   )
 }
