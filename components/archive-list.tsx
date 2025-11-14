@@ -47,12 +47,12 @@ export function ArchiveList({ initialTemplates, initialTotal }: ArchiveListProps
       } else {
         toast({
           title: "Error",
-          description: result.error || "Failed to load templates",
+          description: result.error || "Failed to load emails",
           variant: "destructive",
         })
       }
     } catch (error) {
-      console.error("Error loading templates:", error)
+      console.error("Error loading emails:", error)
       toast({
         title: "Error",
         description: "An unexpected error occurred",
@@ -148,9 +148,9 @@ export function ArchiveList({ initialTemplates, initialTotal }: ArchiveListProps
           <div className="rounded-full bg-muted p-4 mb-4">
             <Search className="h-8 w-8 text-muted-foreground" />
           </div>
-          <h3 className="text-lg font-semibold mb-2">No templates yet</h3>
+          <h3 className="text-lg font-semibold mb-2">No emails yet</h3>
           <p className="text-sm text-muted-foreground max-w-sm">
-            Start generating cold outreach templates to see them appear here
+            Start generating cold outreach emails to see them appear here
           </p>
         </CardContent>
       </Card>
@@ -190,7 +190,7 @@ export function ArchiveList({ initialTemplates, initialTotal }: ArchiveListProps
 
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">
-            {totalTemplates > 0 ? `${(currentPage - 1) * pageSize + 1}-${Math.min(currentPage * pageSize, totalTemplates)} of ${totalTemplates}` : '0 templates'}
+            {totalTemplates > 0 ? `${(currentPage - 1) * pageSize + 1}-${Math.min(currentPage * pageSize, totalTemplates)} of ${totalTemplates}` : '0 emails'}
           </span>
           <div className="flex gap-1">
             <Button
@@ -216,7 +216,7 @@ export function ArchiveList({ initialTemplates, initialTotal }: ArchiveListProps
       {loading ? (
         <Card>
           <CardContent className="py-8 text-center">
-            <p className="text-sm text-muted-foreground">Loading templates...</p>
+            <p className="text-sm text-muted-foreground">Loading emails...</p>
           </CardContent>
         </Card>
       ) : templates.length === 0 && searchQuery ? (

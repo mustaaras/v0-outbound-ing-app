@@ -9,8 +9,8 @@ import ErrorBoundary from "@/components/error-boundary"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Outbound.ing - AI-Powered Cold Outreach Templates",
-  description: "Generate personalized, high-converting cold email templates using AI and proven strategies",
+  title: "Outbound.ing - AI-Powered Cold Outreach Emails",
+  description: "Generate personalized, high-converting cold outreach emails using AI and proven strategies",
   icons: {
     icon: [
       { url: "/favicon.svg" },

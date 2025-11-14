@@ -16,7 +16,7 @@ export default async function ArchivePage() {
     <div className="mx-auto max-w-6xl space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Archive</h1>
-        <p className="mt-2 text-muted-foreground">View and manage all your generated templates</p>
+        <p className="mt-2 text-muted-foreground">View and manage all your generated emails</p>
       </div>
 
       <ArchiveList initialTemplates={result.templates || []} initialTotal={result.total || 0} />

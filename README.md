@@ -1,7 +1,7 @@
 
 # <img src="public/logos/logo-o-new.svg" alt="Outbound.ing Logo" width="48" height="48" style="vertical-align:middle;"/> Outbound.ing
 
-Outbound.ing is an AI-powered SaaS platform for generating high-converting cold email templates and searching for buyers. Built for sales teams, founders, and agencies who want to personalize outreach and close more deals.
+Outbound.ing is an AI-powered SaaS platform for generating high-converting cold outreach emails and searching for buyers. Built for sales teams, founders, and agencies who want to personalize outreach and close more deals.
 
 ## Features
 

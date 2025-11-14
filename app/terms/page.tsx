@@ -46,7 +46,7 @@ export default function TermsPage() {
                 Outbound.ing provides AI-powered email generation tools for sales and outreach purposes. The
                 Service includes access to 150+ sales strategies across 14 industry categories (including Local Services,
                 Hospitality & Food Service, Healthcare & Wellness, Retail & Shopping, and Fitness & Personal Care),
-                customizable email templates, location-based business contact search with Google Places integration,
+                customizable emails, location-based business contact search with Google Places integration,
                 support chat, and generation limits based on your subscription tier.
               </p>
             </section>
@@ -124,7 +124,7 @@ export default function TermsPage() {
             <section className="space-y-3">
               <h2 className="text-2xl font-semibold">7. Intellectual Property</h2>
               <p>
-                All content generated through the Service, including email templates and strategies, is provided
+                All content generated through the Service, including emails and strategies, is provided
                 &quot;as is&quot; for your use. You retain ownership of any content you input into the Service. We
                 retain all rights to the Service platform, technology, and underlying AI models.
               </p>

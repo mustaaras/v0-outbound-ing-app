@@ -242,7 +242,7 @@ Save 20% with annual billing on all plans!
 ## 📈 Success Stories
 
 ### SaaS Founder
-"Outbound.ing helped me go from 2 to 15 demo calls per month. The AI-generated emails sound natural and get 3x better response rates than my old templates."
+"Outbound.ing helped me go from 2 to 15 demo calls per month. The AI-generated emails sound natural and get 3x better response rates than my old emails."
 
 ### Sales Director
 "Our team generates 200+ personalized emails per week. The contact search saves hours of manual research, and the A/B testing helps us optimize for conversions."

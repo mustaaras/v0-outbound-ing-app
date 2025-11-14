@@ -75,12 +75,12 @@ export default async function DashboardPage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Templates</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Emails</CardTitle>
             <Archive className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalTemplates || 0}</div>
-            <p className="mt-2 text-xs text-muted-foreground">All time generated templates</p>
+            <p className="mt-2 text-xs text-muted-foreground">All time generated emails</p>
           </CardContent>
         </Card>
         <Card>
