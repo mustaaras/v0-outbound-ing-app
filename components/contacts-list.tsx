@@ -7,6 +7,7 @@ import {
   updateSavedContactAction, 
   deleteSavedContactAction, 
   addContactAction,
+  updateContactAction,
 } from "@/app/actions/contacts"
 import type { UserContactView } from "@/lib/contacts-db-types"
 import { Button } from "@/components/ui/button"
@@ -17,7 +18,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Plus, Mail, Building2, Send, CheckCircle2 } from "lucide-react"
+import { Plus, Mail, Building2, Send, CheckCircle2, Edit } from "lucide-react"
 import { ContactsImportDialog } from "@/components/contacts-import-dialog"
 
 export default function ContactsList({ userTier }: { userTier: string }) {
@@ -26,6 +27,8 @@ export default function ContactsList({ userTier }: { userTier: string }) {
   const [filterStatus, setFilterStatus] = useState<"all" | "new" | "contacted" | "replied" | "converted" | "unsubscribed">("all")
   const [searchQuery, setSearchQuery] = useState("")
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [editingContact, setEditingContact] = useState<UserContactView | null>(null)
   
   const { toast } = useToast()
   const router = useRouter()
@@ -118,6 +121,47 @@ export default function ContactsList({ userTier }: { userTier: string }) {
         variant: "destructive",
       })
     }
+  }
+
+  async function handleEditContact(e: React.FormEvent) {
+    e.preventDefault()
+    if (!editingContact) return
+
+    try {
+      const result = await updateContactAction(editingContact.contact_id, {
+        first_name: editingContact.first_name,
+        last_name: editingContact.last_name,
+        title: editingContact.title,
+      })
+
+      if (result.success) {
+        toast({
+          title: "Success",
+          description: "Contact updated successfully",
+        })
+        setIsEditDialogOpen(false)
+        setEditingContact(null)
+        loadContacts()
+      } else {
+        toast({
+          title: "Error",
+          description: result.error || "Failed to update contact",
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      console.error("Error updating contact:", error)
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      })
+    }
+  }
+
+  function handleEditClick(contact: UserContactView) {
+    setEditingContact(contact)
+    setIsEditDialogOpen(true)
   }
 
   async function handleUpdateStatus(contactId: string, newStatus: "new" | "contacted" | "replied" | "converted" | "unsubscribed") {
@@ -356,9 +400,58 @@ export default function ContactsList({ userTier }: { userTier: string }) {
                   </div>
                 </form>
               </DialogContent>
-            </Dialog>
+              </Dialog>
             </div>
           </div>
+
+          {/* Edit Contact Dialog */}
+          <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>Edit Contact</DialogTitle>
+                <DialogDescription>
+                  Update contact information
+                </DialogDescription>
+              </DialogHeader>
+              {editingContact && (
+                <form onSubmit={handleEditContact} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="edit-firstName">First Name</Label>
+                      <Input
+                        id="edit-firstName"
+                        value={editingContact.first_name || ""}
+                        onChange={(e) => setEditingContact({ ...editingContact, first_name: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="edit-lastName">Last Name</Label>
+                      <Input
+                        id="edit-lastName"
+                        value={editingContact.last_name || ""}
+                        onChange={(e) => setEditingContact({ ...editingContact, last_name: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2 col-span-2">
+                      <Label htmlFor="edit-title">Title</Label>
+                      <Input
+                        id="edit-title"
+                        value={editingContact.title || ""}
+                        onChange={(e) => setEditingContact({ ...editingContact, title: e.target.value })}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end gap-2">
+                    <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+                      Cancel
+                    </Button>
+                    <Button type="submit">Update Contact</Button>
+                  </div>
+                </form>
+              )}
+            </DialogContent>
+          </Dialog>
 
           {/* Filters */}
           <Tabs value={filterStatus} onValueChange={(value) => setFilterStatus(value as typeof filterStatus)}>
@@ -442,6 +535,14 @@ export default function ContactsList({ userTier }: { userTier: string }) {
                         <option value="converted">Converted</option>
                         <option value="unsubscribed">Unsubscribed</option>
                       </select>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEditClick(contact)}
+                      >
+                        <Edit className="h-4 w-4 mr-1" />
+                        Edit
+                      </Button>
                       <Button
                         variant="outline"
                         size="sm"
