@@ -31,24 +31,9 @@ export async function GET(request: Request) {
     if (data.user) {
       devLog("[v0] OAuth user authenticated:", data.user.email)
 
-      const { data: existingUser } = await supabase.from("users").select("id").eq("id", data.user.id).maybeSingle()
-
-      if (!existingUser) {
-        devLog("[v0] Creating user entry for OAuth user:", data.user.id)
-        const { error: insertError } = await supabase.from("users").insert({
-          id: data.user.id,
-          email: data.user.email,
-          tier: "free",
-        })
-
-        if (insertError) {
-          errorLog("[v0] Error creating user entry:", insertError)
-        } else {
-          devLog("[v0] User entry created successfully")
-        }
-      } else {
-        devLog("[v0] User entry already exists")
-      }
+      // Note: User record in 'users' table is created automatically by database trigger
+      // No need to manually create it here
+      devLog("[v0] User authentication successful, proceeding to dashboard")
     }
   } else {
     devLog("[v0] No code parameter in callback URL")
