@@ -117,114 +117,184 @@ export class GoogleMapsUtils {
   }
 
   /**
-   * Extract emails from website content
+   * Extract emails from website content, including JSON-LD structured data
    */
   static extractEmailsFromText(text: string): string[] {
     const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g
-    const matches = text.match(emailRegex) || []
-    return [...new Set(matches)] // Remove duplicates
+    const matches: string[] = []
+
+    // Extract emails from plain text
+    const plainTextMatches = text.match(emailRegex) || []
+    matches.push(...plainTextMatches)
+
+    // Extract emails from JSON-LD structured data
+    try {
+      // Find all JSON-LD script tags (handle multiline content)
+      const jsonLdRegex = /<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi
+      let jsonLdMatch
+      while ((jsonLdMatch = jsonLdRegex.exec(text)) !== null) {
+        try {
+          const jsonData = JSON.parse(jsonLdMatch[1])
+          
+          // Handle both single objects and arrays of objects
+          const entities = Array.isArray(jsonData) ? jsonData : [jsonData]
+          
+          for (const entity of entities) {
+            // Extract email from various JSON-LD properties
+            if (entity.email) {
+              if (Array.isArray(entity.email)) {
+                matches.push(...entity.email)
+              } else {
+                matches.push(entity.email)
+              }
+            }
+            
+            // Also check nested contactPoint objects
+            if (entity.contactPoint) {
+              const contactPoints = Array.isArray(entity.contactPoint) ? entity.contactPoint : [entity.contactPoint]
+              for (const contactPoint of contactPoints) {
+                if (contactPoint.email) {
+                  if (Array.isArray(contactPoint.email)) {
+                    matches.push(...contactPoint.email)
+                  } else {
+                    matches.push(contactPoint.email)
+                  }
+                }
+              }
+            }
+          }
+        } catch (parseError) {
+          // Skip invalid JSON-LD blocks
+          continue
+        }
+      }
+    } catch (error) {
+      // Continue if JSON-LD parsing fails
+    }
+
+    // Remove duplicates and return
+    return [...new Set(matches)]
   }
 
   /**
    * Scrape website for contact information
    * Note: This is a basic implementation. In production, consider using a proper scraping service.
    */
-  static async scrapeWebsiteForContacts(website: string): Promise<{
+  static async scrapeWebsiteForContacts(website: string, retries: number = 2): Promise<{
     emails: string[]
     success: boolean
     error?: string
   }> {
-    try {
-      // Basic validation
-      if (!website.startsWith('http')) {
-        website = 'https://' + website
-      }
+    let lastError: string = ''
 
-      const response = await fetch(website, {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (compatible; OutboundBot/1.0)',
-        },
-        // Timeout after 10 seconds
-        signal: AbortSignal.timeout(10000),
-      })
+    for (let attempt = 0; attempt <= retries; attempt++) {
+      try {
+        // Basic validation
+        if (!website.startsWith('http')) {
+          website = 'https://' + website
+        }
 
-      if (!response.ok) {
-        return { emails: [], success: false, error: `HTTP ${response.status}` }
-      }
+        const response = await fetch(website, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (compatible; OutboundBot/1.0)',
+          },
+          // Timeout after 10 seconds
+          signal: AbortSignal.timeout(10000),
+        })
 
-      // Check content type to avoid scraping images, PDFs, etc.
-      const contentType = response.headers.get('content-type') || ''
-      if (!contentType.includes('text/html') && !contentType.includes('application/xhtml')) {
-        return { emails: [], success: false, error: 'Not an HTML page' }
-      }
+        if (!response.ok) {
+          lastError = `HTTP ${response.status}`
+          if (attempt < retries) continue // Retry on HTTP errors
+          return { emails: [], success: false, error: lastError }
+        }
 
-      const html = await response.text()
+        // Check content type to avoid scraping images, PDFs, etc.
+        const contentType = response.headers.get('content-type') || ''
+        if (!contentType.includes('text/html') && !contentType.includes('application/xhtml')) {
+          return { emails: [], success: false, error: 'Not an HTML page' }
+        }
 
-      // Skip if this looks like an image or binary content
-      if (html.length < 100 || html.includes('<html') === false) {
-        return { emails: [], success: false, error: 'Invalid HTML content' }
-      }
+        const html = await response.text()
 
-      // Look for contact pages - but filter out image URLs
-      const contactUrls = this.findContactPages(html, website)
-        .filter(url => !url.includes('.png') && !url.includes('.jpg') && !url.includes('.jpeg') && 
-                     !url.includes('.gif') && !url.includes('.svg') && !url.includes('.webp') &&
-                     !url.includes('.pdf') && !url.includes('.doc') && !url.includes('.docx'))
+        // Skip if this looks like an image or binary content
+        if (html.length < 100 || html.includes('<html') === false) {
+          return { emails: [], success: false, error: 'Invalid HTML content' }
+        }
 
-      let allEmails: string[] = []
+        // Look for contact pages - but filter out image URLs
+        const contactUrls = this.findContactPages(html, website)
+          .filter(url => !url.includes('.png') && !url.includes('.jpg') && !url.includes('.jpeg') && 
+                       !url.includes('.gif') && !url.includes('.svg') && !url.includes('.webp') &&
+                       !url.includes('.pdf') && !url.includes('.doc') && !url.includes('.docx'))
 
-      // Scrape main page
-      allEmails = allEmails.concat(this.extractEmailsFromText(html))
+        let allEmails: string[] = []
 
-      // Try to scrape contact pages (limit to 2 to avoid too many requests)
-      for (const contactUrl of contactUrls.slice(0, 2)) {
-        try {
-          const contactResponse = await fetch(contactUrl, {
-            headers: {
-              'User-Agent': 'Mozilla/5.0 (compatible; OutboundBot/1.0)',
-            },
-            signal: AbortSignal.timeout(8000),
-          })
+        // Scrape main page
+        allEmails = allEmails.concat(this.extractEmailsFromText(html))
 
-          // Check content type for contact pages too
-          const contactContentType = contactResponse.headers.get('content-type') || ''
-          if (!contactContentType.includes('text/html') && !contactContentType.includes('application/xhtml')) {
-            continue // Skip non-HTML content
-          }
+        // Try to scrape contact pages (limit to 3 to avoid too many requests)
+        for (const contactUrl of contactUrls.slice(0, 3)) {
+          try {
+            const contactResponse = await fetch(contactUrl, {
+              headers: {
+                'User-Agent': 'Mozilla/5.0 (compatible; OutboundBot/1.0)',
+              },
+              signal: AbortSignal.timeout(8000),
+            })
 
-          if (contactResponse.ok) {
-            const contactHtml = await contactResponse.text()
-            
-            // Skip if this looks like an image or binary content
-            if (contactHtml.length < 100 || contactHtml.includes('<html') === false) {
-              continue
+            // Check content type for contact pages too
+            const contactContentType = contactResponse.headers.get('content-type') || ''
+            if (!contactContentType.includes('text/html') && !contactContentType.includes('application/xhtml')) {
+              continue // Skip non-HTML content
             }
-            
-            const contactEmails = this.extractEmailsFromText(contactHtml)
-            allEmails = allEmails.concat(contactEmails)
+
+            if (contactResponse.ok) {
+              const contactHtml = await contactResponse.text()
+              
+              // Skip if this looks like an image or binary content
+              if (contactHtml.length < 100 || contactHtml.includes('<html') === false) {
+                continue
+              }
+              
+              const contactEmails = this.extractEmailsFromText(contactHtml)
+              allEmails = allEmails.concat(contactEmails)
+            }
+          } catch (error) {
+            // Continue if contact page fails
+            continue
           }
-        } catch (error) {
-          // Continue if contact page fails
+        }
+
+        // Remove duplicates and filter valid emails
+        const uniqueEmails = [...new Set(allEmails)]
+          .filter(email => this.isValidEmailFormat(email))
+          .filter(email => !email.includes('noreply') && !email.includes('no-reply') && 
+                          !email.includes('donotreply') && !email.includes('do-not-reply') &&
+                          !email.includes('example.com') && !email.includes('test.com') &&
+                          !email.includes('sample.com') && !email.includes('placeholder.com') &&
+                          !email.includes('yourcompany.com') && !email.includes('company.com'))
+          .slice(0, 3) // Limit to 3 emails per site
+
+        return { emails: uniqueEmails, success: true }
+      } catch (error) {
+        lastError = error instanceof Error ? error.message : 'Unknown error'
+        if (attempt < retries) {
+          // Wait before retrying (exponential backoff)
+          await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000))
           continue
         }
+        return {
+          emails: [],
+          success: false,
+          error: lastError
+        }
       }
+    }
 
-      // Remove duplicates and filter valid emails
-      const uniqueEmails = [...new Set(allEmails)]
-        .filter(email => this.isValidEmailFormat(email))
-        .filter(email => !email.includes('noreply') && !email.includes('no-reply') && 
-                        !email.includes('donotreply') && !email.includes('do-not-reply') &&
-                        !email.includes('example.com') && !email.includes('test.com') &&
-                        !email.includes('sample.com'))
-        .slice(0, 3) // Limit to 3 emails per site
-
-      return { emails: uniqueEmails, success: true }
-    } catch (error) {
-      return {
-        emails: [],
-        success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
-      }
+    return {
+      emails: [],
+      success: false,
+      error: lastError
     }
   }
 
@@ -238,12 +308,18 @@ export class GoogleMapsUtils {
       const url = new URL(baseUrl)
       const baseDomain = url.origin
 
-      // Common contact page patterns
+      // Common contact page patterns (expanded list)
       const patterns = [
         /href=["']([^"']*contact[^"']*)["']/gi,
         /href=["']([^"']*about[^"']*)["']/gi,
         /href=["']([^"']*reach[^"']*)["']/gi,
         /href=["']([^"']*connect[^"']*)["']/gi,
+        /href=["']([^"']*support[^"']*)["']/gi,
+        /href=["']([^"']*help[^"']*)["']/gi,
+        /href=["']([^"']*inquiry[^"']*)["']/gi,
+        /href=["']([^"']*inquiries[^"']*)["']/gi,
+        /href=["']([^"']*get-in-touch[^"']*)["']/gi,
+        /href=["']([^"']*touch[^"']*)["']/gi,
       ]
 
       for (const pattern of patterns) {
@@ -256,16 +332,37 @@ export class GoogleMapsUtils {
             href = baseDomain + '/' + href
           }
 
-          if (href.includes('contact') || href.includes('about')) {
+          // More inclusive filtering for contact-related pages
+          if (href.includes('contact') || href.includes('about') || href.includes('support') || 
+              href.includes('help') || href.includes('inquir') || href.includes('touch') ||
+              href.includes('reach') || href.includes('connect')) {
             contactUrls.push(href)
           }
         }
       }
 
-      // Add common contact URLs
-      contactUrls.push(`${baseDomain}/contact`)
-      contactUrls.push(`${baseDomain}/about`)
-      contactUrls.push(`${baseDomain}/contact-us`)
+      // Add common contact URLs (expanded list)
+      const commonPaths = [
+        '/contact',
+        '/about',
+        '/contact-us',
+        '/about-us',
+        '/support',
+        '/help',
+        '/contact-us/',
+        '/about-us/',
+        '/support/',
+        '/help/',
+        '/get-in-touch',
+        '/reach-us',
+        '/connect',
+        '/inquiry',
+        '/inquiries'
+      ]
+
+      for (const path of commonPaths) {
+        contactUrls.push(`${baseDomain}${path}`)
+      }
 
       return [...new Set(contactUrls)]
     } catch {
