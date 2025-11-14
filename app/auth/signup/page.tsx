@@ -107,9 +107,7 @@ export default function SignupPage() {
     setError(null)
 
     try {
-      const redirectUrl = process.env.NODE_ENV === 'production'
-        ? process.env.NEXT_PUBLIC_SUPABASE_REDIRECT_URL
-        : process.env.NEXT_PUBLIC_SUPABASE_DEV_REDIRECT_URL
+      const redirectUrl = "https://knpjfzfuwncoqqbntqoc.supabase.co/auth/v1/callback"
 
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
