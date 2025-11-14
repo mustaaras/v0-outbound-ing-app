@@ -42,6 +42,9 @@ export async function generateTemplate(input: GenerateTemplateInput) {
     throw new Error("User not found")
   }
 
+  // Apply effective tier logic (ultra = pro)
+  const effectiveTier = user.tier === "ultra" ? "pro" : user.tier
+
   // Check if user can generate
   const { canGenerate } = await canGenerateTemplate(input.userId, user.tier)
   if (!canGenerate) {
@@ -57,7 +60,7 @@ export async function generateTemplate(input: GenerateTemplateInput) {
 
   // Check if user has access to pro strategies
   const hasProStrategy = strategies.some((s) => s.tier === "pro")
-  if (hasProStrategy && user.tier !== "pro") {
+  if (hasProStrategy && effectiveTier !== "pro") {
     throw new Error("Upgrade to Pro to use premium strategies")
   }
 
@@ -98,7 +101,7 @@ Generate ONLY the email body text, no subject line. The sender's signature will 
 
   try {
     // Check for premium features
-    const isPro = user.tier === "pro" || user.tier === "ultra"
+    const isPro = effectiveTier === "pro"
     const isUltra = user.tier === "ultra"
     
     if (input.generateVariants && !isPro) {
