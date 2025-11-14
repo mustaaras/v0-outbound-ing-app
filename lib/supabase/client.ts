@@ -17,6 +17,8 @@ export function createClient() {
       flowType: 'pkce',
       autoRefreshToken: true,
       persistSession: true,
+      // Ensure the browser client looks for OAuth tokens in the URL and completes the PKCE flow
+      detectSessionInUrl: true,
     }
   })
 }
