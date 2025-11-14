@@ -138,11 +138,11 @@ export const rateLimiters = {
     message: "Too many search requests. Please wait before searching again."
   }),
 
-  // Very strict rate limiting for authentication
+  // More lenient rate limiting for authentication (mobile-friendly)
   auth: new RateLimiter({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    maxRequests: 5, // 5 auth attempts per 15 minutes
-    message: "Too many authentication attempts. Please wait 15 minutes before trying again."
+    maxRequests: 10, // 10 auth attempts per 15 minutes (increased from 5)
+    message: "Too many authentication attempts. Please wait before trying again."
   })
 }
 

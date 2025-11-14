@@ -89,6 +89,11 @@ export default function LoginPage() {
           setError(
             "Invalid email or password. If you signed up with Google, please use 'Continue with Google' instead.",
           )
+        } else if (error.message.toLowerCase().includes("too many") || error.message.toLowerCase().includes("rate limit")) {
+          // Handle rate limiting with more specific message
+          const retryAfter = error.message.match(/retryAfter["\s:]+(\d+)/)?.[1]
+          const waitTime = retryAfter ? Math.ceil(parseInt(retryAfter) / 60) : 15
+          setError(`Too many login attempts. Please wait ${waitTime} minutes before trying again.`)
         } else {
           throw error
         }
