@@ -152,7 +152,7 @@ export function SearchContactsForm({ userId, userTier, searchesUsed, searchLimit
       })
     )
 
-    window.location.href = "/generator"
+    window.open("/generator", "_blank")
   }
 
   const handleSendEmail = (buyer: SnovBuyer) => {
@@ -166,7 +166,7 @@ export function SearchContactsForm({ userId, userTier, searchesUsed, searchLimit
         title: buyer.title,
       }),
     )
-    window.location.href = "/generator"
+    window.open("/generator", "_blank")
   }
 
   if (searchLimit === 0) {

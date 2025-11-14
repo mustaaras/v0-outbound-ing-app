@@ -77,7 +77,7 @@ export function PublicEmailFinderForm({ userId, userTier, searchesUsed, searchLi
         title: r.type === 'generic' ? 'Generic Inbox' : 'Public Email',
       })
     )
-    window.location.href = '/generator'
+    window.open('/generator', '_blank')
   }
 
   const onSubmit = async (e: React.FormEvent) => {
