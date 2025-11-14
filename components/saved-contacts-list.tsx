@@ -111,7 +111,7 @@ export function SavedContactsList({ contacts, userId, isArchivedView }: Props) {
         title: contact.title || undefined,
       }),
     )
-    window.location.href = "/generator"
+    window.open("/generator", "_blank")
   }
 
   if (!contacts || contacts.length === 0) {

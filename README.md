@@ -49,12 +49,22 @@ styles/
 tools/
 ```
 
+## Documentation
+
+- **[User Guide](docs/user-guide.md)** - Complete guide for using Outbound.ing
+- **[FAQ](docs/faq.md)** - Frequently asked questions
+- **[Developer Docs](docs/README.md)** - Technical documentation
+
 ## Getting Started
 
 1. Clone the repo
 2. Install dependencies: `pnpm install`
 3. Add your environment variables to `.env.local`
 4. Start the dev server: `pnpm dev`
+
+## For Users
+
+New to Outbound.ing? Start with our [User Guide](docs/user-guide.md) for a complete walkthrough of all features.
 
 ## Logo
 
