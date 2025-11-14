@@ -7,11 +7,11 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Loader2, MapPin, Search, Building2, Globe, Crown, Send, Bookmark } from "lucide-react"
+import { Loader2, MapPin, Search, Building2, Globe, Crown, Send, Bookmark, CheckCircle2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { GooglePlace, LocationSearchParams, LocationSearchResult } from "@/lib/google-maps"
 import { processLocationSearch, validateLocationSearchAccess } from "@/app/actions/location-search"
-import { saveBuyer } from "@/app/actions/save-buyer"
+import { addContactAction } from "@/app/actions/contacts"
 import { devLog, errorLog } from "@/lib/logger"
 
 // Extend window interface for Google Maps
@@ -52,11 +52,7 @@ export function LocationSearchForm({ isLoading: externalLoading, userId }: Locat
   const [processingResults, setProcessingResults] = useState<ProcessingResult | null>(null)
   const [mapsLoaded, setMapsLoaded] = useState(false)
   const [googleMaps, setGoogleMaps] = useState<typeof google.maps | null>(null)
-  const [userAccess, setUserAccess] = useState<{
-    canSearch: boolean
-    tier: string
-    remainingSearches?: number
-  } | null>(null)
+  const [savedContacts, setSavedContacts] = useState<Set<string>>(new Set())
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<google.maps.Map | null>(null)
   const markersRef = useRef<google.maps.Marker[]>([])
@@ -72,32 +68,24 @@ export function LocationSearchForm({ isLoading: externalLoading, userId }: Locat
       recipientName: businessName,
       recipientCompany: businessName,
     })
-    router.push(`/generator?${params.toString()}`)
-  }, [router])
+    window.open(`/generator?${params.toString()}`, '_blank')
+  }, [])
 
   const saveContact = useCallback(async (email: string, businessName: string) => {
-    if (!userId) {
-      toast({
-        title: "Error",
-        description: "User not authenticated. Please log in again.",
-        variant: "destructive",
-      })
-      return
-    }
-
     try {
-      const result = await saveBuyer({
-        userId,
-        buyer: {
-          email,
-          first_name: null as any,
-          last_name: null as any,
-          company: businessName,
-          title: "Business Contact",
-        },
+      const result = await addContactAction({
+        email,
+        firstName: undefined,
+        lastName: undefined,
+        title: "Business Contact",
+        companyName: businessName,
+        companyDomain: businessName.toLowerCase().replace(/\s+/g, ''), // Simple domain extraction
+        source: "location_search",
+        saveForUser: true,
       })
 
       if (result.success) {
+        setSavedContacts(prev => new Set(prev).add(email))
         toast({
           title: "Contact saved",
           description: `${email} has been added to your contacts.`,
@@ -118,7 +106,7 @@ export function LocationSearchForm({ isLoading: externalLoading, userId }: Locat
         variant: "destructive",
       })
     }
-  }, [userId, toast])
+  }, [toast])
 
   // Load Google Maps API
   useEffect(() => {
@@ -779,12 +767,22 @@ export function LocationSearchForm({ isLoading: externalLoading, userId }: Locat
                               </Button>
                               <Button
                                 size="sm"
-                                variant="outline"
-                                className="h-6 px-2 text-xs"
+                                variant={savedContacts.has(email) ? "default" : "outline"}
+                                className={`h-6 px-2 text-xs ${savedContacts.has(email) ? "bg-green-600 hover:bg-green-700" : ""}`}
                                 onClick={() => saveContact(email, scraped.businessName)}
+                                disabled={savedContacts.has(email)}
                               >
-                                <Bookmark className="h-3 w-3 mr-1" />
-                                Save
+                                {savedContacts.has(email) ? (
+                                  <>
+                                    <CheckCircle2 className="h-3 w-3 mr-1" />
+                                    Saved
+                                  </>
+                                ) : (
+                                  <>
+                                    <Bookmark className="h-3 w-3 mr-1" />
+                                    Save
+                                  </>
+                                )}
                               </Button>
                             </div>
                           ))}
