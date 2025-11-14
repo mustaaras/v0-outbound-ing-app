@@ -148,7 +148,11 @@ export default function LoginPage() {
     setError(null)
 
     try {
-      const redirectUrl = "https://knpjfzfuwncoqqbntqoc.supabase.co/auth/v1/callback"
+      const devRedirect = process.env.NEXT_PUBLIC_SUPABASE_DEV_REDIRECT_URL
+      const prodRedirect = process.env.NEXT_PUBLIC_SUPABASE_REDIRECT_URL
+      const redirectUrl = (typeof window !== "undefined" && window.location.hostname.includes("localhost"))
+        ? devRedirect
+        : prodRedirect
 
       console.log("🔍 OAuth Debug - Using redirect URL:", redirectUrl)
       devLog("[v0] Starting Google OAuth login with redirect:", redirectUrl)

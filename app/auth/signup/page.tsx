@@ -107,7 +107,11 @@ export default function SignupPage() {
     setError(null)
 
     try {
-      const redirectUrl = "https://knpjfzfuwncoqqbntqoc.supabase.co/auth/v1/callback"
+      const devRedirect = process.env.NEXT_PUBLIC_SUPABASE_DEV_REDIRECT_URL
+      const prodRedirect = process.env.NEXT_PUBLIC_SUPABASE_REDIRECT_URL
+      const redirectUrl = (typeof window !== "undefined" && window.location.hostname.includes("localhost"))
+        ? devRedirect
+        : prodRedirect
 
       devLog("[v0] Starting Google OAuth signup with redirect:", redirectUrl)
 
