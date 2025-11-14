@@ -5,6 +5,7 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 import ErrorBoundary from "@/components/error-boundary"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -48,6 +49,7 @@ export default function RootLayout({
           </ErrorBoundary>
           <Toaster />
         </ThemeProvider>
+        <SpeedInsights />
       </body>
     </html>
   )
