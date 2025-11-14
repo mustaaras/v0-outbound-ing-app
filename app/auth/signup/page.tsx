@@ -127,9 +127,9 @@ function SignupForm() {
       }
 
       devLog("[v0] Starting Google OAuth signup with redirect:", redirectUrl)
-      console.log("🔍 OAuth Debug - Hostname:", typeof window !== "undefined" ? window.location.hostname : "SSR")
-      console.log("🔍 OAuth Debug - Is localhost:", isLocalhost)
-      console.log("🔍 OAuth Debug - Using redirect URL:", redirectUrl)
+      devLog("[v0] OAuth Debug - Hostname:", typeof window !== "undefined" ? window.location.hostname : "SSR")
+      devLog("[v0] OAuth Debug - Is localhost:", isLocalhost)
+      devLog("[v0] OAuth Debug - Using redirect URL:", redirectUrl)
 
       if (!redirectUrl) {
         throw new Error("Redirect URL not configured. Please set NEXT_PUBLIC_SUPABASE_REDIRECT_URL or NEXT_PUBLIC_SUPABASE_DEV_REDIRECT_URL")

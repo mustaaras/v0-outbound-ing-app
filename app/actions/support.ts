@@ -21,12 +21,13 @@ type ConversationMessage = {
 }
 
 export async function getSupportConversations(): Promise<ConversationMessage[]> {
+  const { devLog, errorLog } = await import("@/lib/logger")
   const user = await getCurrentUser()
   if (!user) throw new Error("Not authenticated")
 
-  console.log("Fetching conversations for user:", user.id)
-  console.log("User email:", user.email)
-  console.log("User object:", JSON.stringify(user, null, 2))
+  devLog("[v0] Fetching conversations for user:", user.id)
+  devLog("[v0] User email:", user.email)
+  devLog("[v0] User object:", JSON.stringify(user, null, 2))
 
   const supabase = await createClient()
 
@@ -38,12 +39,12 @@ export async function getSupportConversations(): Promise<ConversationMessage[]> 
     .order("created_at", { ascending: true })
 
   if (userError) {
-    console.error("Error fetching user messages:", userError)
+    errorLog("[v0] Error fetching user messages:", userError)
     throw new Error(userError.message)
   }
 
-  console.log("User messages found:", userMessages?.length || 0)
-  console.log("User message IDs:", userMessages?.map(m => m.id))
+  devLog("[v0] User messages found:", userMessages?.length || 0)
+  devLog("[v0] User message IDs:", userMessages?.map(m => m.id))
 
   // Fetch admin replies for user's messages (using join to bypass potential RLS issues)
   const { data: adminReplies, error: adminError } = await supabase
@@ -59,13 +60,13 @@ export async function getSupportConversations(): Promise<ConversationMessage[]> 
     .order("created_at", { ascending: true })
 
   if (adminError) {
-    console.error("Error fetching admin replies:", adminError)
-    console.error("Admin error details:", JSON.stringify(adminError, null, 2))
+    errorLog("[v0] Error fetching admin replies:", adminError)
+    errorLog("[v0] Admin error details:", JSON.stringify(adminError, null, 2))
     throw new Error(adminError.message)
   }
 
-  console.log("Admin replies found:", adminReplies?.length || 0)
-  console.log("Admin replies data:", JSON.stringify(adminReplies, null, 2))
+  devLog("[v0] Admin replies found:", adminReplies?.length || 0)
+  devLog("[v0] Admin replies data:", JSON.stringify(adminReplies, null, 2))
 
   // Combine and sort all messages chronologically
   const conversations: ConversationMessage[] = []
@@ -95,7 +96,7 @@ export async function getSupportConversations(): Promise<ConversationMessage[]> 
   // Sort by created_at
   conversations.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
 
-  console.log("Final conversations:", conversations)
+  devLog("[v0] Final conversations:", conversations)
 
   return conversations
 }

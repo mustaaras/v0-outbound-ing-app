@@ -30,8 +30,9 @@ export default function SupportPage() {
     try {
       const { markAdminMessagesAsRead } = await import("@/app/actions/admin-reply")
       await markAdminMessagesAsRead();
-    } catch (err: any) {
-      console.error("Error marking messages as read:", err);
+    } catch (err: unknown) {
+      const { errorLog } = await import("@/lib/logger")
+      errorLog("[v0] Error marking messages as read:", err);
     }
   }
 
@@ -39,13 +40,15 @@ export default function SupportPage() {
     setLoading(true);
     setError(null);
     try {
-      console.log("Loading conversations...");
+      const { devLog, errorLog } = await import("@/lib/logger")
+      devLog("[v0] Loading conversations...");
       const data = await getSupportConversations();
-      console.log("Conversations loaded:", data);
+      devLog("[v0] Conversations loaded:", data);
       setConversations(data);
-    } catch (err: any) {
-      console.error("Error loading conversations:", err);
-      setError(err?.message || "Failed to load conversations.");
+    } catch (err: unknown) {
+      const { errorLog } = await import("@/lib/logger")
+      errorLog("[v0] Error loading conversations:", err);
+      setError(err instanceof Error ? err.message : "Failed to load conversations.");
     } finally {
       setLoading(false);
     }
@@ -56,16 +59,18 @@ export default function SupportPage() {
     setError(null);
     setSubmitting(true);
     try {
-      console.log("Sending message:", message);
+      const { devLog, errorLog } = await import("@/lib/logger")
+      devLog("[v0] Sending message:", message);
       const { submitSupportMessage } = await import("@/app/actions/support")
       await submitSupportMessage({ message });
-      console.log("Message sent successfully");
+      devLog("[v0] Message sent successfully");
       setMessage("");
       // Reload conversations to show the new message
       await loadConversations();
-    } catch (err: any) {
-      console.error("Error sending message:", err);
-      setError(err?.message || "Failed to send support message.");
+    } catch (err: unknown) {
+      const { errorLog } = await import("@/lib/logger")
+      errorLog("[v0] Error sending message:", err);
+      setError(err instanceof Error ? err.message : "Failed to send support message.");
     } finally {
       setSubmitting(false);
     }

@@ -2,6 +2,7 @@
 
 import React from "react"
 import { Button } from "@/components/ui/button"
+import { errorLog } from "@/lib/logger"
 
 interface ErrorBoundaryState {
   hasError: boolean
@@ -24,7 +25,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error("Error Boundary caught an error:", error, errorInfo)
+    errorLog("[ErrorBoundary] Caught an error:", error, errorInfo)
 
     // In production, you might want to send this to an error reporting service
     if (typeof window !== "undefined" && process.env.NODE_ENV === "production") {

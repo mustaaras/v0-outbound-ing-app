@@ -32,7 +32,8 @@ export default async function SettingsPage() {
         renewalDate = new Date((sub as any).current_period_end * 1000).toLocaleDateString()
       }
     } catch (error) {
-      console.error("Error fetching subscription:", error)
+      const { errorLog } = await import("@/lib/logger")
+      errorLog("[v0] Error fetching subscription:", error)
     }
   }
 
