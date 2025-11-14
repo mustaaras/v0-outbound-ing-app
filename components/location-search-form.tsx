@@ -7,10 +7,11 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Loader2, MapPin, Search, Building2, Globe, Crown, Send } from "lucide-react"
+import { Loader2, MapPin, Search, Building2, Globe, Crown, Send, Bookmark } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { GooglePlace, LocationSearchParams, LocationSearchResult } from "@/lib/google-maps"
 import { processLocationSearch, validateLocationSearchAccess } from "@/app/actions/location-search"
+import { saveBuyer } from "@/app/actions/save-buyer"
 import { devLog, errorLog } from "@/lib/logger"
 
 // Extend window interface for Google Maps
@@ -38,9 +39,10 @@ interface ProcessingResult {
 
 interface LocationSearchFormProps {
   isLoading?: boolean
+  userId?: string
 }
 
-export function LocationSearchForm({ isLoading: externalLoading }: LocationSearchFormProps) {
+export function LocationSearchForm({ isLoading: externalLoading, userId }: LocationSearchFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [location, setLocation] = useState("")
@@ -72,6 +74,51 @@ export function LocationSearchForm({ isLoading: externalLoading }: LocationSearc
     })
     router.push(`/generator?${params.toString()}`)
   }, [router])
+
+  const saveContact = useCallback(async (email: string, businessName: string) => {
+    if (!userId) {
+      toast({
+        title: "Error",
+        description: "User not authenticated. Please log in again.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    try {
+      const result = await saveBuyer({
+        userId,
+        buyer: {
+          email,
+          first_name: null as any,
+          last_name: null as any,
+          company: businessName,
+          title: "Business Contact",
+        },
+      })
+
+      if (result.success) {
+        toast({
+          title: "Contact saved",
+          description: `${email} has been added to your contacts.`,
+          variant: "default",
+        })
+      } else {
+        toast({
+          title: "Save failed",
+          description: result.error || "Failed to save contact.",
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      errorLog("[v0] Error saving contact:", error)
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred while saving the contact.",
+        variant: "destructive",
+      })
+    }
+  }, [userId, toast])
 
   // Load Google Maps API
   useEffect(() => {
@@ -729,6 +776,15 @@ export function LocationSearchForm({ isLoading: externalLoading }: LocationSearc
                               >
                                 <Send className="h-3 w-3 mr-1" />
                                 Send Email
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-6 px-2 text-xs"
+                                onClick={() => saveContact(email, scraped.businessName)}
+                              >
+                                <Bookmark className="h-3 w-3 mr-1" />
+                                Save
                               </Button>
                             </div>
                           ))}
