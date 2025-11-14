@@ -60,7 +60,7 @@ export async function generateTemplate(input: GenerateTemplateInput) {
 
   // Check if user has access to pro strategies
   const hasProStrategy = strategies.some((s) => s.tier === "pro")
-  if (hasProStrategy && effectiveTier !== "pro") {
+  if (hasProStrategy && effectiveTier === "free") {
     throw new Error("Upgrade to Pro to use premium strategies")
   }
 
