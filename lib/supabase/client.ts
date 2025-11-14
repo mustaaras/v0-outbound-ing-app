@@ -8,5 +8,15 @@ export function createClient() {
     throw new Error("Missing Supabase environment variables")
   }
 
-  return createBrowserClient(supabaseUrl, supabaseAnonKey)
+  const redirectTo = process.env.NODE_ENV === 'production'
+    ? process.env.NEXT_PUBLIC_SUPABASE_REDIRECT_URL
+    : process.env.NEXT_PUBLIC_SUPABASE_DEV_REDIRECT_URL
+
+  return createBrowserClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      flowType: 'pkce',
+      autoRefreshToken: true,
+      persistSession: true,
+    }
+  })
 }
