@@ -192,7 +192,8 @@ export default function LoginPage() {
             <CardContent>
               <form onSubmit={handleLogin}>
                 <div className="flex flex-col gap-6">
-                  <Button type="button" variant="outline" className="w-full bg-transparent" onClick={handleGoogleLogin}>
+                  {/* Temporarily disabled Google OAuth due to redirect issues */}
+                  {/* <Button type="button" variant="outline" className="w-full bg-transparent" onClick={handleGoogleLogin}>
                     <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                       <path
                         fill="currentColor"
@@ -212,7 +213,7 @@ export default function LoginPage() {
                       />
                     </svg>
                     Continue with Google
-                  </Button>
+                  </Button> */}
 
                   <div className="relative">
                     <div className="absolute inset-0 flex items-center">

@@ -150,7 +150,8 @@ export default function SignupPage() {
             <CardContent>
               <form onSubmit={handleSignUp}>
                 <div className="flex flex-col gap-6">
-                  <Button
+                  {/* Temporarily disabled Google OAuth due to redirect issues */}
+                  {/* <Button
                     type="button"
                     variant="outline"
                     className="w-full bg-transparent"
@@ -175,7 +176,7 @@ export default function SignupPage() {
                       />
                     </svg>
                     Continue with Google
-                  </Button>
+                  </Button> */}
 
                   <div className="relative">
                     <div className="absolute inset-0 flex items-center">
