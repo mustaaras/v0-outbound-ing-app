@@ -1,0 +1,20 @@
+
+> my-v0-project@0.1.0 dev /Users/aras/Documents/v0-outbound-ing-app
+> next dev
+
+   ▲ Next.js 16.0.0 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://172.20.10.3:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+ ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+ ✓ Ready in 658ms
+[v0] Middleware check: { path: '/', hasUser: false }
+ GET / 200 in 1657ms (compile: 1423ms, proxy.ts: 30ms, render: 203ms)
+[v0] Middleware check: { path: '/auth/login', hasUser: false }
+ GET /auth/login 200 in 292ms (compile: 251ms, proxy.ts: 4ms, render: 37ms)
+[v0] Middleware check: { path: '/auth/login', hasUser: false }
+ GET /auth/login 200 in 57ms (compile: 6ms, proxy.ts: 15ms, render: 36ms)
+[v0] Middleware check: { path: '/auth/login', hasUser: false }
+ GET /auth/login 200 in 35ms (compile: 7ms, proxy.ts: 5ms, render: 23ms)

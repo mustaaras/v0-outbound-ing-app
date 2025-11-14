@@ -148,7 +148,10 @@ export default function LoginPage() {
     setError(null)
 
     try {
-      const redirectUrl = process.env.NEXT_PUBLIC_SUPABASE_DEV_REDIRECT_URL || `${window.location.origin}/auth/callback`
+      // Hardcode the redirect URL for testing
+      const redirectUrl = "http://localhost:3000/auth/callback"
+
+      console.log("🔍 OAuth Debug - Using hardcoded redirect URL:", redirectUrl)
 
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
