@@ -109,11 +109,54 @@ export class GoogleMapsUtils {
   }
 
   /**
-   * Simple email validation
+   * Enhanced email validation - much more strict than basic regex
    */
   static isValidEmailFormat(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return emailRegex.test(email)
+    if (!email || typeof email !== 'string') return false
+
+    // Basic format check
+    const basicRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!basicRegex.test(email)) return false
+
+    const [localPart, domainPart] = email.split('@')
+    if (!localPart || !domainPart) return false
+
+    // Local part validation
+    // Should not be empty, not start/end with dots, no consecutive dots
+    if (localPart.length === 0 || localPart.startsWith('.') || localPart.endsWith('.') || localPart.includes('..')) {
+      return false
+    }
+
+    // Domain part validation
+    if (domainPart.length === 0 || domainPart.startsWith('.') || domainPart.endsWith('.')) {
+      return false
+    }
+
+    // Domain should have at least one dot and a valid TLD
+    const domainParts = domainPart.split('.')
+    if (domainParts.length < 2) return false
+
+    // Check for file extensions (common false positives)
+    const invalidExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.pdf', '.doc', '.docx', '.txt', '.html', '.css', '.js']
+    const lowerDomain = domainPart.toLowerCase()
+    if (invalidExtensions.some(ext => lowerDomain.endsWith(ext))) {
+      return false
+    }
+
+    // Check for valid TLD (must be at least 2 characters, no numbers only)
+    const tld = domainParts[domainParts.length - 1].toLowerCase()
+    if (tld.length < 2 || /^\d+$/.test(tld)) {
+      return false
+    }
+
+    // Common valid TLDs (not exhaustive but covers most cases)
+    const validTlds = ['com', 'org', 'net', 'edu', 'gov', 'mil', 'int', 'info', 'biz', 'name', 'pro', 'coop', 'aero', 'museum', 'travel', 'jobs', 'mobi', 'cat', 'tel', 'asia', 'post', 'xxx', 'ac', 'ad', 'ae', 'af', 'ag', 'ai', 'al', 'am', 'an', 'ao', 'aq', 'ar', 'as', 'at', 'au', 'aw', 'ax', 'az', 'ba', 'bb', 'bd', 'be', 'bf', 'bg', 'bh', 'bi', 'bj', 'bm', 'bn', 'bo', 'br', 'bs', 'bt', 'bv', 'bw', 'by', 'bz', 'ca', 'cc', 'cd', 'cf', 'cg', 'ch', 'ci', 'ck', 'cl', 'cm', 'cn', 'co', 'cr', 'cu', 'cv', 'cx', 'cy', 'cz', 'de', 'dj', 'dk', 'dm', 'do', 'dz', 'ec', 'ee', 'eg', 'er', 'es', 'et', 'eu', 'fi', 'fj', 'fk', 'fm', 'fo', 'fr', 'ga', 'gb', 'gd', 'ge', 'gf', 'gg', 'gh', 'gi', 'gl', 'gm', 'gn', 'gp', 'gq', 'gr', 'gs', 'gt', 'gu', 'gw', 'gy', 'hk', 'hm', 'hn', 'hr', 'ht', 'hu', 'id', 'ie', 'il', 'im', 'in', 'io', 'iq', 'ir', 'is', 'it', 'je', 'jm', 'jo', 'jp', 'ke', 'kg', 'kh', 'ki', 'km', 'kn', 'kp', 'kr', 'kw', 'ky', 'kz', 'la', 'lb', 'lc', 'li', 'lk', 'lr', 'ls', 'lt', 'lu', 'lv', 'ly', 'ma', 'mc', 'md', 'me', 'mg', 'mh', 'mk', 'ml', 'mm', 'mn', 'mo', 'mp', 'mq', 'mr', 'ms', 'mt', 'mu', 'mv', 'mw', 'mx', 'my', 'mz', 'na', 'nc', 'ne', 'nf', 'ng', 'ni', 'nl', 'no', 'np', 'nr', 'nu', 'nz', 'om', 'pa', 'pe', 'pf', 'pg', 'ph', 'pk', 'pl', 'pm', 'pn', 'pr', 'ps', 'pt', 'pw', 'py', 'qa', 're', 'ro', 'rs', 'ru', 'rw', 'sa', 'sb', 'sc', 'sd', 'se', 'sg', 'sh', 'si', 'sj', 'sk', 'sl', 'sm', 'sn', 'so', 'sr', 'st', 'su', 'sv', 'sy', 'sz', 'tc', 'td', 'tf', 'tg', 'th', 'tj', 'tk', 'tl', 'tm', 'tn', 'to', 'tp', 'tr', 'tt', 'tv', 'tw', 'tz', 'ua', 'ug', 'uk', 'um', 'us', 'uy', 'uz', 'va', 'vc', 've', 'vg', 'vi', 'vn', 'vu', 'wf', 'ws', 'ye', 'yt', 'yu', 'za', 'zm', 'zw']
+
+    if (!validTlds.includes(tld)) {
+      return false
+    }
+
+    return true
   }
 
   /**
@@ -268,11 +311,38 @@ export class GoogleMapsUtils {
         // Remove duplicates and filter valid emails
         const uniqueEmails = [...new Set(allEmails)]
           .filter(email => this.isValidEmailFormat(email))
-          .filter(email => !email.includes('noreply') && !email.includes('no-reply') && 
-                          !email.includes('donotreply') && !email.includes('do-not-reply') &&
-                          !email.includes('example.com') && !email.includes('test.com') &&
-                          !email.includes('sample.com') && !email.includes('placeholder.com') &&
-                          !email.includes('yourcompany.com') && !email.includes('company.com'))
+          .filter(email => {
+            const lowerEmail = email.toLowerCase()
+            // Filter out common false positives
+            return !lowerEmail.includes('noreply') && 
+                   !lowerEmail.includes('no-reply') && 
+                   !lowerEmail.includes('donotreply') && 
+                   !lowerEmail.includes('do-not-reply') &&
+                   !lowerEmail.includes('example.com') && 
+                   !lowerEmail.includes('test.com') &&
+                   !lowerEmail.includes('sample.com') && 
+                   !lowerEmail.includes('placeholder.com') &&
+                   !lowerEmail.includes('yourcompany.com') && 
+                   !lowerEmail.includes('company.com') &&
+                   !lowerEmail.includes('domain.com') &&
+                   !lowerEmail.includes('website.com') &&
+                   !lowerEmail.includes('email.com') &&
+                   !lowerEmail.includes('mail.com') &&
+                   !lowerEmail.includes('sentry') && // Common tracking/analytics domains
+                   !lowerEmail.includes('wixpress.com') && // Wix internal domains
+                   !lowerEmail.includes('wix.com') &&
+                   !lowerEmail.includes('googleusercontent.com') &&
+                   !lowerEmail.includes('gravatar.com') &&
+                   !lowerEmail.includes('w3.org') &&
+                   !lowerEmail.includes('facebook.com') &&
+                   !lowerEmail.includes('twitter.com') &&
+                   !lowerEmail.includes('linkedin.com') &&
+                   !lowerEmail.includes('instagram.com') &&
+                   !lowerEmail.includes('youtube.com') &&
+                   !lowerEmail.includes('github.com') &&
+                   !lowerEmail.includes('stackoverflow.com') &&
+                   !/\d{8,}@/.test(lowerEmail) // Filter out emails that look like tracking IDs
+          })
           .slice(0, 3) // Limit to 3 emails per site
 
         return { emails: uniqueEmails, success: true }
