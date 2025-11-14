@@ -49,14 +49,14 @@ export const SubscriptionConfirmation = ({
         </Section>
         
         <Section style={buttonContainer}>
-          <Button style={button} href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://outbound.ing'}/generator`}>
+          <Button style={button} href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.outbound.ing'}/generator`}>
             Start Generating Emails
           </Button>
         </Section>
         
         <Text style={text}>
           You can manage your subscription anytime from your{" "}
-          <Link href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://outbound.ing'}/settings`} style={link}>
+          <Link href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.outbound.ing'}/settings`} style={link}>
             account settings
           </Link>.
         </Text>

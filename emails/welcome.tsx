@@ -41,13 +41,13 @@ export const WelcomeEmail = ({ firstName, email }: WelcomeEmailProps) => (
         </Section>
         
         <Section style={buttonContainer}>
-          <Button style={button} href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://outbound.ing'}/dashboard`}>
+          <Button style={button} href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.outbound.ing'}/dashboard`}>
             Go to Dashboard
           </Button>
         </Section>
         
         <Text style={text}>
-          Want more? <Link href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://outbound.ing'}/upgrade`} style={link}>Upgrade to Light or Pro</Link> for unlimited strategies, more emails, and premium features.
+          Want more? <Link href={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.outbound.ing'}/upgrade`} style={link}>Upgrade to Light or Pro</Link> for unlimited strategies, more emails, and premium features.
         </Text>
         
         <Text style={footer}>
