@@ -14,11 +14,11 @@ Yes! Upgrade or downgrade anytime from your dashboard. Changes take effect immed
 ## Email Generation
 
 ### How does the AI email generation work?
-Our GPT-4 powered system creates personalized emails based on proven sales strategies. You provide recipient details, and we generate professional outreach emails customized for your industry and goals.
+Our system uses the most advanced LLMs to create personalized emails based on proven sales strategies. You provide recipient details, and we generate professional outreach emails customized for your industry and goals.
 
 ### What languages do you support?
 - **Free/Light**: English only
-- **Pro**: Any language supported by GPT-4
+- **Pro**: Any language supported by the most advanced LLMs
 
 ### Can I edit the generated emails?
 Yes! Review and edit any generated content before sending. Add your signature, make personalizations, or completely rewrite sections.

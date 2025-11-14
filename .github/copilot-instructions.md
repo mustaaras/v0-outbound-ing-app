@@ -8,7 +8,7 @@ This is a Next.js 16 SaaS application for generating cold email templates using 
 ### Core Tech Stack
 - **Framework**: Next.js 16 (App Router), React 19, TypeScript
 - **Database**: Supabase (PostgreSQL + Auth)
-- **AI**: OpenAI GPT-4o-mini via Vercel AI SDK
+- **AI**: Most advanced LLMs via Vercel AI SDK
 - **Payments**: Stripe (subscriptions + webhooks)
 - **Email**: Resend + React Email
 - **Styling**: Tailwind CSS 4, Radix UI components

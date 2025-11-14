@@ -107,7 +107,7 @@ export default async function AdminPage() {
             <div className="text-2xl font-bold">~$0.60</div>
             <p className="text-xs text-muted-foreground mt-1">per user per month (estimate)</p>
             <p className="text-xs text-muted-foreground mt-2">
-              Based on GPT-4o usage, varies by activity
+              Based on usage of the most advanced LLMs, varies by activity
             </p>
           </CardContent>
         </Card>

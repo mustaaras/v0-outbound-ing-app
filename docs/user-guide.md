@@ -27,7 +27,7 @@ Welcome to Outbound.ing! This comprehensive guide will help you master AI-powere
 ## 📧 Email Generation
 
 ### How It Works
-Outbound.ing uses GPT-4 to create personalized emails based on proven sales strategies. Each email is customized for your industry, tone, and goals.
+Outbound.ing uses the most advanced LLMs to create personalized emails based on proven sales strategies. Each email is customized for your industry, tone, and goals.
 
 ### Step-by-Step Guide
 
