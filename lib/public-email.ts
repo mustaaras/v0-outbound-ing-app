@@ -344,12 +344,33 @@ const BLOCKED_LOCALPARTS = new Set([
 ])
 
 function normalizeDomain(input: string): string {
-  return input
+  const normalized = input
     .trim()
     .toLowerCase()
     .replace(/^https?:\/\//, "")
     .replace(/^www\./, "")
     .split("/")[0]
+
+  // Validate that this looks like a domain, not a file
+  if (!normalized || normalized.length === 0) return ""
+  
+  // Reject if it looks like a file (has file extension)
+  const fileExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico', '.webp', '.bmp', '.tiff', '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.txt', '.zip', '.rar', '.7z', '.tar', '.gz', '.mp3', '.mp4', '.avi', '.mov', '.wmv', '.flv', '.webm', '.m4v', '.css', '.js', '.html', '.htm', '.xml', '.json', '.rss', '.atom']
+  if (fileExtensions.some(ext => normalized.includes(ext))) return ""
+  
+  // Must contain at least one dot (unless localhost)
+  if (!normalized.includes('.') && normalized !== 'localhost') return ""
+  
+  // Reject if it's just a filename without extension but looks like a file
+  if (!normalized.includes('.') && /^[a-zA-Z0-9_-]+$/.test(normalized) && normalized.length < 4) return ""
+  
+  // Reject pure numbers or invalid characters
+  if (/^\d+$/.test(normalized) || !/^[a-zA-Z0-9.-]+$/.test(normalized)) return ""
+  
+  // Reasonable length check
+  if (normalized.length > 253) return ""
+  
+  return normalized
 }
 
 function absoluteUrl(domain: string, path: string): string {
@@ -483,6 +504,13 @@ export async function extractPublicEmailsForDomain(
   options: ExtractOptions = {},
 ): Promise<PublicEmailResult[]> {
   const domain = normalizeDomain(rawDomain)
+  
+  // If domain normalization failed (invalid domain), return empty results
+  if (!domain) {
+    devLog("[public-email] Invalid domain rejected:", rawDomain)
+    return []
+  }
+  
   const pages = DEFAULT_PAGES.slice(0, Math.max(1, Math.min(options.pagesPerDomain ?? 8, DEFAULT_PAGES.length)))
   const timeoutMs = options.timeoutMs ?? 7000
   const robots = await getRobotsTxt(domain, timeoutMs)

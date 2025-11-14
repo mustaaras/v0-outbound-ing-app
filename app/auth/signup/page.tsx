@@ -87,7 +87,7 @@ export default function SignupPage() {
 
         if (signInError) {
           errorLog("[v0] Auto-login failed:", signInError)
-          setError("Account created! Please check your email to verify your account, then login.")
+          setError("Account created! Please check your email (including junk/spam folder) to verify your account, then login.")
         } else {
           devLog("[v0] Auto-login successful, redirecting to dashboard")
           router.push("/dashboard")

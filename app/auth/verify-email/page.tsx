@@ -17,7 +17,8 @@ export default function VerifyEmailPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-muted-foreground text-center">
-              Click the link in the email to activate your account and start creating cold outreach templates.
+              Click the link in the email to activate your account and start creating cold outreach emails. 
+              <strong>Check your junk/spam folder</strong> if you don&apos;t see it in your inbox.
             </p>
             <Button asChild className="w-full bg-transparent" variant="outline">
               <Link href="/auth/login">Back to login</Link>
