@@ -189,9 +189,16 @@ export function LocationSearchForm({ isLoading: externalLoading, userId }: Locat
       }
     } catch (error) {
       errorLog("[v0] Error processing places:", error)
+      
+      // Check if it's a limit error
+      const errorMessage = error instanceof Error ? error.message : "Failed to process search results. Please try again."
+      const isLimitError = errorMessage.includes("Monthly location search limit reached")
+      
       toast({
-        title: "Processing failed",
-        description: "Failed to process search results. Please try again.",
+        title: isLimitError ? "Search Limit Reached" : "Processing failed",
+        description: isLimitError 
+          ? "You've used all 20 free searches this month. Upgrade to Light or Pro for unlimited searches!"
+          : errorMessage,
         variant: "destructive",
       })
     } finally {
