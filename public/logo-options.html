@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Logo Options</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #2d3748;
+            margin-bottom: 40px;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        .logo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        .logo-card {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .logo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        .logo {
+            width: 80px;
+            height: 80px;
+            color: #2d3748;
+            margin: 0 auto 20px;
+            display: block;
+        }
+        .logo-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+        .logo-desc {
+            color: #718096;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        .current-logo {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .current-logo .logo {
+            color: white;
+        }
+        .current-logo .logo-name,
+        .current-logo .logo-desc {
+            color: rgba(255,255,255,0.9);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 New Logo Options</h1>
+
+        <div class="logo-grid">
+            <div class="logo-card">
+                <img src="/logos/logo-precision.svg" alt="Precision Logo" class="logo">
+                <div class="logo-name">Precision</div>
+                <div class="logo-desc">Clean geometric target with minimal arrow. Professional and precise.</div>
+            </div>
+
+            <div class="logo-card">
+                <img src="/logos/logo-focus.svg" alt="Focus Logo" class="logo">
+                <div class="logo-name">Focus</div>
+                <div class="logo-desc">Circular design with subtle directional elements. Clean and focused.</div>
+            </div>
+
+            <div class="logo-card">
+                <img src="/logos/logo-abstract.svg" alt="Abstract Logo" class="logo">
+                <div class="logo-name">Abstract</div>
+                <div class="logo-desc">Modern abstract design with flowing curves. Contemporary feel.</div>
+            </div>
+
+            <div class="logo-card">
+                <img src="/logos/logo-minimal.svg" alt="Minimal Logo" class="logo">
+                <div class="logo-name">Minimal</div>
+                <div class="logo-desc">Ultra-minimalist with just essential elements. Maximum simplicity.</div>
+            </div>
+
+            <div class="logo-card current-logo">
+                <img src="/logos/logo-o-new.svg" alt="Current Logo" class="logo">
+                <div class="logo-name">Current Logo</div>
+                <div class="logo-desc">Your existing logo for comparison. Simple and recognizable.</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

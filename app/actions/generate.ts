@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server"
 import { canGenerateTemplate, incrementUsage } from "@/lib/auth-utils"
 import { generateText } from "ai"
 import { errorLog } from "@/lib/logger"
+import { rateLimiters } from "@/lib/rate-limit"
 
 interface GenerateTemplateInput {
   subject: string
@@ -26,6 +27,12 @@ interface GenerateTemplateInput {
 }
 
 export async function generateTemplate(input: GenerateTemplateInput) {
+  // Rate limiting check - AI generation is expensive
+  const rateLimitResult = rateLimiters.aiGeneration.check(input.userId)
+  if (!rateLimitResult.allowed) {
+    throw new Error(`Rate limit exceeded. You can generate ${rateLimiters.aiGeneration.maxRequests} emails per minute. Please wait ${Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000)} seconds.`)
+  }
+
   const supabase = await createClient()
 
   // Get user tier
@@ -244,6 +251,7 @@ Generate ONLY the email body text, no subject line. The sender's signature will 
     return { result: finalText }
   } catch (error) {
     errorLog("AI generation error:", error)
+
     throw new Error("Failed to generate email. Please try again.")
   }
 }

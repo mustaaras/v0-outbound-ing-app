@@ -39,9 +39,7 @@ export default function LandingPage() {
             </div>
 
             <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-              Generate Perfect Emails
-              <br />
-              <span className="text-primary">Across Every Industry</span>
+              Find Prospects, Generate Emails, Close Deals
             </h1>
 
             <p className="text-balance max-w-2xl text-lg text-muted-foreground sm:text-xl">
@@ -85,7 +83,7 @@ export default function LandingPage() {
               <div className="text-center">
                 <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Everything You Need to Close Deals</h2>
                 <p className="mt-4 text-lg text-muted-foreground">
-                  Professional cold emails powered by AI, customized for your industry
+                  Professional emails powered by AI, customized for your industry
                 </p>
               </div>
 
