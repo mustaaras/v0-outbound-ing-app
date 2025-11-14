@@ -2,8 +2,6 @@ import { errorLog } from "@/lib/logger"
 import { createClient } from "@/lib/supabase/server"
 import type { User } from "@/lib/types"
 import { sendUsageWarningEmail } from "@/lib/email/send"
-import { getCurrentMonth } from "@/lib/utils/date"
-import { getEmailLimit, normalizeTier, getSavedContactsLimit, getLocationSearchLimit } from "@/lib/utils/tier"
 
 async function withTimeout<T>(promise: Promise<T>, timeoutMs = 5000): Promise<T> {
   const timeoutPromise = new Promise<T>((_, reject) =>
@@ -14,60 +12,57 @@ async function withTimeout<T>(promise: Promise<T>, timeoutMs = 5000): Promise<T>
 
 export async function getCurrentUser(): Promise<User | null> {
   try {
-    const supabase = await createClient()
+    const supabase: any = await createClient()
 
-    const authPromise = supabase.auth.getUser() as unknown as Promise<{ data: { user: { id: string } | null }; error: unknown }>
     const {
       data: { user: authUser },
-      error: authError,
-    } = await withTimeout(authPromise, 5000)
-
-    if (authError) {
-      errorLog("[v0] Error getting auth user:", authError)
-      return null
-    }
+    } = await withTimeout<any>(supabase.auth.getUser(), 5000)
 
     if (!authUser) return null
 
-    const queryPromise = supabase.from("users").select("*").eq("id", authUser.id).single() as unknown as Promise<{ data: User | null; error: unknown }>
-    const { data: user, error } = await withTimeout(queryPromise, 5000)
+    const { data: user, error } = await withTimeout<any>(
+      supabase.from("users").select("*").eq("id", authUser.id).single(),
+      5000,
+    )
 
-    if (error) {
-      errorLog("[v0] Error fetching user:", error)
-      return null
-    }
+      if (error) {
+        errorLog("[v0] Error fetching user:", error)
+        return null
+      }
 
     return user
   } catch (error) {
-    errorLog("[v0] getCurrentUser error:", error)
+      errorLog("[v0] getCurrentUser error:", error)
     return null
   }
 }
 
 export async function getUserUsage(userId: string): Promise<number> {
   try {
-    const supabase = await createClient()
-    const currentMonth = getCurrentMonth()
+    const supabase: any = await createClient()
+    const currentMonth = new Date().toISOString().slice(0, 7) // YYYY-MM format
 
-    const queryPromise = supabase.from("usage").select("count").eq("user_id", userId).eq("month", currentMonth).maybeSingle() as unknown as Promise<{ data: { count: number } | null; error: unknown }>
-    const { data, error } = await withTimeout(queryPromise, 5000)
+    const { data, error } = await withTimeout<any>(
+      supabase.from("usage").select("count").eq("user_id", userId).eq("month", currentMonth).maybeSingle(),
+      5000,
+    )
 
-    if (error) {
-      errorLog("[v0] Error fetching usage:", error)
-      return 0
-    }
+      if (error) {
+        errorLog("[v0] Error fetching usage:", error)
+        return 0
+      }
 
     if (!data) return 0
     return data.count
   } catch (error) {
-    errorLog("[v0] getUserUsage error:", error)
+      errorLog("[v0] getUserUsage error:", error)
     return 0
   }
 }
 
 export async function incrementUsage(userId: string): Promise<void> {
   const supabase = await createClient()
-  const currentMonth = getCurrentMonth()
+  const currentMonth = new Date().toISOString().slice(0, 7)
 
   const { data: existing } = await supabase
     .from("usage")
@@ -97,8 +92,8 @@ export async function incrementUsage(userId: string): Promise<void> {
     .single()
 
   if (user) {
-    const effectiveTier = normalizeTier(user.tier)
-    const limit = getEmailLimit(effectiveTier)
+    const effectiveTier = user.tier === "ultra" ? "pro" : user.tier
+    const limit = effectiveTier === "pro" ? 999999 : effectiveTier === "light" ? 300 : 30
     const percentage = Math.round((newCount / limit) * 100)
 
     // Only send warnings for paid tiers (light and pro), not free
@@ -134,9 +129,10 @@ export async function canGenerateTemplate(
   userId: string,
   tier: string,
 ): Promise<{ canGenerate: boolean; usage: number; limit: number }> {
-  const effectiveTier = normalizeTier(tier)
+  // Fallback: treat any legacy 'ultra' tier value as 'pro'
+  const effectiveTier = tier === "ultra" ? "pro" : tier
   const usage = await getUserUsage(userId)
-  const limit = getEmailLimit(effectiveTier)
+  const limit = effectiveTier === "pro" ? 999999 : effectiveTier === "light" ? 300 : 30
 
   return {
     canGenerate: usage < limit,
@@ -150,22 +146,24 @@ export async function canSaveContact(
   tier: string,
 ): Promise<{ canSave: boolean; currentCount: number; limit: number }> {
   try {
-    const supabase = await createClient()
+    const supabase: any = await createClient()
 
     // Count total saved contacts (active + archived)
-    const queryPromise = supabase
-      .from("saved_buyers")
-      .select("*", { count: "exact", head: true })
-      .eq("user_id", userId) as unknown as Promise<{ count: number | null; error: unknown }>
-    const { count, error } = await withTimeout(queryPromise, 5000)
+    const { count, error } = await withTimeout<any>(
+      supabase
+        .from("saved_buyers")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", userId),
+      5000,
+    )
 
     if (error) {
       errorLog("[v0] Error counting saved contacts:", error)
       return { canSave: false, currentCount: 0, limit: 0 }
     }
 
-    const effectiveTier = normalizeTier(tier)
-    const limit = getSavedContactsLimit(effectiveTier)
+    const effectiveTier = tier === "ultra" ? "pro" : tier
+    const limit = effectiveTier === "pro" || effectiveTier === "light" ? 999999 : 50
     const currentCount = count || 0
 
     return {
@@ -181,28 +179,30 @@ export async function canSaveContact(
 
 export async function getUserLocationSearches(userId: string): Promise<number> {
   try {
-    const supabase = await createClient()
-    const currentMonth = getCurrentMonth()
+    const supabase: any = await createClient()
+    const currentMonth = new Date().toISOString().slice(0, 7) // YYYY-MM format
 
-    const queryPromise = supabase.from("location_searches").select("search_count").eq("user_id", userId).eq("month", currentMonth).maybeSingle() as unknown as Promise<{ data: { search_count: number } | null; error: unknown }>
-    const { data, error } = await withTimeout(queryPromise, 5000)
+    const { data, error } = await withTimeout<any>(
+      supabase.from("location_searches").select("search_count").eq("user_id", userId).eq("month", currentMonth).maybeSingle(),
+      5000,
+    )
 
-    if (error) {
-      errorLog("[v0] Error fetching location searches:", error)
-      return 0
-    }
+      if (error) {
+        errorLog("[v0] Error fetching location searches:", error)
+        return 0
+      }
 
     if (!data) return 0
     return data.search_count
   } catch (error) {
-    errorLog("[v0] getUserLocationSearches error:", error)
+      errorLog("[v0] getUserLocationSearches error:", error)
     return 0
   }
 }
 
 export async function incrementLocationSearchCount(userId: string): Promise<void> {
   const supabase = await createClient()
-  const currentMonth = getCurrentMonth()
+  const currentMonth = new Date().toISOString().slice(0, 7)
 
   const { data: existing } = await supabase
     .from("location_searches")
@@ -229,9 +229,10 @@ export async function canPerformLocationSearch(
   userId: string,
   tier: string,
 ): Promise<{ canSearch: boolean; searches: number; limit: number }> {
-  const effectiveTier = normalizeTier(tier)
+  // Fallback: treat any legacy 'ultra' tier value as 'pro'
+  const effectiveTier = tier === "ultra" ? "pro" : tier
   const searches = await getUserLocationSearches(userId)
-  const limit = getLocationSearchLimit(effectiveTier)
+  const limit = effectiveTier === "pro" || effectiveTier === "light" ? 999999 : 20
 
   return {
     canSearch: searches < limit,

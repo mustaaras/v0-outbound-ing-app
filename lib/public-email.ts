@@ -139,7 +139,7 @@ export interface PublicEmailResult {
  */
 function isValidEmailFormat(email: string): boolean {
   // RFC 5322 compliant email regex (simplified)
-  const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
+  const emailRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
   
   if (!emailRegex.test(email)) return false
   
@@ -389,7 +389,7 @@ async function fetchWithTimeout(url: string, opts: { timeoutMs?: number; headers
   try {
     const res = await fetch(url, {
       headers: {
-        "User-Agent": "Outbound.ing PublicEmailFinder/1.0 (+https://www.outbound.ing)",
+        "User-Agent": "Outbound.ing PublicEmailFinder/1.0 (+https://outbound.ing)",
         ...opts.headers,
       },
       signal: controller.signal,

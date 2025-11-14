@@ -1,250 +1,297 @@
 import Link from "next/link"
-import { ArrowRight, CheckCircle, Mail, Zap, Users, Target, TrendingUp, Crown, Star } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Wand2, Zap, Crown, Sparkles, Target, Users, Check } from "lucide-react"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { PRODUCTS } from "@/lib/products"
 
-export default function HomePage() {
+export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-      {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="container flex h-16 items-center">
-          <Link href="/" className="flex items-center gap-2 font-semibold">
+    <div className="flex min-h-screen flex-col">
+      <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container flex h-16 items-center justify-between">
+          <Link href="/" className="flex items-center gap-2">
             <img
               src="/logos/logo-o-new.svg"
               alt="Outbound.ing Logo"
               className="h-8 w-8"
             />
-            <span className="text-lg">Outbound.ing</span>
+            <span className="text-lg font-semibold">Outbound.ing</span>
           </Link>
-          <div className="ml-auto flex items-center gap-4">
-            <Link href="/pricing">
-              <Button variant="outline" size="sm">
-                Pricing
-              </Button>
-            </Link>
-            <Link href="/auth/login">
-              <Button size="sm">
-                Sign In
-              </Button>
-            </Link>
+          <div className="flex items-center gap-2 sm:gap-4">
+            <Link href="/contact" className="text-sm font-medium hover:text-primary transition-colors hidden sm:block">Contact</Link>
+            <Button asChild variant="ghost" size="sm">
+              <Link href="/auth/login">Log in</Link>
+            </Button>
+            <Button asChild size="sm">
+              <Link href="/auth/signup">Sign up</Link>
+            </Button>
           </div>
         </div>
       </header>
 
-      <main>
-        {/* Hero Section */}
-        <section className="container py-24 text-center">
-          <Badge variant="secondary" className="mb-4">
-            <Zap className="mr-1 h-3 w-3" />
-            AI-Powered Cold Outreach
-          </Badge>
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
-            Generate High-Converting
-            <span className="text-primary"> Cold Emails</span>
-            <br />
-            in Seconds
-          </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Transform your sales outreach with AI-generated emails using 100+ proven strategies.
-            Get 3x better response rates and close more deals.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/auth/signup">
-              <Button size="lg" className="text-lg px-8">
-                Start Free Trial
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-            <Link href="/guide">
-              <Button variant="outline" size="lg" className="text-lg px-8">
-                View Demo
-              </Button>
-            </Link>
-          </div>
-          <p className="text-sm text-muted-foreground mt-4">
-            No credit card required • 30 emails per month free
-          </p>
-        </section>
+      <main className="flex-1">
+        {/* Hero Section - Fully Centered */}
+        <section className="container flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center py-20 text-center">
+          <div className="mx-auto flex max-w-5xl flex-col items-center gap-8">
+            <div className="inline-flex items-center gap-2 rounded-full border bg-muted px-4 py-2 text-sm">
+              <Sparkles className="h-4 w-4 text-primary" />
+              <span>100+ AI-Powered Sales Strategies + Contact Search</span>
+            </div>
 
-        {/* Features Section */}
-        <section className="container py-24">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold tracking-tight mb-4">
-              Everything You Need for Effective Cold Outreach
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              From strategy selection to email generation, we handle the heavy lifting so you can focus on closing deals.
+            <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
+              Find Prospects, Generate Emails, Close Deals
+            </h1>
+
+            <p className="text-balance max-w-2xl text-lg text-muted-foreground sm:text-xl">
+              AI-powered outreach emails for SaaS, domains, real estate, freelancing, affiliate marketing, B2B
+              services, recruiting, and more. Find contacts with our location-based business search and choose from 100+ proven strategies.
             </p>
-          </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card>
-              <CardHeader>
-                <Mail className="h-10 w-10 text-primary mb-2" />
-                <CardTitle>AI Email Generation</CardTitle>
-                <CardDescription>
-                  Generate professional cold emails using proven strategies across 10+ industries
-                </CardDescription>
-              </CardHeader>
-            </Card>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Button asChild size="lg" className="gap-2">
+                <Link href="/auth/signup">
+                  <Wand2 className="h-4 w-4" />
+                  Start Free - 30 Emails/Month
+                </Link>
+              </Button>
+                            <Button asChild variant="outline" size="lg">
+                <a href="#pricing">See Pricing</a>
+              </Button>
+            </div>
 
-            <Card>
-              <CardHeader>
-                <Target className="h-10 w-10 text-primary mb-2" />
-                <CardTitle>100+ Strategies</CardTitle>
-                <CardDescription>
-                  Access battle-tested approaches from top sales professionals and agencies
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <Users className="h-10 w-10 text-primary mb-2" />
-                <CardTitle>Contact Discovery</CardTitle>
-                <CardDescription>
-                  Find prospects with our integrated search tools (Pro feature)
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <Zap className="h-10 w-10 text-primary mb-2" />
-                <CardTitle>A/B Testing</CardTitle>
-                <CardDescription>
-                  Generate multiple variants and test what works best (Light & Pro)
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <Crown className="h-10 w-10 text-primary mb-2" />
-                <CardTitle>Multi-Language</CardTitle>
-                <CardDescription>
-                  Generate emails in any language for global outreach (Pro feature)
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <TrendingUp className="h-10 w-10 text-primary mb-2" />
-                <CardTitle>Analytics & Tracking</CardTitle>
-                <CardDescription>
-                  Track performance and optimize your outreach campaigns
-                </CardDescription>
-              </CardHeader>
-            </Card>
+            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <Target className="h-4 w-4" />
+                <span>14 Categories</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Zap className="h-4 w-4" />
+                <span>100+ Strategies</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4" />
+                <span>Custom Tone & Goals</span>
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* Social Proof */}
-        <section className="bg-muted/50 py-24">
+        {/* Features Section - Centered */}
+        <section className="border-t bg-muted/50 py-20">
           <div className="container">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold tracking-tight mb-4">
-                Trusted by Sales Professionals Worldwide
-              </h2>
-            </div>
+            <div className="mx-auto max-w-5xl space-y-12">
+              <div className="text-center">
+                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Everything You Need to Close Deals</h2>
+                <p className="mt-4 text-lg text-muted-foreground">
+                  Professional emails powered by AI, customized for your industry
+                </p>
+              </div>
 
-            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex mb-4">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="h-5 w-5 fill-primary text-primary" />
-                    ))}
+              <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="flex flex-col items-center gap-3 rounded-lg border bg-card p-6 text-center">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                    <Wand2 className="h-6 w-6 text-primary" />
                   </div>
-                  <p className="text-muted-foreground mb-4">
-                    "Outbound.ing helped me go from 2 to 15 demo calls per month. The AI-generated emails sound natural and get 3x better response rates than my old emails."
+                  <h3 className="text-xl font-semibold">AI-Powered Generation</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Leverage GPT-4 to create compelling, personalized cold emails that get responses and close deals
                   </p>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                      <span className="text-sm font-semibold">SM</span>
-                    </div>
-                    <div>
-                      <p className="font-semibold">Sarah Mitchell</p>
-                      <p className="text-sm text-muted-foreground">Sales Director, TechCorp</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                </div>
 
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex mb-4">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="h-5 w-5 fill-primary text-primary" />
-                    ))}
+                <div className="flex flex-col items-center gap-3 rounded-lg border bg-card p-6 text-center">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                    <Zap className="h-6 w-6 text-primary" />
                   </div>
-                  <p className="text-muted-foreground mb-4">
-                    "As a solo consultant, Outbound.ing levels the playing field. I can now compete with big agencies using professional-grade outreach automation."
+                  <h3 className="text-xl font-semibold">100+ Sales Strategies</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Choose from proven strategies across 9 categories: SaaS, Affiliate Marketing, Real Estate,
+                    Recruiting, and more
                   </p>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                      <span className="text-sm font-semibold">MJ</span>
-                    </div>
-                    <div>
-                      <p className="font-semibold">Mike Johnson</p>
-                      <p className="text-sm text-muted-foreground">Business Consultant</p>
-                    </div>
+                </div>
+
+                <div className="flex flex-col items-center gap-3 rounded-lg border bg-card p-6 text-center">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                    <Target className="h-6 w-6 text-primary" />
                   </div>
-                </CardContent>
-              </Card>
+                  <h3 className="text-xl font-semibold">Fully Customizable</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Control tone, length, goal, and personalization level to craft emails that match your style
+                  </p>
+                </div>
+
+                <div className="flex flex-col items-center gap-3 rounded-lg border bg-card p-6 text-center">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                    <Users className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold">Find Contacts Instantly</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Search businesses by location and automatically extract contact emails from up to 10 websites with our advanced scraping technology
+                  </p>
+                </div>
+
+                <div className="flex flex-col items-center gap-3 rounded-lg border bg-card p-6 text-center">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                    <Sparkles className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold">Direct Email Integration</h3>
+                  <p className="text-sm text-muted-foreground">
+                    One click to open your email client with everything pre-filled and ready to send, or use our built-in support chat for help
+                  </p>
+                </div>
+
+                <div className="flex flex-col items-center gap-3 rounded-lg border bg-card p-6 text-center">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                    <Crown className="h-6 w-6 text-primary" />
+                  </div>
+                                    <h3 className="text-xl font-semibold">Flexible Pricing Plans</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Start free with 30 emails/month. Upgrade to Light for 300 emails at $15/month, Pro for unlimited emails
+                    at $29/month. 20% off annual billing.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="container py-24 text-center">
-          <h2 className="text-3xl font-bold tracking-tight mb-4">
-            Ready to Transform Your Cold Outreach?
-          </h2>
-          <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Join thousands of sales professionals who are already using Outbound.ing to generate more leads and close more deals.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/auth/signup">
-              <Button size="lg" className="text-lg px-8">
+        {/* CTA Section - Centered */}
+        <section className="container py-20">
+          <div className="mx-auto flex max-w-3xl flex-col items-center gap-6 rounded-lg border bg-card p-8 text-center sm:p-12">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Ready to Close More Deals?</h2>
+            <p className="text-lg text-muted-foreground">
+              Join thousands of professionals using AI to craft perfect cold emails
+            </p>
+            <Button asChild size="lg" className="gap-2">
+              <Link href="/auth/signup">
+                <Wand2 className="h-4 w-4" />
                 Get Started Free
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-            <Link href="/pricing">
-              <Button variant="outline" size="lg" className="text-lg px-8">
-                View Pricing
-              </Button>
-            </Link>
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="lg">
+              <Link href="#pricing">See Pricing</Link>
+            </Button>
+          </div>
+        </section>
+
+        {/* Public Pricing Section */}
+  <section id="pricing" className="border-t bg-muted/50 py-20">
+          <div className="container">
+            <div className="mx-auto max-w-5xl space-y-8 text-center">
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Simple, transparent pricing</h2>
+              <p className="text-muted-foreground">Compare plans and pick what fits your outreach needs</p>
+            </div>
+
+            <div className="mt-10 grid gap-6 lg:grid-cols-3">
+              {/* Free Plan */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Free</CardTitle>
+                  <CardDescription>Perfect for trying out Outbound.ing</CardDescription>
+                  <div className="mt-4">
+                    <span className="text-4xl font-bold">$0</span>
+                    <span className="text-muted-foreground">/month</span>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-3 text-left">
+                    {[
+                      "30 emails per month",
+                      "Pick 1 strategy at a time",
+                      "14 industry categories",
+                      "Basic customization",
+                      "Email support",
+                      "Location based contact search - 20/month",
+                    ].map((f) => (
+                      <li key={f} className="flex items-start gap-2">
+                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                        <span className="text-sm">{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+                <CardFooter>
+                  <Button asChild className="w-full">
+                    <Link href="/auth/signup">Start Free</Link>
+                  </Button>
+                </CardFooter>
+              </Card>
+
+              {PRODUCTS.filter(p => p.billingCycle === "monthly").map((product) => (
+                <Card key={product.id} className={product.tier === "pro" ? "border-primary shadow-lg" : ""}>
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle>{product.name}</CardTitle>
+                      {product.tier === "pro" && (
+                        <span className="rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">
+                          Popular
+                        </span>
+                      )}
+                    </div>
+                    <CardDescription>{product.description}</CardDescription>
+                    <div className="mt-4">
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-4xl font-bold">{product.priceLabel}</span>
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-1">or save 20% with annual billing</p>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-3 text-left">
+                      {product.features.map((feature) => (
+                        <li key={feature} className="flex items-start gap-2">
+                          <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                          <span className="text-sm">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                  <CardFooter>
+                    <Button asChild className="w-full">
+                      <Link href="/auth/signup">Get Started</Link>
+                    </Button>
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+
+            {/* Quick comparison bullets */}
+            <div className="mx-auto mt-10 max-w-4xl rounded-lg border bg-card p-6">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="text-left">
+                  <h3 className="font-semibold">What’s included</h3>
+                  <ul className="mt-2 space-y-2 text-sm text-muted-foreground">
+                    <li>150+ premium strategies across 14 industries</li>
+                    <li>Archive access and full customization</li>
+                    <li>Direct email handoff—ready to send</li>
+                    <li>Advanced contact search with website scraping</li>
+                  </ul>
+                </div>
+                <div className="text-left">
+                  <h3 className="font-semibold">Search Contacts</h3>
+                  <ul className="mt-2 space-y-2 text-sm text-muted-foreground">
+                    <li>Free: 20 searches per month</li>
+                    <li>Light: Unlimited searches</li>
+                    <li>Pro: Unlimited + advanced enrichment (up to 10 websites, 3 emails each)</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t bg-muted/50 py-12">
-        <div className="container">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center gap-2 mb-4 md:mb-0">
-              <img
-                src="/logos/logo-o-new.svg"
-                alt="Outbound.ing Logo"
-                className="h-6 w-6"
-              />
-              <span className="font-semibold">Outbound.ing</span>
-            </div>
-            <div className="flex gap-6 text-sm text-muted-foreground">
-              <Link href="/terms" className="hover:text-foreground">Terms</Link>
-              <Link href="/privacy" className="hover:text-foreground">Privacy</Link>
-              <Link href="/faq" className="hover:text-foreground">FAQ</Link>
-              <Link href="/contact" className="hover:text-foreground">Contact</Link>
-            </div>
-          </div>
-          <div className="mt-8 pt-8 border-t text-center text-sm text-muted-foreground">
-            <p>© 2025 Outbound.ing. Helping you close more deals with AI-powered outreach.</p>
-          </div>
+      <footer className="border-t py-8">
+        <div className="container flex flex-wrap items-center justify-center gap-4 text-center text-sm text-muted-foreground">
+          <span>© 2025 Outbound.ing. All rights reserved.</span>
+          <Link href="/terms" className="hover:text-foreground">
+            Terms of Service
+          </Link>
+          <Link href="/faq" className="hover:text-foreground">
+            FAQ
+          </Link>
+          <a href="mailto:support@outbound.ing" className="hover:text-foreground">
+            Contact
+          </a>
         </div>
       </footer>
     </div>

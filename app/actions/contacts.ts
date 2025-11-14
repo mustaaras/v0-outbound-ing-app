@@ -14,7 +14,6 @@ import {
   getContactSearchHistory,
 } from "@/lib/contacts-db"
 import type { CompanyInsert, ContactInsert } from "@/lib/contacts-db-types"
-import { errorLog } from "@/lib/logger"
 
 /**
  * Add a new contact and company to the database
@@ -79,7 +78,7 @@ export async function addContactAction(data: {
 
     return { success: true, contact, company }
   } catch (error) {
-    errorLog("[v0] Error in addContactAction:", error)
+    console.error("Error in addContactAction:", error)
     return { success: false, error: "An unexpected error occurred" }
   }
 }
@@ -108,7 +107,7 @@ export async function saveContactAction(
 
     return { success: true, savedContact }
   } catch (error) {
-    errorLog("[v0] Error in saveContactAction:", error)
+    console.error("Error in saveContactAction:", error)
     return { success: false, error: "An unexpected error occurred" }
   }
 }
@@ -142,7 +141,7 @@ export async function getSavedContactsAction(options?: {
     
     return { success: true, contacts, total: allContacts.length }
   } catch (error) {
-    errorLog("[v0] Error in getSavedContactsAction:", error)
+    console.error("Error in getSavedContactsAction:", error)
     return { success: false, error: "An unexpected error occurred", contacts: [], total: 0 }
   }
 }
@@ -176,7 +175,7 @@ export async function updateSavedContactAction(
 
     return { success: true }
   } catch (error) {
-    errorLog("[v0] Error in updateSavedContactAction:", error)
+    console.error("Error in updateSavedContactAction:", error)
     return { success: false, error: "An unexpected error occurred" }
   }
 }
@@ -202,7 +201,7 @@ export async function deleteSavedContactAction(savedContactId: string) {
 
     return { success: true }
   } catch (error) {
-    errorLog("[v0] Error in deleteSavedContactAction:", error)
+    console.error("Error in deleteSavedContactAction:", error)
     return { success: false, error: "An unexpected error occurred" }
   }
 }
@@ -243,7 +242,7 @@ export async function searchContactsAction(query: {
 
     return { success: true, contacts }
   } catch (error) {
-    errorLog("[v0] Error in searchContactsAction:", error)
+    console.error("Error in searchContactsAction:", error)
     return { success: false, error: "An unexpected error occurred", contacts: [] }
   }
 }
@@ -277,7 +276,7 @@ export async function updateContactAction(contactId: string, updates: {
 
     return { success: true }
   } catch (error) {
-    errorLog("[v0] Error in updateContactAction:", error)
+    console.error("Error in updateContactAction:", error)
     return { success: false, error: "An unexpected error occurred" }
   }
 }
@@ -299,7 +298,7 @@ export async function getSearchHistoryAction(limit: number = 20) {
     const history = await getContactSearchHistory(user.id, limit)
     return { success: true, history }
   } catch (error) {
-    errorLog("[v0] Error in getSearchHistoryAction:", error)
+    console.error("Error in getSearchHistoryAction:", error)
     return { success: false, error: "An unexpected error occurred", history: [] }
   }
 }
@@ -355,7 +354,7 @@ export async function bulkImportContactsAction(contacts: Array<{
 
     return { success: true, imported, failed, results }
   } catch (error) {
-    errorLog("[v0] Error in bulkImportContactsAction:", error)
+    console.error("Error in bulkImportContactsAction:", error)
     return { success: false, error: "An unexpected error occurred", imported: 0, failed: 0 }
   }
 }

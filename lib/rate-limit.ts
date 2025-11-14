@@ -140,8 +140,8 @@ export const rateLimiters = {
 
   // More lenient rate limiting for authentication (mobile-friendly)
   auth: new RateLimiter({
-    windowMs: 60 * 1000, // 1 minute (reduced for testing)
-    maxRequests: 50, // 50 auth attempts per minute (increased for testing)
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    maxRequests: 10, // 10 auth attempts per 15 minutes (increased from 5)
     message: "Too many authentication attempts. Please wait before trying again."
   })
 }

@@ -1,7 +1,6 @@
 "use server"
 
 import { createClient } from "@/lib/supabase/server"
-import { errorLog } from "@/lib/logger"
 
 export async function getTemplatesAction(options?: {
   limit?: number
@@ -39,13 +38,13 @@ export async function getTemplatesAction(options?: {
     const { data: templates, error, count } = await query
 
     if (error) {
-      errorLog("[v0] Error fetching templates:", error)
+      console.error("Error fetching templates:", error)
       return { success: false, error: "Failed to fetch templates", templates: [], total: 0 }
     }
 
     return { success: true, templates: templates || [], total: count || 0 }
   } catch (error) {
-    errorLog("[v0] Error in getTemplatesAction:", error)
+    console.error("Error in getTemplatesAction:", error)
     return { success: false, error: "An unexpected error occurred", templates: [], total: 0 }
   }
 }

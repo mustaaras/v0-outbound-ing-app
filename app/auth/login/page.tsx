@@ -8,11 +8,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
-import { useRouter, useSearchParams } from "next/navigation"
-import { useState, useEffect, Suspense } from "react"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
 import { devLog, errorLog } from "@/lib/logger"
 
-function LoginForm() {
+export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
@@ -24,15 +24,6 @@ function LoginForm() {
   const [resetEmailSent, setResetEmailSent] = useState(false)
   const [resetLoading, setResetLoading] = useState(false)
   const router = useRouter()
-  const searchParams = useSearchParams()
-
-  // Check for error in URL params
-  useEffect(() => {
-    const errorParam = searchParams.get('error')
-    if (errorParam) {
-      setError(decodeURIComponent(errorParam))
-    }
-  }, [searchParams])
 
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -157,24 +148,7 @@ function LoginForm() {
     setError(null)
 
     try {
-      const devRedirect = process.env.NEXT_PUBLIC_SUPABASE_DEV_REDIRECT_URL
-      const prodRedirect = process.env.NEXT_PUBLIC_SUPABASE_REDIRECT_URL
-      const isLocalhost = typeof window !== "undefined" && window.location.hostname.includes("localhost")
-      let redirectUrl = isLocalhost ? devRedirect : prodRedirect
-      
-      // Fallback to current origin + /auth/callback if env vars not set
-      if (!redirectUrl && typeof window !== "undefined") {
-        redirectUrl = `${window.location.origin}/auth/callback`
-      }
-
-      devLog("[v0] OAuth Debug - Hostname:", typeof window !== "undefined" ? window.location.hostname : "SSR")
-      devLog("[v0] OAuth Debug - Is localhost:", isLocalhost)
-      devLog("[v0] OAuth Debug - Using redirect URL:", redirectUrl)
-      devLog("[v0] Starting Google OAuth login with redirect:", redirectUrl)
-
-      if (!redirectUrl) {
-        throw new Error("Redirect URL not configured. Please set NEXT_PUBLIC_SUPABASE_REDIRECT_URL or NEXT_PUBLIC_SUPABASE_DEV_REDIRECT_URL")
-      }
+      const redirectUrl = process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/auth/callback`
 
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
@@ -183,14 +157,9 @@ function LoginForm() {
         },
       })
 
-      if (error) {
-        devLog("[v0] Google OAuth error:", error)
-        throw error
-      }
-
-      devLog("[v0] Google OAuth initiated successfully")
+      if (error) throw error
     } catch (error: unknown) {
-      errorLog("[v0] Google login error:", error)
+  errorLog("[v0] Google login error:", error)
       setError(error instanceof Error ? error.message : "An error occurred")
     }
   }
@@ -334,13 +303,5 @@ function LoginForm() {
         </div>
       </div>
     </div>
-  )
-}
-
-export default function LoginPage() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <LoginForm />
-    </Suspense>
   )
 }
