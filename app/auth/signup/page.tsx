@@ -109,6 +109,8 @@ export default function SignupPage() {
     try {
       const redirectUrl = "https://knpjfzfuwncoqqbntqoc.supabase.co/auth/v1/callback"
 
+      devLog("[v0] Starting Google OAuth signup with redirect:", redirectUrl)
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
@@ -116,7 +118,12 @@ export default function SignupPage() {
         },
       })
 
-      if (error) throw error
+      if (error) {
+        devLog("[v0] Google OAuth signup error:", error)
+        throw error
+      }
+
+      devLog("[v0] Google OAuth signup initiated successfully")
     } catch (error: unknown) {
       errorLog("[v0] Google signup error:", error)
       setError(error instanceof Error ? error.message : "An error occurred")

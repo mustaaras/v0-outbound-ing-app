@@ -151,6 +151,7 @@ export default function LoginPage() {
       const redirectUrl = "https://knpjfzfuwncoqqbntqoc.supabase.co/auth/v1/callback"
 
       console.log("🔍 OAuth Debug - Using redirect URL:", redirectUrl)
+      devLog("[v0] Starting Google OAuth login with redirect:", redirectUrl)
 
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
@@ -159,9 +160,14 @@ export default function LoginPage() {
         },
       })
 
-      if (error) throw error
+      if (error) {
+        devLog("[v0] Google OAuth error:", error)
+        throw error
+      }
+
+      devLog("[v0] Google OAuth initiated successfully")
     } catch (error: unknown) {
-  errorLog("[v0] Google login error:", error)
+      errorLog("[v0] Google login error:", error)
       setError(error instanceof Error ? error.message : "An error occurred")
     }
   }
