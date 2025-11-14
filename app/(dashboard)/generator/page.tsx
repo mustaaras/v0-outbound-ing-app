@@ -53,7 +53,7 @@ export default async function GeneratorPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Email Generator</h1>
-          <p className="mt-2 text-muted-foreground">Create professional B2B outreach emails with AI</p>
+          <p className="mt-2 text-muted-foreground">AI-powered professional outreach emails in seconds</p>
         </div>
       </div>
 

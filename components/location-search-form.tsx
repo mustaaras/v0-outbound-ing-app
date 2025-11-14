@@ -543,15 +543,6 @@ export function LocationSearchForm({ isLoading: externalLoading, userId }: Locat
   return (
     <div className="space-y-6">
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <MapPin className="h-5 w-5" />
-            Location-Based Business Search
-          </CardTitle>
-          <CardDescription>
-            Find businesses in any city or location using Google Maps. Enter a search term like "restaurants" and select a location from the autocomplete dropdown to find businesses anywhere in the world.
-          </CardDescription>
-        </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -635,12 +626,6 @@ export function LocationSearchForm({ isLoading: externalLoading, userId }: Locat
 
       {/* Map Container */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Building2 className="h-5 w-5" />
-            Search Results Map
-          </CardTitle>
-        </CardHeader>
         <CardContent>
           <div
             ref={mapRef}

@@ -10,7 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Textarea } from "@/components/ui/textarea"
 import type { Strategy } from "@/lib/types"
 import { generateTemplate } from "@/app/actions/generate"
-import { Loader2, Copy, Crown, Mail, ChevronDown } from "lucide-react"
+import { Loader2, Copy, Crown, Mail } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
@@ -41,7 +41,6 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
   const [emailLength, setEmailLength] = useState<string>("Medium")
   const [goal, setGoal] = useState<string>("Get a reply")
   const [language, setLanguage] = useState<string>("English")
-  // Removed showAdvancedOptions state - always visible now
   
   // Premium features
   const [generateVariants, setGenerateVariants] = useState<boolean>(false)
@@ -373,61 +372,47 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
 
   return (
     <div className="space-y-6">
-      <form onSubmit={handleSubmit} className="rounded-lg border bg-card p-6 space-y-6">
-        <div className="mb-40 md:mb-48">
-          <Tabs value={activeCategory} onValueChange={setActiveCategory}>
-            <TabsList
-              className="grid grid-rows-5 grid-flow-col auto-cols-fr gap-2 h-auto w-full p-1 sm:flex sm:flex-wrap sm:gap-2 sm:h-9"
-            >
-              {categories.map((cat) => (
-                <TabsTrigger
-                  key={cat}
-                  value={cat}
-                  className="h-auto text-xs whitespace-nowrap px-3 py-2"
-                >
-                  <span className="hidden sm:inline">{cat}</span>
-                  <span className="sm:hidden">{getShortCategory(cat)}</span>
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="subject">{getSubjectLabel()} *</Label>
-          <Input
-            id="subject"
-            placeholder={getSubjectPlaceholder()}
-            value={subject}
-            onChange={(e) => setSubject(e.target.value)}
-            required
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="recipient-name">Recipient Name</Label>
-          <Input
-            id="recipient-name"
-            placeholder="John Smith"
-            value={recipientName}
-            onChange={(e) => setRecipientName(e.target.value)}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="recipient-email">Recipient Email</Label>
-          <Input
-            id="recipient-email"
-            type="email"
-            placeholder="john@company.com"
-            value={recipientEmail}
-            onChange={(e) => setRecipientEmail(e.target.value)}
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
+      <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Basic Information */}
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="recipient-title">Recipient Title (Optional)</Label>
+            <Label htmlFor="subject">{getSubjectLabel()} *</Label>
+            <Input
+              id="subject"
+              placeholder={getSubjectPlaceholder()}
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="recipient-email">Recipient Email *</Label>
+            <Input
+              id="recipient-email"
+              type="email"
+              placeholder="john@company.com"
+              value={recipientEmail}
+              onChange={(e) => setRecipientEmail(e.target.value)}
+              required
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="recipient-name">Recipient Name</Label>
+            <Input
+              id="recipient-name"
+              placeholder="John Smith"
+              value={recipientName}
+              onChange={(e) => setRecipientName(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="recipient-title">Recipient Title</Label>
             <Input
               id="recipient-title"
               placeholder="CEO, Marketing Director, etc."
@@ -437,7 +422,7 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="recipient-company">Company (Optional)</Label>
+            <Label htmlFor="recipient-company">Company</Label>
             <Input
               id="recipient-company"
               placeholder="Acme Inc"
@@ -457,272 +442,246 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
           />
           <p className="text-sm text-muted-foreground">Your contact information added at the end</p>
         </div>
+      </div>
 
-        <div className="space-y-4">
-          <div>
-            <Label>{userTier === "free" ? "Select 1 Strategy *" : "Select Strategies *"}</Label>
-            <p className="text-sm text-muted-foreground mt-1">
-              {userTier === "free"
-                ? `Choose 1 ${activeCategory} strategy (Pro: unlimited)`
-                : `Choose from ${activeCategory} strategies (unlimited)`}
-            </p>
-          </div>
+      {/* Strategy Selection */}
+      <div className="space-y-4">
+        <Label className="text-base font-medium">Choose Your Strategy</Label>
+        <p className="text-sm text-muted-foreground">Select one or more strategies to combine in your email</p>
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            {categorizedStrategies[activeCategory]?.map((strategy) => {
-              const isProStrategy = strategy.tier === "pro"
-              const isLocked = isProStrategy && userTier === "free"
-              const isSelected = selectedStrategies.includes(strategy.id)
+        <Tabs value={activeCategory} onValueChange={setActiveCategory}>
+          <TabsList className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 h-auto p-1">
+            {categories.slice(0, 5).map((cat) => (
+              <TabsTrigger
+                key={cat}
+                value={cat}
+                className="h-auto text-xs px-3 py-2 whitespace-nowrap"
+              >
+                {getShortCategory(cat)}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          <TabsList className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 h-auto p-1">
+            {categories.slice(5).map((cat) => (
+              <TabsTrigger
+                key={cat}
+                value={cat}
+                className="h-auto text-xs px-3 py-2 whitespace-nowrap"
+              >
+                {getShortCategory(cat)}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
 
-              return (
-                <div
-                  key={strategy.id}
-                  className={`relative flex items-start gap-3 rounded-lg border p-4 transition-colors ${
-                    isLocked
-                      ? "cursor-not-allowed opacity-50"
-                      : isSelected
-                        ? "border-primary bg-primary/5"
-                        : "cursor-pointer hover:border-primary/50"
-                  }`}
-                >
-                  <Checkbox
-                    id={strategy.id}
-                    checked={isSelected}
-                    disabled={isLocked}
-                    onCheckedChange={() => handleStrategyToggle(strategy.id, strategy.tier)}
-                  />
-                  <div
-                    className="flex-1 space-y-1"
-                    onClick={() => !isLocked && handleStrategyToggle(strategy.id, strategy.tier)}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Label
-                        htmlFor={strategy.id}
-                        className={`font-medium ${isLocked ? "cursor-not-allowed" : "cursor-pointer"}`}
-                      >
-                        {strategy.name}
-                      </Label>
-                      {isProStrategy && (
-                        <Badge variant="secondary" className="gap-1">
-                          <Crown className="h-3 w-3" />
-                          Pro
-                        </Badge>
-                      )}
-                    </div>
-                    <p className="text-sm text-muted-foreground">{strategy.description}</p>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
+        <div className="grid gap-3 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          {categorizedStrategies[activeCategory]?.map((strategy) => {
+            const isProStrategy = strategy.tier === "pro"
+            const isLocked = isProStrategy && userTier === "free"
+            const isSelected = selectedStrategies.includes(strategy.id)
 
-          {userTier === "free" && (
-            <div className="rounded-lg bg-muted p-4 text-sm">
-              Want access to all strategies?{" "}
-              <Link href="/upgrade" className="font-medium underline underline-offset-4">
-                Upgrade to Pro
-              </Link>
-            </div>
-          )}
-        </div>
-
-        {selectedStrategies.length > 0 && (
-          <div className="space-y-4 rounded-lg border-2 border-primary/20 bg-primary/5 p-6">
-            <div className="space-y-1">
-              <Label className="text-base font-semibold">🎯 Customize Your Email</Label>
-              <p className="text-sm text-muted-foreground">Fine-tune how your email is generated</p>
-            </div>
-
-            <div className="space-y-4 pt-2">
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Tone</Label>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-                    {["Professional", "Friendly", "Persuasive", "Casual", "Enthusiastic", "Consultative", "Direct", "Empathetic"].map((option) => (
-                    <button
-                      key={option}
-                      type="button"
-                      onClick={() => setTone(option)}
-                      className={`px-4 py-2 text-sm rounded-md border transition-colors ${
-                        tone === option
-                          ? "bg-primary text-primary-foreground border-primary"
-                          : "bg-background hover:bg-muted border-border"
-                      }`}
-                    >
-                      {option}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Email Length</Label>
-                <div className="grid grid-cols-3 gap-2">
-                  {[
-                    { value: "Short", label: "Short (2-3 sentences)" },
-                    { value: "Medium", label: "Medium (4-6 sentences)" },
-                    { value: "Long", label: "Long (Full paragraph)" }
-                  ].map(({ value, label }) => (
-                    <button
-                      key={value}
-                      type="button"
-                      onClick={() => setEmailLength(value)}
-                      className={`px-4 py-2 text-sm rounded-md border transition-colors ${
-                        emailLength === value
-                          ? "bg-primary text-primary-foreground border-primary"
-                          : "bg-background hover:bg-muted border-border"
-                      }`}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Goal</Label>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {["Book a call", "Get a reply", "Make a sale", "Introduce product", "Schedule demo", "Request feedback", "Propose partnership", "Follow-up"].map((option) => (
-                    <button
-                      key={option}
-                      type="button"
-                      onClick={() => setGoal(option)}
-                      className={`px-4 py-2 text-sm rounded-md border transition-colors ${
-                        goal === option
-                          ? "bg-primary text-primary-foreground border-primary"
-                          : "bg-background hover:bg-muted border-border"
-                      }`}
-                    >
-                      {option}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {userTier === "pro" && (
-                <div className="space-y-2">
+            return (
+              <div
+                key={strategy.id}
+                className={`relative flex items-start gap-3 rounded-lg border p-4 transition-all cursor-pointer ${
+                  isLocked
+                    ? "opacity-50 cursor-not-allowed"
+                    : isSelected
+                      ? "border-primary bg-primary/5 shadow-sm"
+                      : "hover:border-primary/50 hover:shadow-sm"
+                }`}
+                onClick={() => !isLocked && handleStrategyToggle(strategy.id, strategy.tier)}
+              >
+                <Checkbox
+                  id={strategy.id}
+                  checked={isSelected}
+                  disabled={isLocked}
+                  onChange={() => {}} // Handled by onClick
+                />
+                <div className="flex-1 space-y-1">
                   <div className="flex items-center gap-2">
-                    <Label className="text-sm font-medium">Language</Label>
-                    <Badge variant="secondary" className="gap-1">
-                      <Crown className="h-3 w-3" />
-                      Pro
-                    </Badge>
-                  </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-                    {["English", "Spanish", "French", "German", "Italian", "Portuguese", "Dutch", "Chinese"].map((lang) => (
-                      <button
-                        key={lang}
-                        type="button"
-                        onClick={() => setLanguage(lang)}
-                        className={`px-4 py-2 text-sm rounded-md border transition-colors ${
-                          language === lang
-                            ? "bg-primary text-primary-foreground border-primary"
-                            : "bg-background hover:bg-muted border-border"
-                        }`}
-                      >
-                        {lang}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Premium Features */}
-  {(userTier === "pro") && selectedStrategies.length > 0 && (
-          <div className="space-y-4 rounded-lg border-2 border-purple-500/20 bg-purple-500/5 p-6">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Crown className="h-5 w-5 text-purple-500" />
-                <Label className="text-base font-semibold">Premium Features</Label>
-              </div>
-              <p className="text-sm text-muted-foreground">Unlock advanced generation options</p>
-            </div>
-
-            <div className="space-y-4">
-              {userTier === "pro" ? (
-                <div className="flex items-start gap-3 rounded-lg border bg-background p-4">
-                  <Checkbox
-                    id="generate-variants"
-                    checked={generateVariants}
-                    onCheckedChange={(checked) => setGenerateVariants(checked as boolean)}
-                  />
-                  <div className="flex-1 space-y-1">
-                    <div className="flex items-center gap-2">
-                      <Label htmlFor="generate-variants" className="cursor-pointer font-medium">
-                        A/B Test Variants
-                      </Label>
+                    <Label className="font-medium cursor-pointer">
+                      {strategy.name}
+                    </Label>
+                    {isProStrategy && (
                       <Badge variant="secondary" className="gap-1">
                         <Crown className="h-3 w-3" />
                         Pro
                       </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      Generate 3 different versions with varied subject lines, CTAs, and tones for testing
-                    </p>
+                    )}
                   </div>
+                  <p className="text-xs text-muted-foreground line-clamp-2">{strategy.description}</p>
                 </div>
-              ) : null}
+              </div>
+            )
+          })}
+        </div>
+      </div>
 
-              {/* Multi-Channel Variants removed with Ultra tier */}
+      {/* Email Customization */}
+      <div className="space-y-4">
+        <Label className="text-base font-medium">Email Style</Label>
+
+        <div className="space-y-3">
+          <div>
+            <Label className="text-sm font-medium mb-2 block">Tone</Label>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {["Professional", "Friendly", "Persuasive", "Casual"].map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  onClick={() => setTone(option)}
+                  className={`px-3 py-2 text-sm rounded-md border transition-colors ${
+                    tone === option
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-background hover:bg-muted border-border"
+                  }`}
+                >
+                  {option}
+                </button>
+              ))}
             </div>
           </div>
-        )}
 
-        {/* Additional Notes - Light & Pro */}
-  {(userTier === "light" || userTier === "pro") && (
-          <div className="space-y-4 rounded-lg border-2 border-blue-500/20 bg-blue-500/5 p-6">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Crown className="h-5 w-5 text-blue-500" />
-                <Label htmlFor="additional-notes" className="text-base font-semibold">Additional Instructions</Label>
+          <div>
+            <Label className="text-sm font-medium mb-2 block">Length</Label>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { value: "Short", label: "Short" },
+                { value: "Medium", label: "Medium" },
+                { value: "Long", label: "Long" }
+              ].map(({ value, label }) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setEmailLength(value)}
+                  className={`px-3 py-2 text-sm rounded-md border transition-colors ${
+                    emailLength === value
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-background hover:bg-muted border-border"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <Label className="text-sm font-medium mb-2 block">Goal</Label>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {["Get a reply", "Book a call", "Make a sale", "Schedule demo"].map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  onClick={() => setGoal(option)}
+                  className={`px-3 py-2 text-sm rounded-md border transition-colors ${
+                    goal === option
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-background hover:bg-muted border-border"
+                  }`}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {userTier === "pro" && (
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Label className="text-sm font-medium">Language</Label>
                 <Badge variant="secondary" className="gap-1">
                   <Crown className="h-3 w-3" />
-                  {userTier === "light" ? "Light" : "Pro"}
+                  Pro
                 </Badge>
               </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {["English", "Spanish", "French", "German"].map((lang) => (
+                  <button
+                    key={lang}
+                    type="button"
+                    onClick={() => setLanguage(lang)}
+                    className={`px-3 py-2 text-sm rounded-md border transition-colors ${
+                      language === lang
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-background hover:bg-muted border-border"
+                    }`}
+                  >
+                    {lang}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Premium Features */}
+      {(userTier === "pro") && (
+        <div className="space-y-4 rounded-lg border-2 border-purple-500/20 bg-purple-500/5 p-4">
+          <div className="flex items-center gap-2">
+            <Crown className="h-5 w-5 text-purple-500" />
+            <Label className="text-base font-semibold">Premium Features</Label>
+          </div>
+
+          <div className="flex items-start gap-3 rounded-lg border bg-background p-4">
+            <Checkbox
+              id="generate-variants"
+              checked={generateVariants}
+              onCheckedChange={(checked) => setGenerateVariants(checked as boolean)}
+            />
+            <div className="flex-1 space-y-1">
+              <Label htmlFor="generate-variants" className="cursor-pointer font-medium">
+                A/B Test Variants
+              </Label>
               <p className="text-sm text-muted-foreground">
-                Can&apos;t find what you&apos;re looking for? Add custom instructions and our AI will incorporate them into your email
-                {userTier === "light" && " (200 character limit)"}
-                {userTier === "pro" && " (300 character limit)"}
+                Generate 3 different versions for testing
               </p>
             </div>
-            <Textarea
-              id="additional-notes"
-              placeholder="E.g., Mention our recent partnership with X company, focus on cost savings, include a specific statistic about ROI..."
-              value={additionalNotes}
-              onChange={(e) => setAdditionalNotes(e.target.value)}
-              maxLength={userTier === "light" ? 200 : 300}
-              rows={4}
-              className="resize-none"
-            />
-            <p className="text-xs text-muted-foreground text-right">
-              {additionalNotes.length} / {userTier === "light" ? 200 : 300} characters
-            </p>
           </div>
-        )}
+        </div>
+      )}
 
-        <Button type="submit" className="w-full" disabled={isLoading || !canGenerate}>
-          {isLoading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Generating...
-            </>
-          ) : (
-            "Generate Email"
-          )}
-        </Button>
-
-        {!canGenerate && (
-          <div className="rounded-lg bg-destructive/10 p-4 text-sm text-destructive">
-            You&apos;ve reached your monthly limit.{" "}
-            <Link href="/upgrade" className="font-medium underline underline-offset-4">
-              Upgrade to Pro
-            </Link>{" "}
-            for unlimited emails.
+      {/* Additional Notes */}
+      {(userTier === "light" || userTier === "pro") && (
+        <div className="space-y-4 rounded-lg border-2 border-blue-500/20 bg-blue-500/5 p-4">
+          <div className="flex items-center gap-2">
+            <Crown className="h-5 w-5 text-blue-500" />
+            <Label htmlFor="additional-notes" className="text-base font-semibold">Additional Instructions</Label>
+            <Badge variant="secondary" className="gap-1">
+              <Crown className="h-3 w-3" />
+              {userTier === "light" ? "Light" : "Pro"}
+            </Badge>
           </div>
+          <Textarea
+            id="additional-notes"
+            placeholder="Add any specific details or instructions..."
+            value={additionalNotes}
+            onChange={(e) => setAdditionalNotes(e.target.value)}
+            maxLength={userTier === "light" ? 200 : 300}
+            rows={3}
+            className="resize-none"
+          />
+          <p className="text-xs text-muted-foreground text-right">
+            {additionalNotes.length} / {userTier === "light" ? 200 : 300}
+          </p>
+        </div>
+      )}
+
+      <Button type="submit" className="w-full" disabled={isLoading || !canGenerate}>
+        {isLoading ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Generating...
+          </>
+        ) : (
+          <>
+            <Mail className="mr-2 h-4 w-4" />
+            Generate Email
+          </>
         )}
+      </Button>
       </form>
 
       {result && !variants && !multiChannelResults && (

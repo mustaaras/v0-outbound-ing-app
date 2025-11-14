@@ -325,7 +325,9 @@ class SnovClient {
             const errorMsg = errorData.errors.map((e: any) => Object.values(e).join(': ')).join(', ')
             errorLog(`[v0] Snov API validation error:`, errorMsg)
           }
-        } catch {}
+        } catch {
+          // Ignore JSON parsing errors for error response
+        }
         return null
       }
       
