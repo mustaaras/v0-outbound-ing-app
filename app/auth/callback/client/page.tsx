@@ -19,34 +19,21 @@ export default function OAuthCallbackClientPage() {
         // supabase-js will attempt to complete the PKCE or implicit flow if the URL contains auth params.
         const { data, error } = await supabase.auth.getSession()
 
-        // If session already exists, redirect
+        if (error) {
+          devLog("[v0] Session error:", error)
+          setError(error.message)
+          setLoading(false)
+          return
+        }
+
+        // If session exists, redirect
         if (data?.session) {
           devLog("[v0] Session detected, redirecting to dashboard")
           router.replace("/dashboard")
           return
         }
 
-        // Try to explicitly handle the URL exchange - detectSessionInUrl in client should run automatically
-        // but we do a fallback attempt if we don't have a session yet.
-        const params = new URLSearchParams(window.location.search)
-        const code = params.get("code")
-        if (code) {
-          devLog("[v0] Found code in URL, calling client-side exchange")
-          // exchangeCodeForSession expects parameters when called manually, but the SDK should handle it
-          const res = await supabase.auth.exchangeCodeForSession(code)
-          if (res.error) {
-            setError(res.error.message)
-            setLoading(false)
-            return
-          }
-
-          if (res.data?.user) {
-            devLog("[v0] Exchange succeeded (client), redirecting to dashboard")
-            router.replace("/dashboard")
-            return
-          }
-        }
-
+        // If no session and no error, something went wrong
         setError("Failed to detect or create a session from the OAuth response. Please login again.")
       } catch (err: unknown) {
         errorLog("[v0] OAuth client callback error:", err)
