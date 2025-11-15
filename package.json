@@ -6,6 +6,7 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx --ignore-pattern node_modules",
+    "generate:logos": "node scripts/generate-logos.js",
     "start": "next start"
   },
   "dependencies": {
@@ -85,5 +86,7 @@
     "tailwindcss": "^4.1.9",
     "tw-animate-css": "1.3.3",
     "typescript": "^5"
+    ,
+    "sharp": "^0.32.4"
   }
 }
