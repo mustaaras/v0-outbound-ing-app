@@ -273,6 +273,13 @@ Generate ONLY the email body text, no subject line. The sender's signature will 
   } catch (error) {
     errorLog("AI generation error:", error)
 
+    // In development show the underlying error to help debugging (useful for local dev).
+    const underlying = error instanceof Error ? error.message : String(error)
+    if (process.env.NODE_ENV === 'development') {
+      throw new Error(`Failed to generate email: ${underlying}`)
+    }
+
+    // In production, return a safe generic message
     throw new Error("Failed to generate email. Please try again.")
   }
 }
