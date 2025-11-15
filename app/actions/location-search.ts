@@ -18,7 +18,7 @@ export interface LocationSearchResult {
   }>
 }
 
-export async function processLocationSearch(places: GooglePlace[]): Promise<LocationSearchResult> {
+export async function processLocationSearch(places: GooglePlace[], options?: { scrapeWebsites?: boolean }): Promise<LocationSearchResult> {
   // Check user authentication and increment search count
   const user = await getCurrentUser()
   if (!user) {
@@ -40,53 +40,64 @@ export async function processLocationSearch(places: GooglePlace[]): Promise<Loca
     const placesWithWebsites = places.filter(p => p.website).length
     const placesWithPhones = places.filter(p => p.formatted_phone_number).length
 
-    // Scrape websites for real email addresses (limit to first 10 to avoid rate limits)
-    // CONFIGURABLE LIMITS:
-    // - MAX_SCRAPE_PLACES: Maximum number of websites to scrape per search (default: 10)
-    // - MAX_EMAILS_PER_SITE: Maximum emails to extract per website (default: 10) - configured in google-maps.ts
-    // - GOOGLE_PLACES_LIMIT: Maximum places returned from Google Places API (default: 10) - configured in location-search-form.tsx
-    const scrapedEmails = []
-    
-    // Deduplicate websites to avoid scraping the same site multiple times
-    const uniqueWebsites = new Set<string>()
-    const placesToScrape = places
-      .filter(p => p.website && p.website.trim() !== '')
-      .filter(p => {
-        const domain = GoogleMapsUtils.extractDomain(p.website!)
-        if (domain && !uniqueWebsites.has(domain)) {
-          uniqueWebsites.add(domain)
-          return true
+    const scrapedEmails: Array<{
+      businessName: string
+      website: string
+      emails: string[]
+      success: boolean
+    }> = []
+
+    // If caller requested to skip website scraping (we will do per-place scrapes incrementally on the client), skip this step.
+    if (options?.scrapeWebsites !== false) {
+      // Scrape websites for real email addresses (limit to first 10 to avoid rate limits)
+      // CONFIGURABLE LIMITS:
+      // - MAX_SCRAPE_PLACES: Maximum number of websites to scrape per search (default: 10)
+      // - MAX_EMAILS_PER_SITE: Maximum emails to extract per website (default: 10) - configured in google-maps.ts
+      // - GOOGLE_PLACES_LIMIT: Maximum places returned from Google Places API (default: 10) - configured in location-search-form.tsx
+      
+      // Deduplicate websites to avoid scraping the same site multiple times
+      const uniqueWebsites = new Set<string>()
+      const placesToScrape = places
+        .filter(p => p.website && p.website.trim() !== '')
+        .filter(p => {
+          const domain = GoogleMapsUtils.extractDomain(p.website!)
+          if (domain && !uniqueWebsites.has(domain)) {
+            uniqueWebsites.add(domain)
+            return true
+          }
+          return false
+        })
+          .slice(0, 12) // Limit to 12 unique websites for performance
+
+      devLog(`[v0] Starting website scraping for ${placesToScrape.length} businesses...`)
+
+      for (const place of placesToScrape) {
+        try {
+          const result = await GoogleMapsUtils.scrapeWebsiteForContacts(place.website!)
+          scrapedEmails.push({
+            businessName: place.name,
+            website: place.website!,
+            emails: result.emails,
+            success: result.success
+          })
+
+          // Small delay to be respectful to websites
+          await new Promise(resolve => setTimeout(resolve, 500))
+        } catch (error) {
+          devLog(`[v0] Failed to scrape ${place.website}:`, error)
+          scrapedEmails.push({
+            businessName: place.name,
+            website: place.website!,
+            emails: [],
+            success: false
+          })
         }
-        return false
-      })
-      .slice(0, 10) // Limit to 10 unique websites for performance
-
-    devLog(`[v0] Starting website scraping for ${placesToScrape.length} businesses...`)
-
-    for (const place of placesToScrape) {
-      try {
-        const result = await GoogleMapsUtils.scrapeWebsiteForContacts(place.website!)
-        scrapedEmails.push({
-          businessName: place.name,
-          website: place.website!,
-          emails: result.emails,
-          success: result.success
-        })
-
-        // Small delay to be respectful to websites
-        await new Promise(resolve => setTimeout(resolve, 500))
-      } catch (error) {
-        devLog(`[v0] Failed to scrape ${place.website}:`, error)
-        scrapedEmails.push({
-          businessName: place.name,
-          website: place.website!,
-          emails: [],
-          success: false
-        })
       }
-    }
 
-    devLog(`[v0] Scraped ${scrapedEmails.filter(s => s.success).length} websites successfully, found ${scrapedEmails.reduce((sum, s) => sum + s.emails.length, 0)} emails`)
+      devLog(`[v0] Scraped ${scrapedEmails.filter(s => s.success).length} websites successfully, found ${scrapedEmails.reduce((sum, s) => sum + s.emails.length, 0)} emails`)
+    } else {
+      devLog(`[v0] Skipping website scraping because options.scrapeWebsites === false`)
+    }
 
     const result: LocationSearchResult = {
       domains,

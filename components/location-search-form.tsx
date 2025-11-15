@@ -11,6 +11,7 @@ import { Loader2, MapPin, Search, Building2, Globe, Crown, Send, Bookmark, Check
 import { useToast } from "@/hooks/use-toast"
 import { GooglePlace, LocationSearchParams, LocationSearchResult } from "@/lib/google-maps"
 import { processLocationSearch, validateLocationSearchAccess } from "@/app/actions/location-search"
+import { scrapeWebsiteAction } from "@/app/actions/scrape-website"
 import { addContactAction } from "@/app/actions/contacts"
 import { devLog, errorLog } from "@/lib/logger"
 
@@ -50,6 +51,9 @@ export function LocationSearchForm({ isLoading: externalLoading, userId }: Locat
   const [radius, setRadius] = useState("5000") // 5km default
   const [places, setPlaces] = useState<GooglePlace[]>([])
   const [processingResults, setProcessingResults] = useState<ProcessingResult | null>(null)
+  const [scrapedResults, setScrapedResults] = useState<Record<string, { loading?: boolean; emails?: string[]; success?: boolean; website?: string }>>({})
+  const [isProcessingResults, setIsProcessingResults] = useState(false)
+  const [limitError, setLimitError] = useState<string | null>(null)
   const [mapsLoaded, setMapsLoaded] = useState(false)
   const [googleMaps, setGoogleMaps] = useState<typeof google.maps | null>(null)
   const [savedContacts, setSavedContacts] = useState<Set<string>>(new Set())
@@ -169,9 +173,11 @@ export function LocationSearchForm({ isLoading: externalLoading, userId }: Locat
   const processPlaces = useCallback(async (foundPlaces: GooglePlace[]) => {
     if (!foundPlaces.length) return
 
+    setIsProcessingResults(true)
     setIsLoading(true)
     try {
-      const results = await processLocationSearch(foundPlaces)
+      // We skip server-side website scraping here because the client will perform per-place scrapes
+      const results = await processLocationSearch(foundPlaces, { scrapeWebsites: false })
       setProcessingResults(results)
 
       if (results.placesWithWebsites > 0 || results.placesWithPhones > 0) {
@@ -194,6 +200,11 @@ export function LocationSearchForm({ isLoading: externalLoading, userId }: Locat
       const errorMessage = error instanceof Error ? error.message : "Failed to process search results. Please try again."
       const isLimitError = errorMessage.includes("Monthly location search limit reached")
       
+      if (isLimitError) {
+        // Set state so the UI can show a persistent upgrade message
+        setLimitError("You've used all 20 free searches this month. Upgrade to Light or Pro to continue searching.")
+      }
+
       toast({
         title: isLimitError ? "Search Limit Reached" : "Processing failed",
         description: isLimitError 
@@ -202,6 +213,7 @@ export function LocationSearchForm({ isLoading: externalLoading, userId }: Locat
         variant: "destructive",
       })
     } finally {
+      setIsProcessingResults(false)
       setIsLoading(false)
     }
   }, [toast])
@@ -368,8 +380,8 @@ export function LocationSearchForm({ isLoading: externalLoading, userId }: Locat
             // Get detailed information for each place to ensure we have websites and phone numbers
             const detailedPlaces: GooglePlace[] = []
 
-            // LIMIT: Maximum 10 places from Google Places API to avoid excessive API usage
-            for (const result of results.slice(0, 10)) { // Limit to first 10 for performance
+            // LIMIT: Maximum 12 places from Google Places API to show more results
+            for (const result of results.slice(0, 12)) { // Limit to first 12 for performance
               try {
                 // Get place details for complete information
                 const details = await new Promise<google.maps.places.PlaceResult | null>((resolveDetails) => {
@@ -469,10 +481,44 @@ export function LocationSearchForm({ isLoading: externalLoading, userId }: Locat
           variant: "default",
         })
       } else {
-        setPlaces(result.places)
+  setPlaces(result.places)
+  // Clear any previous limit error on a successful search
+  setLimitError(null)
         addMarkersToMap(result.places)
 
-        // Process places for domain extraction and contact search
+        // Start per-place scraping asynchronously so each card updates as its scrape completes
+        ;(async () => {
+          const toScrape = result.places.slice(0, 12) // show first 12 results
+          for (const place of toScrape) {
+            // Initialize loading state for this place
+            setScrapedResults(prev => ({ ...prev, [place.place_id]: { loading: true } }))
+
+            if (place.website) {
+              try {
+                const res = await scrapeWebsiteAction(place.website)
+                setScrapedResults(prev => ({
+                  ...prev,
+                  [place.place_id]: {
+                    loading: false,
+                    emails: res.emails || [],
+                    success: res.success,
+                    website: res.website,
+                  }
+                }))
+              } catch (error) {
+                setScrapedResults(prev => ({ ...prev, [place.place_id]: { loading: false, emails: [], success: false } }))
+              }
+            } else {
+              // No website to scrape
+              setScrapedResults(prev => ({ ...prev, [place.place_id]: { loading: false, emails: [], success: false } }))
+            }
+
+            // Small delay to avoid hammering target sites
+            await new Promise(resolve => setTimeout(resolve, 300))
+          }
+        })()
+
+        // Process places for domain extraction and contact search (skip website scraping server-side)
         processPlaces(result.places)
 
         toast({
@@ -568,13 +614,21 @@ export function LocationSearchForm({ isLoading: externalLoading, userId }: Locat
               <div className="space-y-2">
                 <Label htmlFor="location">Location</Label>
                 <div className="flex gap-2">
-                  <Input
-                    ref={locationInputRef}
-                    id="location"
-                    placeholder="Start typing a city name (autocomplete available)"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                  />
+                  <div className="relative flex-1">
+                    <Input
+                      ref={locationInputRef}
+                      id="location"
+                      placeholder={mapsLoaded ? "Start typing a city name (autocomplete available)" : "Loading city autocomplete..."}
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                      disabled={!mapsLoaded}
+                    />
+                    {!mapsLoaded && (
+                      <div className="absolute inset-y-0 right-3 flex items-center">
+                        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                      </div>
+                    )}
+                  </div>
                   <Button
                     type="button"
                     variant="outline"
@@ -633,28 +687,44 @@ export function LocationSearchForm({ isLoading: externalLoading, userId }: Locat
         </CardContent>
       </Card>
 
-      {/* Map Container */}
+      <div className="text-xs text-muted-foreground mt-2">
+        please note: website scraping is currently in beta and may not find every contact. please manually verify any email addresses on the target website before outreach.
+      </div>
+
+        {/* If user hit free tier limit, show a persistent upgrade message */}
+        {limitError && (
+          <Card className="border border-red-200 bg-red-50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-red-700">
+                <Crown className="h-4 w-4 text-red-700" />
+                Search Limit Reached
+              </CardTitle>
+              <CardDescription className="text-red-700">
+                {limitError}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-3">
+                <Button onClick={() => router.push('/upgrade')} className="bg-red-600 text-white hover:bg-red-700">Upgrade Account</Button>
+                <Button variant="outline" onClick={() => setLimitError(null)}>Dismiss</Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+      {/* Visible Map - keep the map so autocomplete and map interactions are available */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Building2 className="h-5 w-5" />
-            Search Results Map
+            <MapPin className="h-5 w-5" />
+            Map View
           </CardTitle>
+          <CardDescription>
+            Interactive map showing search results. You can click markers to view business details.
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <div
-            ref={mapRef}
-            className="w-full h-96 rounded-lg border"
-            style={{ minHeight: "400px" }}
-          />
-          {!mapsLoaded && (
-            <div className="absolute inset-0 flex items-center justify-center bg-muted/50 rounded-lg">
-              <div className="text-center">
-                <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">Loading Google Maps...</p>
-              </div>
-            </div>
-          )}
+          <div ref={mapRef} className="w-full h-64 rounded-md overflow-hidden" />
         </CardContent>
       </Card>
 
@@ -672,7 +742,7 @@ export function LocationSearchForm({ isLoading: externalLoading, userId }: Locat
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {places.slice(0, 9).map((place) => (
+              {places.slice(0, 12).map((place) => (
                 <div key={place.place_id} className="p-4 border rounded-lg space-y-2">
                   <h3 className="font-semibold text-sm">{place.name}</h3>
                   {place.formatted_address && (
@@ -695,6 +765,51 @@ export function LocationSearchForm({ isLoading: externalLoading, userId }: Locat
                       {place.website}
                     </a>
                   )}
+                  {/* Inline scraping results for this place (populate progressively) */}
+                  <div>
+                            {scrapedResults[place.place_id]?.loading ? (
+                              <div className="mt-2 flex items-center text-xs text-muted-foreground">
+                                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                Scraping website for emails...
+                              </div>
+                            ) : scrapedResults[place.place_id] && scrapedResults[place.place_id].emails && scrapedResults[place.place_id].emails!.length > 0 ? (
+                              (() => {
+                                const primary = scrapedResults[place.place_id].emails![0]
+                                return (
+                                  <div className="mt-2 p-2 rounded-md bg-green-50 dark:bg-green-900/30">
+                                    <div className="text-xs font-medium text-green-800 truncate">{primary}</div>
+                                    <div className="mt-2 flex items-center gap-2">
+                                      <Button size="sm" variant="outline" className="h-7 px-2 text-sm" onClick={() => sendEmailToGenerator(primary, place.name)}>
+                                        <Send className="h-3 w-3 mr-1" />
+                                        Send
+                                      </Button>
+                                      <Button size="sm" variant={savedContacts.has(primary) ? "default" : "outline"} className="h-7 px-2 text-sm" onClick={() => saveContact(primary, place.name)} disabled={savedContacts.has(primary)}>
+                                        {savedContacts.has(primary) ? (
+                                          <>
+                                            <CheckCircle2 className="h-3 w-3 mr-1" />
+                                            Saved
+                                          </>
+                                        ) : (
+                                          <>
+                                            <Bookmark className="h-3 w-3 mr-1" />
+                                            Save
+                                          </>
+                                        )}
+                                      </Button>
+                                    </div>
+                                  </div>
+                                )
+                              })()
+                            ) : scrapedResults[place.place_id] && scrapedResults[place.place_id].emails && scrapedResults[place.place_id].emails!.length === 0 ? (
+                              <p className="mt-2 text-xs text-muted-foreground italic">No emails found on website</p>
+                            ) : (
+                              place.website ? (
+                                <p className="mt-2 text-xs text-muted-foreground italic">Ready to scrape</p>
+                              ) : (
+                                <p className="mt-2 text-xs text-muted-foreground italic">No website to scrape</p>
+                              )
+                            )}
+                  </div>
                   {place.formatted_phone_number && (
                     <p className="text-xs text-green-600 font-medium">
                       📞 {place.formatted_phone_number}
@@ -712,9 +827,9 @@ export function LocationSearchForm({ isLoading: externalLoading, userId }: Locat
                   )}
                 </div>
               ))}
-              {places.length > 9 && (
+              {places.length > 12 && (
                 <div className="p-4 border rounded-lg flex items-center justify-center text-sm text-muted-foreground">
-                  +{places.length - 9} more results...
+                  +{places.length - 12} more results...
                 </div>
               )}
             </div>
@@ -722,161 +837,7 @@ export function LocationSearchForm({ isLoading: externalLoading, userId }: Locat
         </Card>
       )}
 
-      {/* Processing Results */}
-      {processingResults && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Building2 className="h-5 w-5" />
-              Business Data Extracted
-            </CardTitle>
-            <CardDescription>
-              Found {processingResults.placesWithWebsites} businesses with websites and {processingResults.placesWithPhones} with phone numbers from {processingResults.totalPlaces} total results.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {processingResults.scrapedEmails && processingResults.scrapedEmails.length > 0 && (
-              <div className="mb-6">
-                <h3 className="text-sm font-semibold mb-3">✨ Real Emails Found (Website Scraping)</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {processingResults.scrapedEmails.map((scraped, index) => (
-                    <div key={index} className="p-3 border rounded-lg bg-green-50 dark:bg-green-950/20">
-                      <div className="flex items-center justify-between mb-2">
-                        <p className="text-xs font-medium text-muted-foreground">
-                          {scraped.businessName}
-                        </p>
-                        <span className={`text-xs px-2 py-1 rounded ${
-                          scraped.success
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                            : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                        }`}>
-                          {scraped.success ? '✅ Found' : '❌ Failed'}
-                        </span>
-                      </div>
-                      <p className="text-xs text-muted-foreground mb-2">
-                        🌐 {scraped.website}
-                      </p>
-                      {scraped.emails.length > 0 ? (
-                        <div className="space-y-1">
-                          {scraped.emails.map((email, emailIndex) => (
-                            <div key={emailIndex} className="flex items-center justify-between">
-                              <p className="text-xs font-mono text-green-700 dark:text-green-300 font-semibold">
-                                📧 {email}
-                              </p>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="h-6 px-2 text-xs"
-                                onClick={() => sendEmailToGenerator(email, scraped.businessName)}
-                              >
-                                <Send className="h-3 w-3 mr-1" />
-                                Send Email
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant={savedContacts.has(email) ? "default" : "outline"}
-                                className={`h-6 px-2 text-xs ${savedContacts.has(email) ? "bg-green-600 hover:bg-green-700" : ""}`}
-                                onClick={() => saveContact(email, scraped.businessName)}
-                                disabled={savedContacts.has(email)}
-                              >
-                                {savedContacts.has(email) ? (
-                                  <>
-                                    <CheckCircle2 className="h-3 w-3 mr-1" />
-                                    Saved
-                                  </>
-                                ) : (
-                                  <>
-                                    <Bookmark className="h-3 w-3 mr-1" />
-                                    Save
-                                  </>
-                                )}
-                              </Button>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-xs text-muted-foreground italic">
-                          No emails found on website
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-                <p className="text-xs text-muted-foreground mt-3">
-                  🎯 Real emails scraped from business websites! These are verified contact addresses.
-                </p>
-              </div>
-            )}
-            {processingResults.places && processingResults.places.length > 0 ? (
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {processingResults.places.slice(0, 20).map((place: GooglePlace) => (
-                    <div key={place.place_id} className="p-4 border rounded-lg space-y-2">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-semibold text-sm">{place.name}</h3>
-                        {place.rating && (
-                          <span className="text-xs text-muted-foreground">
-                            ⭐ {place.rating}
-                          </span>
-                        )}
-                      </div>
-                      {place.formatted_address && (
-                        <p className="text-xs text-muted-foreground">{place.formatted_address}</p>
-                      )}
-                      <div className="flex flex-wrap gap-1">
-                        {place.types?.slice(0, 2).map((type: string) => (
-                          <Badge key={type} variant="secondary" className="text-xs">
-                            {type.replace(/_/g, ' ')}
-                          </Badge>
-                        ))}
-                      </div>
-                      {place.website && (
-                        <a
-                          href={place.website}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs text-blue-600 hover:underline block"
-                        >
-                          🌐 {place.website}
-                        </a>
-                      )}
-                      {place.formatted_phone_number && (
-                        <p className="text-xs text-green-600 font-medium">
-                          📞 {place.formatted_phone_number}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-                {processingResults.places.length > 20 && (
-                  <p className="text-sm text-muted-foreground text-center">
-                    +{processingResults.places.length - 20} more businesses found
-                  </p>
-                )}
-              </div>
-            ) : processingResults.domains.length > 0 ? (
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {processingResults.domains.slice(0, 12).map((domain: string, index: number) => (
-                    <div key={index} className="p-4 border rounded-lg">
-                      <p className="text-sm font-mono">{domain}</p>
-                    </div>
-                  ))}
-                </div>
-                {processingResults.domains.length > 12 && (
-                  <p className="text-sm text-muted-foreground text-center">
-                    +{processingResults.domains.length - 12} more domains found
-                  </p>
-                )}
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground text-center py-4">
-                No business data could be extracted from the search results.
-              </p>
-            )}
-          </CardContent>
-        </Card>
-      )}
+      {/* Processing results UI removed — we now show per-card incremental results */}
     </div>
   )
 }

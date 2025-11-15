@@ -1,9 +1,11 @@
 import { getCurrentUser, getUserUsage } from "@/lib/auth-utils"
+import { validateLocationSearchAccess } from "@/app/actions/location-search"
 import { createClient } from "@/lib/supabase/server"
 import { TIER_LIMITS } from "@/lib/types"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { TrendingUp, Archive, Crown } from "lucide-react"
+import { TrendingUp, Archive, Crown, MapPin } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 
 export default async function DashboardPage() {
@@ -35,6 +37,14 @@ export default async function DashboardPage() {
     .order("created_at", { ascending: false })
     .limit(3)
 
+  // Get remaining location/search access (optional)
+  let locationAccess: { canSearch?: boolean; tier?: string; remainingSearches?: number } | null = null
+  try {
+    locationAccess = await validateLocationSearchAccess()
+  } catch (err) {
+    // ignore errors — this is optional UI
+  }
+
   return (
     <div className="mx-auto max-w-6xl space-y-6">
       <div className="grid gap-4 md:grid-cols-3">
@@ -64,6 +74,28 @@ export default async function DashboardPage() {
                     ? "Unlimited generations"
                     : `${remaining} generation${remaining !== 1 ? "s" : ""} remaining`}
                 </p>
+                {/* Location/search remaining (if available) */}
+                {locationAccess?.remainingSearches !== undefined && (
+                  (() => {
+                    const rem = locationAccess.remainingSearches as number
+                    // choose color: green when plenty (>5), amber when low (1-5), red when 0
+                    const badgeClass = rem === 0
+                      ? 'bg-red-50 text-red-700'
+                      : rem <= 5
+                        ? 'bg-amber-50 text-amber-700'
+                        : 'bg-green-50 text-green-700'
+
+                    return (
+                      <div className="mt-3">
+                        <Badge className={`flex items-center gap-2 px-2 py-1 text-xs ${badgeClass}`}>
+                          <MapPin className="h-3 w-3" />
+                          <span className="font-medium">{rem}</span>
+                          <span className="text-muted-foreground">search{rem !== 1 ? 'es' : ''} left</span>
+                        </Badge>
+                      </div>
+                    )
+                  })()
+                )}
               </>
             )}
             {user.tier === "pro" && (

@@ -11,6 +11,16 @@ import { Textarea } from "@/components/ui/textarea"
 import type { Strategy } from "@/lib/types"
 import { generateTemplate } from "@/app/actions/generate"
 import { Loader2, Copy, Crown, Mail, ChevronDown } from "lucide-react"
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+  DialogHeader,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
@@ -55,6 +65,9 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
 
   const { toast } = useToast()
   const searchParams = useSearchParams()
+  const [contactsOpen, setContactsOpen] = useState(false)
+  const [savedContacts, setSavedContacts] = useState<any[] | null>(null)
+  const [contactSearch, setContactSearch] = useState("")
 
   // Read URL parameters from contacts page
   useEffect(() => {
@@ -83,6 +96,31 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
       // ignore
     }
   }, [])
+
+  // When the Add Contact dialog is opened, fetch saved contacts
+  useEffect(() => {
+    let mounted = true
+    async function loadContacts() {
+      try {
+        const res = await fetch('/api/contacts/saved')
+        const json = await res.json()
+        if (!mounted) return
+        if (json?.success) {
+          setSavedContacts(json.contacts || [])
+        } else {
+          setSavedContacts([])
+        }
+      } catch (e) {
+        setSavedContacts([])
+      }
+    }
+
+    if (contactsOpen && savedContacts === null) {
+      loadContacts()
+    }
+
+    return () => { mounted = false }
+  }, [contactsOpen])
 
   // Group strategies by category
   const categorizedStrategies = useMemo(() => {
@@ -126,6 +164,9 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
     if (cat.startsWith("Recruiting")) return "Recruit"
     return cat.split(" ")[0]
   }
+
+  // Single inactive background for category boxes to keep rows consistent
+  const inactiveBgClass = "bg-gray-100 dark:bg-gray-700"
 
   const handleStrategyToggle = (strategyId: string, tier: string) => {
     if (tier === "pro" && userTier === "free") {
@@ -379,29 +420,115 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
             <TabsList
               className="grid grid-rows-5 grid-flow-col auto-cols-fr gap-2 h-auto w-full p-1 sm:flex sm:flex-wrap sm:gap-2 sm:h-9"
             >
-              {categories.map((cat) => (
-                <TabsTrigger
-                  key={cat}
-                  value={cat}
-                  className="h-auto text-xs whitespace-nowrap px-3 py-2"
-                >
-                  <span className="hidden sm:inline">{cat}</span>
-                  <span className="sm:hidden">{getShortCategory(cat)}</span>
-                </TabsTrigger>
-              ))}
+              {categories.map((cat) => {
+                return (
+                  <TabsTrigger
+                    key={cat}
+                    value={cat}
+                    className={`h-auto text-xs whitespace-nowrap px-3 py-2 rounded-md border transform transition-colors transition-transform duration-200 ease-in-out ${inactiveBgClass} text-gray-900 hover:shadow-md hover:-translate-y-0.5 border-border data-[state=active]:bg-gray-800 data-[state=active]:text-white data-[state=active]:ring-2 data-[state=active]:ring-primary data-[state=active]:border-transparent`}
+                  >
+                    <span className="hidden sm:inline">{cat}</span>
+                    <span className="sm:hidden">{getShortCategory(cat)}</span>
+                  </TabsTrigger>
+                )
+              })}
             </TabsList>
           </Tabs>
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="subject">{getSubjectLabel()} *</Label>
-          <Input
-            id="subject"
-            placeholder={getSubjectPlaceholder()}
-            value={subject}
-            onChange={(e) => setSubject(e.target.value)}
-            required
-          />
+          <div className="flex flex-col sm:flex-row sm:items-center sm:gap-3">
+            <div className="flex-1">
+              <Input
+                id="subject"
+                placeholder={getSubjectPlaceholder()}
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                required
+              />
+            </div>
+            <div className="mt-2 sm:mt-0">
+              <Dialog open={contactsOpen} onOpenChange={(open) => setContactsOpen(open)}>
+                <DialogTrigger asChild>
+                  <Button size="sm" variant="outline" className="w-full sm:w-auto">
+                    <Mail className="mr-2 h-4 w-4" />
+                    Add contact
+                    <ChevronDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </DialogTrigger>
+
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Select a contact</DialogTitle>
+                    <DialogDescription>Pick one of your saved contacts to autofill recipient fields.</DialogDescription>
+                  </DialogHeader>
+
+                  <div className="mt-4">
+                    <input
+                      className="w-full rounded-md border px-3 py-2 mb-3"
+                      placeholder="Search name, email or company"
+                      value={contactSearch}
+                      onChange={(e) => setContactSearch(e.target.value)}
+                    />
+
+                    <div className="max-h-72 overflow-y-auto space-y-2">
+                      {savedContacts === null && (
+                        <div className="text-sm text-muted-foreground">Loading...</div>
+                      )}
+
+                      {savedContacts?.length === 0 && savedContacts !== null && (
+                        <div className="text-sm text-muted-foreground">No saved contacts found.</div>
+                      )}
+
+                      {savedContacts && savedContacts.filter((c: any) => {
+                        if (!contactSearch) return true
+                        const q = contactSearch.toLowerCase()
+                        const name = `${c.first_name || ''} ${c.last_name || ''}`.toLowerCase()
+                        return (
+                          (c.email || '').toLowerCase().includes(q) ||
+                          name.includes(q) ||
+                          (c.company || '').toLowerCase().includes(q)
+                        )
+                      }).map((c: any) => (
+                        <div
+                          key={c.id ?? c.email}
+                          className="flex items-center justify-between gap-2 rounded-lg border p-3 cursor-pointer hover:bg-muted"
+                        >
+                          <div className="min-w-0">
+                            <div className="font-medium truncate">{(c.first_name || c.last_name) ? `${c.first_name || ''} ${c.last_name || ''}`.trim() : c.email}</div>
+                            <div className="text-xs text-muted-foreground truncate">{c.company || 'Company N/A'}</div>
+                            <div className="text-xs text-muted-foreground">{c.email}</div>
+                          </div>
+                          <div>
+                            <Button
+                              size="sm"
+                              onClick={() => {
+                                const name = `${c.first_name || ''} ${c.last_name || ''}`.trim() || c.email.split("@")[0]
+                                setRecipientName(name)
+                                setRecipientEmail(c.email || "")
+                                if (c.company) setRecipientCompany(c.company)
+                                if (c.title) setRecipientTitle(c.title)
+                                setContactsOpen(false)
+                              }}
+                            >
+                              Use
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant="ghost">Close</Button>
+                    </DialogClose>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </div>
         </div>
 
         <div className="space-y-2">
@@ -474,9 +601,9 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
               const isLocked = isProStrategy && userTier === "free"
               const isSelected = selectedStrategies.includes(strategy.id)
 
-              return (
+                return (
                 <div
-                  key={strategy.id}
+                  key={strategy.id ?? strategy.name}
                   className={`relative flex items-start gap-3 rounded-lg border p-4 transition-colors ${
                     isLocked
                       ? "cursor-not-allowed opacity-50"
@@ -503,10 +630,24 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
                         {strategy.name}
                       </Label>
                       {isProStrategy && (
-                        <Badge variant="secondary" className="gap-1">
-                          <Crown className="h-3 w-3" />
-                          Pro
-                        </Badge>
+                        // For Free users show both a locked Pro badge and an "Available on Light" badge
+                        // so they understand Light users can access this strategy. Light/Pro users see a
+                        // neutral "Advanced" label to avoid implying it's unavailable.
+                        userTier === "free" ? (
+                          <>
+                            <Badge variant="secondary" className="gap-1" title="Requires Pro">
+                              <Crown className="h-3 w-3" />
+                              Pro
+                            </Badge>
+                            <Badge variant="outline" className="ml-2" title="Available on Light tier">
+                              Light
+                            </Badge>
+                          </>
+                        ) : (
+                          <Badge variant="outline" className="gap-1" title="Available to your tier">
+                            Advanced
+                          </Badge>
+                        )
                       )}
                     </div>
                     <p className="text-sm text-muted-foreground">{strategy.description}</p>
@@ -516,14 +657,20 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
             })}
           </div>
 
-          {userTier === "free" && (
-            <div className="rounded-lg bg-muted p-4 text-sm">
-              Want access to all strategies?{" "}
-              <Link href="/upgrade" className="font-medium underline underline-offset-4">
-                Upgrade to Pro
-              </Link>
-            </div>
-          )}
+          <div className="mt-2 text-xs text-muted-foreground">
+            <p className="leading-tight">
+              Badges show the original strategy tier. If a strategy is marked <strong>Pro</strong> but your
+              plan also allows it, it will be available — we show a neutral label to reduce confusion.
+            </p>
+            {userTier === "free" && (
+              <p className="mt-2 text-xs">
+                Want access to all strategies? {" "}
+                <Link href="/upgrade" className="font-medium underline underline-offset-2 text-sm">
+                  Upgrade Your Plan
+                </Link>
+              </p>
+            )}
+          </div>
         </div>
 
         {selectedStrategies.length > 0 && (
@@ -758,7 +905,7 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
           </div>
           <div className="grid gap-4 md:grid-cols-3">
             {variants.map((variant, index) => (
-              <div key={index} className="rounded-lg border bg-card p-4 space-y-3">
+              <div key={variant?.label ?? index} className="rounded-lg border bg-card p-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <h4 className="font-semibold text-sm">{variant.label}</h4>
                   <div className="flex gap-2">

@@ -163,12 +163,82 @@ export class GoogleMapsUtils {
    * Extract emails from website content, including JSON-LD structured data
    */
   static extractEmailsFromText(text: string): string[] {
-    const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g
     const matches: string[] = []
 
-    // Extract emails from plain text
-    const plainTextMatches = text.match(emailRegex) || []
-    matches.push(...plainTextMatches)
+    // Helper: decode numeric/hex HTML entities (e.g. &#64; or &#x40;)
+    const decodeHtmlEntities = (input: string) => {
+      return input.replace(/&#x([0-9A-Fa-f]+);/g, (_m, hex) => String.fromCharCode(parseInt(hex, 16)))
+                  .replace(/&#([0-9]+);/g, (_m, dec) => String.fromCharCode(parseInt(dec, 10)))
+                  .replace(/&amp;/g, '&')
+                  .replace(/&lt;/g, '<')
+                  .replace(/&gt;/g, '>')
+                  .replace(/&quot;/g, '"')
+                  .replace(/&apos;/g, "'")
+    }
+
+    // Normalize common obfuscations like 'name [at] domain dot com' -> 'name@domain.com'
+    const normalizeObfuscation = (s: string) => {
+      return s
+        .replace(/\[at\]|\(at\)|\s+at\s+/gi, '@')
+        .replace(/\[dot\]|\(dot\)|\s+dot\s+/gi, '.')
+        .replace(/\s+\(at\)\s+/gi, '@')
+        .replace(/\s+\(dot\)\s+/gi, '.')
+        .replace(/\s+\[at\]\s+/gi, '@')
+        .replace(/\s+\[dot\]\s+/gi, '.')
+        .replace(/\s+@\s+/g, '@')
+        .replace(/\s+\.\s+/g, '.')
+    }
+
+    // 1) Extract emails from mailto: links
+    try {
+      const mailtoRegex = /href=["']mailto:([^"'>\s?]+)["']/gi
+      let m
+      while ((m = mailtoRegex.exec(text)) !== null) {
+        const decoded = decodeHtmlEntities(m[1])
+        matches.push(decoded)
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    // 2) Extract emails from plain text (after decoding entities)
+    try {
+      const decodedText = decodeHtmlEntities(text)
+      const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g
+      const plainTextMatches = decodedText.match(emailRegex) || []
+      matches.push(...plainTextMatches)
+    } catch (e) {
+      // ignore
+    }
+
+    // 3) Handle obfuscated patterns like 'name [at] domain dot com' or 'name(at)domain.com'
+    try {
+      const obfRegex = /[\w.+%-]+\s*(?:\[at\]|\(at\)|@|\s+at\s+)\s*[\w.-]+\s*(?:\[dot\]|\(dot\)|\.|\s+dot\s+)\s*[a-zA-Z]{2,}/gi
+      let o
+      while ((o = obfRegex.exec(text)) !== null) {
+        const candidate = normalizeObfuscation(o[0])
+        // Extract normalized email if it matches email pattern
+        const emailMatch = candidate.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/)
+        if (emailMatch) matches.push(emailMatch[0])
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    // 4) Look for data attributes or JS variables that might contain emails
+    try {
+      const dataAttrRegex = /data[-_](?:email|contact)["']?\s*[:=]?\s*["']([^"']+)["']/gi
+      let d
+      while ((d = dataAttrRegex.exec(text)) !== null) {
+        const decoded = decodeHtmlEntities(d[1])
+        // normalize and check
+        const norm = normalizeObfuscation(decoded)
+        const em = norm.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/)
+        if (em) matches.push(em[0])
+      }
+    } catch (e) {
+      // ignore
+    }
 
     // Extract emails from JSON-LD structured data
     try {
@@ -198,9 +268,9 @@ export class GoogleMapsUtils {
               for (const contactPoint of contactPoints) {
                 if (contactPoint.email) {
                   if (Array.isArray(contactPoint.email)) {
-                    matches.push(...contactPoint.email)
+                    matches.push(...contactPoint.email.map((e: string) => decodeHtmlEntities(e)))
                   } else {
-                    matches.push(contactPoint.email)
+                    matches.push(decodeHtmlEntities(contactPoint.email))
                   }
                 }
               }
@@ -216,7 +286,15 @@ export class GoogleMapsUtils {
     }
 
     // Remove duplicates and return
-    return [...new Set(matches)]
+    // Final normalization: decode entities and filter
+    const final = matches
+      .map(m => m.trim())
+      .map(m => decodeHtmlEntities(m))
+      .map(m => normalizeObfuscation(m))
+      .filter(m => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(m))
+
+    // Remove duplicates and return
+    return [...new Set(final)]
   }
 
   /**
@@ -228,11 +306,36 @@ export class GoogleMapsUtils {
     success: boolean
     error?: string
   }> {
+    // Lightweight in-memory cache (per-process). Keyed by domain. TTL = 24 hours.
+    const CACHE_TTL = 1000 * 60 * 60 * 24
+    if (!(global as any).__outbound_scrape_cache) (global as any).__outbound_scrape_cache = new Map<string, { ts: number; emails: string[] }>()
+    const cache: Map<string, { ts: number; emails: string[] }> = (global as any).__outbound_scrape_cache
+
     let lastError: string = ''
+
+    // Normalize website URL
+    const normalize = (url: string) => {
+      if (!url.startsWith('http')) return 'https://' + url
+      return url
+    }
+
+    const domainKey = (() => {
+      try {
+        const u = new URL(normalize(website))
+        return u.hostname.replace(/^www\./, '')
+      } catch {
+        return website
+      }
+    })()
+
+    // Return cached if fresh
+    const cached = cache.get(domainKey)
+    if (cached && Date.now() - cached.ts < CACHE_TTL) {
+      return { emails: cached.emails, success: cached.emails.length > 0 }
+    }
 
     for (let attempt = 0; attempt <= retries; attempt++) {
       try {
-        // Basic validation
         if (!website.startsWith('http')) {
           website = 'https://' + website
         }
@@ -241,131 +344,117 @@ export class GoogleMapsUtils {
           headers: {
             'User-Agent': 'Mozilla/5.0 (compatible; OutboundBot/1.0)',
           },
-          // Timeout after 10 seconds
           signal: AbortSignal.timeout(10000),
         })
 
         if (!response.ok) {
           lastError = `HTTP ${response.status}`
-          if (attempt < retries) continue // Retry on HTTP errors
+          if (attempt < retries) continue
           return { emails: [], success: false, error: lastError }
         }
 
-        // Check content type to avoid scraping images, PDFs, etc.
         const contentType = response.headers.get('content-type') || ''
         if (!contentType.includes('text/html') && !contentType.includes('application/xhtml')) {
           return { emails: [], success: false, error: 'Not an HTML page' }
         }
 
         const html = await response.text()
-
-        // Skip if this looks like an image or binary content
         if (html.length < 100 || html.includes('<html') === false) {
           return { emails: [], success: false, error: 'Invalid HTML content' }
         }
 
-        // Look for contact pages - but filter out image URLs
-        const contactUrls = this.findContactPages(html, website)
-          .filter(url => !url.includes('.png') && !url.includes('.jpg') && !url.includes('.jpeg') && 
-                       !url.includes('.gif') && !url.includes('.svg') && !url.includes('.webp') &&
-                       !url.includes('.pdf') && !url.includes('.doc') && !url.includes('.docx'))
+        // Extract emails from homepage first
+        let allEmails: string[] = this.extractEmailsFromText(html)
 
-        let allEmails: string[] = []
+        // If we already have enough emails, cache & return
+        const MAX_EMAILS = 3
+        if (allEmails.length >= MAX_EMAILS) {
+          const unique = [...new Set(allEmails)].slice(0, MAX_EMAILS)
+          cache.set(domainKey, { ts: Date.now(), emails: unique })
+          return { emails: unique, success: true }
+        }
 
-        // Scrape main page
-        allEmails = allEmails.concat(this.extractEmailsFromText(html))
+        // Find candidate contact pages (more aggressive international patterns)
+        const contactCandidates = this.findContactPages(html, website)
+        const filtered = contactCandidates
+          .map(u => {
+            try { return new URL(u, website).toString() } catch { return u }
+          })
+          .filter(u => !u.match(/\.(png|jpg|jpeg|gif|svg|webp|pdf|doc|docx)(\?.*)?$/i))
 
-        // Try to scrape contact pages (limit to 3 to avoid too many requests)
-        for (const contactUrl of contactUrls.slice(0, 3)) {
+        // Prioritize candidates that contain contact-like keywords
+        const priority = ['contact', 'iletisim', 'contact-us', 'contactus', 'kontakt', 'contato', 'kontakt', 'kontakt-os', 'kontakt-us', 'about', 'reach']
+        const scored = filtered
+          .map(u => ({ u, score: priority.reduce((s, k) => s + (u.toLowerCase().includes(k) ? 2 : 0), 0) }))
+          .sort((a, b) => b.score - a.score)
+          .map(s => s.u)
+
+        // Limit how many pages we will attempt to fetch
+        const MAX_PAGES = 6
+        const toFetch = [...new Set(scored)].slice(0, MAX_PAGES)
+
+        // A simple concurrency pool
+        const CONCURRENCY = 3
+        const results: string[] = []
+
+        const tasks = toFetch.slice()
+        const workers: Promise<void>[] = []
+
+        const fetchOne = async (url: string) => {
           try {
-            const contactResponse = await fetch(contactUrl, {
-              headers: {
-                'User-Agent': 'Mozilla/5.0 (compatible; OutboundBot/1.0)',
-              },
+            const r = await fetch(url, {
+              headers: { 'User-Agent': 'Mozilla/5.0 (compatible; OutboundBot/1.0)' },
               signal: AbortSignal.timeout(8000),
             })
-
-            // Check content type for contact pages too
-            const contactContentType = contactResponse.headers.get('content-type') || ''
-            if (!contactContentType.includes('text/html') && !contactContentType.includes('application/xhtml')) {
-              continue // Skip non-HTML content
-            }
-
-            if (contactResponse.ok) {
-              const contactHtml = await contactResponse.text()
-              
-              // Skip if this looks like an image or binary content
-              if (contactHtml.length < 100 || contactHtml.includes('<html') === false) {
-                continue
-              }
-              
-              const contactEmails = this.extractEmailsFromText(contactHtml)
-              allEmails = allEmails.concat(contactEmails)
-            }
-          } catch (error) {
-            // Continue if contact page fails
-            continue
+            const ct = r.headers.get('content-type') || ''
+            if (!r.ok || (!ct.includes('text/html') && !ct.includes('application/xhtml'))) return
+            const text = await r.text()
+            if (text.length < 100 || text.includes('<html') === false) return
+            const emails = this.extractEmailsFromText(text)
+            for (const e of emails) results.push(e)
+          } catch (err) {
+            // ignore individual failures
           }
         }
 
-        // Remove duplicates and filter valid emails
+        for (let i = 0; i < CONCURRENCY; i++) {
+          const worker = (async () => {
+            while (tasks.length > 0 && results.length < MAX_EMAILS) {
+              const next = tasks.shift()
+              if (!next) break
+              await fetchOne(next)
+            }
+          })()
+          workers.push(worker)
+        }
+
+        await Promise.all(workers)
+
+        allEmails = allEmails.concat(results)
+
         const uniqueEmails = [...new Set(allEmails)]
           .filter(email => this.isValidEmailFormat(email))
           .filter(email => {
             const lowerEmail = email.toLowerCase()
-            // Filter out common false positives
-            return !lowerEmail.includes('noreply') && 
-                   !lowerEmail.includes('no-reply') && 
-                   !lowerEmail.includes('donotreply') && 
-                   !lowerEmail.includes('do-not-reply') &&
-                   !lowerEmail.includes('example.com') && 
-                   !lowerEmail.includes('test.com') &&
-                   !lowerEmail.includes('sample.com') && 
-                   !lowerEmail.includes('placeholder.com') &&
-                   !lowerEmail.includes('yourcompany.com') && 
-                   !lowerEmail.includes('company.com') &&
-                   !lowerEmail.includes('domain.com') &&
-                   !lowerEmail.includes('website.com') &&
-                   !lowerEmail.includes('email.com') &&
-                   !lowerEmail.includes('mail.com') &&
-                   !lowerEmail.includes('sentry') && // Common tracking/analytics domains
-                   !lowerEmail.includes('wixpress.com') && // Wix internal domains
-                   !lowerEmail.includes('wix.com') &&
-                   !lowerEmail.includes('googleusercontent.com') &&
-                   !lowerEmail.includes('gravatar.com') &&
-                   !lowerEmail.includes('w3.org') &&
-                   !lowerEmail.includes('facebook.com') &&
-                   !lowerEmail.includes('twitter.com') &&
-                   !lowerEmail.includes('linkedin.com') &&
-                   !lowerEmail.includes('instagram.com') &&
-                   !lowerEmail.includes('youtube.com') &&
-                   !lowerEmail.includes('github.com') &&
-                   !lowerEmail.includes('stackoverflow.com') &&
-                   !/\d{8,}@/.test(lowerEmail) // Filter out emails that look like tracking IDs
+            return !lowerEmail.includes('noreply') && !lowerEmail.includes('no-reply') && !lowerEmail.includes('donotreply') && !lowerEmail.includes('do-not-reply')
           })
-          .slice(0, 3) // Limit to 3 emails per site
+          .slice(0, MAX_EMAILS)
 
-        return { emails: uniqueEmails, success: true }
+        // Cache result
+        cache.set(domainKey, { ts: Date.now(), emails: uniqueEmails })
+
+        return { emails: uniqueEmails, success: uniqueEmails.length > 0 }
       } catch (error) {
         lastError = error instanceof Error ? error.message : 'Unknown error'
         if (attempt < retries) {
-          // Wait before retrying (exponential backoff)
           await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000))
           continue
         }
-        return {
-          emails: [],
-          success: false,
-          error: lastError
-        }
+        return { emails: [], success: false, error: lastError }
       }
     }
 
-    return {
-      emails: [],
-      success: false,
-      error: lastError
-    }
+    return { emails: [], success: false, error: lastError }
   }
 
   /**

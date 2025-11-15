@@ -23,15 +23,6 @@ export default async function SearchBuyersPage() {
       </div>
 
       <div className="space-y-6">
-        <div>
-          <h2 className="text-xl font-semibold flex items-center gap-2">
-            <MapPin className="h-5 w-5" />
-            Location-Based Business Search
-          </h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Find businesses in any city worldwide using Google Maps. Results will be processed for contact information.
-          </p>
-        </div>
         <LocationSearchForm userId={(user as any).id} />
       </div>
     </div>

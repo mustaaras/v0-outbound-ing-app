@@ -2,12 +2,14 @@ export const dynamic = "force-dynamic"
 
 import { GeneratorForm } from "@/components/generator-form"
 import { getCurrentUser, getUserUsage } from "@/lib/auth-utils"
+import { validateLocationSearchAccess } from "@/app/actions/location-search"
 import { createClient } from "@/lib/supabase/server"
 import { TIER_LIMITS } from "@/lib/types"
 import type { User } from "@/lib/types"
 import { redirect } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Crown } from "lucide-react"
+import { Crown, MapPin } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { errorLog } from "@/lib/logger"
 
@@ -39,6 +41,15 @@ export default async function GeneratorPage() {
     strategies = Array.isArray(strategiesData) ? strategiesData.filter((s) => s && typeof s.tier !== "undefined") : []
 
     usage = await getUserUsage(user.id)
+
+    // Get remaining location/search counts for the dashboard (free/light tiers)
+    try {
+      const access = await validateLocationSearchAccess()
+      // attach to user object for rendering convenience
+      ;(user as any).locationAccess = access
+    } catch (err) {
+      // ignore; not critical for the dashboard
+    }
   } catch (error) {
      errorLog("Error in GeneratorPage:", error)
   }
@@ -47,6 +58,14 @@ export default async function GeneratorPage() {
 
   const limit = TIER_LIMITS[user.tier as keyof typeof TIER_LIMITS] || 5
   const canGenerate = usage < limit
+  const remSearches = (user as any).locationAccess?.remainingSearches as number | undefined
+  const badgeClass = remSearches === undefined
+    ? ''
+    : remSearches === 0
+      ? 'bg-red-50 text-red-700'
+      : remSearches <= 5
+        ? 'bg-amber-50 text-amber-700'
+        : 'bg-green-50 text-green-700'
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
@@ -66,6 +85,16 @@ export default async function GeneratorPage() {
                 <div className="text-2xl font-bold">
                   {usage} / {limit}
                 </div>
+                {/* Show remaining location/searches when available */}
+                {remSearches !== undefined && (
+                  <div className="mt-3">
+                    <Badge className={`flex items-center gap-2 px-2 py-1 text-xs ${badgeClass}`}>
+                      <MapPin className="h-3 w-3" />
+                      <span className="font-medium">{remSearches}</span>
+                      <span className="text-muted-foreground">search{remSearches !== 1 ? 'es' : ''} left</span>
+                    </Badge>
+                  </div>
+                )}
               </div>
               {user.tier === "free" && !canGenerate && (
                 <Button asChild>
