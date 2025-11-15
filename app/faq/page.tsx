@@ -9,9 +9,7 @@ export default function FAQPage() {
       <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <span className="text-lg font-bold">O</span>
-            </div>
+            <img src="/logos/logo-o-new-48.svg" width={32} height={32} alt="Outbound.ing logo" className="rounded" />
             <span className="text-lg font-semibold">Outbound.ing</span>
           </Link>
           <Button asChild variant="ghost" size="sm">
@@ -178,7 +176,7 @@ export default function FAQPage() {
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground">
                 If you have questions or need help, please use the Support chat in your account dashboard. We typically
-                respond within 24 hours during business days. You can also email us at support@outbound.ing for urgent issues.
+                respond within 24 hours during business days. You can also <a className="underline" href="mailto:support@outbound.ing">email us</a> for urgent issues.
               </AccordionContent>
             </AccordionItem>
           </Accordion>

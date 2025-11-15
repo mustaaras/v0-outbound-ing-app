@@ -82,19 +82,41 @@ export class GoogleMapsUtils {
    * Filter places that have websites (potential business leads)
    */
   static filterPlacesWithWebsites(places: GooglePlace[]): GooglePlace[] {
-    return places.filter(place => place.website && place.website.trim() !== '')
+    return places.filter(place => {
+      if (!place.website) return false
+      const w = place.website.trim()
+      if (!w) return false
+
+      // Ignore javascript/mailto links and common asset file URLs (logos, images)
+      if (/^javascript:/i.test(w)) return false
+      if (/^mailto:/i.test(w)) return false
+      if (w.match(/\.(png|jpg|jpeg|gif|svg|webp|ico)(\?.*)?$/i)) return false
+
+      return true
+    })
   }
 
   /**
    * Convert Google Places results to domain list for Snov.io processing
    */
   static extractDomainsFromPlaces(places: GooglePlace[]): string[] {
+    const MAX_DOMAINS = 12
+
     const domains = places
+      // Only consider places with a usable website (avoid image/logo links)
+      .filter(place => !!place.website && typeof place.website === 'string' && place.website.trim() !== '')
+      .filter(place => {
+        const w = place.website!.trim()
+        if (/^javascript:/i.test(w)) return false
+        if (/^mailto:/i.test(w)) return false
+        if (w.match(/\.(png|jpg|jpeg|gif|svg|webp|ico)(\?.*)?$/i)) return false
+        return true
+      })
       .map(place => this.extractDomain(place.website))
       .filter((domain): domain is string => domain !== null)
 
-    // Remove duplicates
-    return [...new Set(domains)]
+    // Remove duplicates and limit to MAX_DOMAINS
+    return Array.from(new Set(domains)).slice(0, MAX_DOMAINS)
   }
 
   /**

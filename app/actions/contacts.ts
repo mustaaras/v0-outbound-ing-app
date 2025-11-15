@@ -23,8 +23,8 @@ export async function addContactAction(data: {
   firstName?: string
   lastName?: string
   title?: string
-  companyName: string
-  companyDomain: string
+  companyName?: string
+  companyDomain?: string
   companyIndustry?: string
   companySize?: string
   companyLocation?: string
@@ -41,23 +41,27 @@ export async function addContactAction(data: {
       return { success: false, error: "Not authenticated" }
     }
 
-    // Create or find company
-    const companyData: CompanyInsert = {
-      name: data.companyName,
-      domain: data.companyDomain,
-      industry: data.companyIndustry,
-      company_size: data.companySize,
-      location: data.companyLocation,
-    }
+    // Create or find company if company info provided. Company is optional
+    // for manual additions — only email is required.
+    let company = null
+    if (data.companyName || data.companyDomain) {
+      const companyData: CompanyInsert = {
+        name: data.companyName || "",
+        domain: data.companyDomain || "",
+        industry: data.companyIndustry,
+        company_size: data.companySize,
+        location: data.companyLocation,
+      }
 
-    const company = await findOrCreateCompany(companyData)
-    if (!company) {
-      return { success: false, error: "Failed to create company" }
+      company = await findOrCreateCompany(companyData)
+      if (!company) {
+        return { success: false, error: "Failed to create company" }
+      }
     }
 
     // Create or find contact
     const contactData: ContactInsert = {
-      company_id: company.id,
+      company_id: company?.id,
       email: data.email,
       first_name: data.firstName,
       last_name: data.lastName,

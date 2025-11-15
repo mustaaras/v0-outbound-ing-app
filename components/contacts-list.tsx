@@ -352,25 +352,23 @@ export default function ContactsList({ userTier }: { userTier: string }) {
                   <div className="space-y-4 border-t pt-4">
                     <h4 className="font-medium">Company Information</h4>
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="companyName">Company Name *</Label>
-                        <Input
-                          id="companyName"
-                          required
-                          value={newContact.companyName}
-                          onChange={(e) => setNewContact({ ...newContact, companyName: e.target.value })}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="companyDomain">Company Domain *</Label>
-                        <Input
-                          id="companyDomain"
-                          required
-                          placeholder="example.com"
-                          value={newContact.companyDomain}
-                          onChange={(e) => setNewContact({ ...newContact, companyDomain: e.target.value })}
-                        />
-                      </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="companyName">Company Name</Label>
+                          <Input
+                            id="companyName"
+                            value={newContact.companyName}
+                            onChange={(e) => setNewContact({ ...newContact, companyName: e.target.value })}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="companyDomain">Company Domain</Label>
+                          <Input
+                            id="companyDomain"
+                            placeholder="example.com"
+                            value={newContact.companyDomain}
+                            onChange={(e) => setNewContact({ ...newContact, companyDomain: e.target.value })}
+                          />
+                        </div>
                       <div className="space-y-2">
                         <Label htmlFor="companyIndustry">Industry</Label>
                         <Input
