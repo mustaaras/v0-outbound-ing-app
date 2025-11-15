@@ -77,7 +77,17 @@ New to Outbound.ing? Start with our [User Guide](docs/user-guide.md) for a compl
 
 ## Logo
 
-![Outbound.ing Logo](public/logos/logo-o-new.svg)
+<!-- Logo variants for README and badges -->
+![Outbound.ing Logo 48](public/logos/logo-o-new-48.svg "Outbound.ing")
+
+Small variants (SVG):
+
+- 32px: `public/logos/logo-o-new-32.svg`
+- 48px: `public/logos/logo-o-new-48.svg`
+- 128px: `public/logos/logo-o-new-128.svg`
+
+If you need PNG exports, open `public/logo-converter.html` in the browser to download PNG sizes (client-side canvas exporter provided in tools).
+
 
 ## Contact & Support
 
