@@ -8,9 +8,7 @@ export default function PrivacyPage() {
       <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <span className="text-lg font-bold">O</span>
-            </div>
+            <img src="/logos/logo-o-new-48.svg" width={32} height={32} alt="Outbound.ing logo" className="rounded" />
             <span className="text-lg font-semibold">Outbound.ing</span>
           </Link>
           <Button asChild variant="ghost" size="sm">
@@ -26,7 +24,7 @@ export default function PrivacyPage() {
         <div className="mx-auto max-w-4xl space-y-8">
           <div className="space-y-4">
             <h1 className="text-4xl font-bold tracking-tight">Privacy Policy</h1>
-            <p className="text-muted-foreground">Last updated: November 13, 2025</p>
+            <p className="text-muted-foreground">Last updated: November 15, 2025</p>
           </div>
 
           <div className="space-y-6 text-base leading-relaxed">
@@ -167,7 +165,7 @@ export default function PrivacyPage() {
               <h2 className="text-2xl font-semibold">12. Contact Us</h2>
               <p>
                 For privacy-related questions or concerns, please contact us through your account dashboard,
-                visit our FAQ page, or email our support team.
+                visit our FAQ page, or email our support team at <a className="underline" href="mailto:support@outbound.ing">support@outbound.ing</a>.
               </p>
             </section>
           </div>

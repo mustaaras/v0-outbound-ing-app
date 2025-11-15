@@ -1,5 +1,7 @@
 # ❓ Outbound.ing FAQ
 
+[![Outbound.ing Logo](/public/logos/logo-o-new-48.svg)](/)
+
 ## Getting Started
 
 ### How do I sign up?
@@ -93,14 +95,14 @@ We strive for 99.9% uptime. Use Vercel's built-in monitoring for real-time statu
 
 ### How do I contact support?
 - **Dashboard**: Use the in-app support chat
-- **Email**: support@outbound.ing
+- **Email**: [support@outbound.ing](mailto:support@outbound.ing)
 - **Response time**: < 24 hours for all plans
 
 ### Do you offer training?
 This user guide covers everything! For personalized training, contact our sales team.
 
 ### Can I request features?
-Absolutely! Use the feedback page in your dashboard or email sales@outbound.ing.
+Absolutely! Use the feedback page in your dashboard or email [sales@outbound.ing](mailto:sales@outbound.ing).
 
 ## Legal & Compliance
 
