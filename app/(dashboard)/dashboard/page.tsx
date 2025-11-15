@@ -50,6 +50,14 @@ export default async function DashboardPage() {
     .gte("created_at", fromIso)
     .order("created_at", { ascending: true })
 
+  // Fetch contact search history for the same window (contact_search_history.created_at)
+  const { data: contactSearches } = await supabase
+    .from("contact_search_history")
+    .select("created_at")
+    .eq("user_id", user.id)
+    .gte("created_at", fromIso)
+    .order("created_at", { ascending: true })
+
   // Get remaining location/search access (optional)
   let locationAccess: { canSearch?: boolean; tier?: string; remainingSearches?: number } | null = null
   try {
@@ -151,23 +159,30 @@ export default async function DashboardPage() {
         <CardContent>
           {/* Build daily counts for the last 30 days and render a client-side chart */}
           {(() => {
-            // Initialize map of dates
-            const map: Record<string, number> = {}
+            // Initialize map of dates with both emails and searches
+            const map: Record<string, { emails: number; searches: number }> = {}
             for (let i = 0; i < 30; i++) {
               const d = new Date()
               d.setDate(d.getDate() - (29 - i))
               const key = d.toISOString().slice(0, 10)
-              map[key] = 0
+              map[key] = { emails: 0, searches: 0 }
             }
 
             if (recentForChart && Array.isArray(recentForChart)) {
               recentForChart.forEach((r: any) => {
                 const key = (r.created_at || "").slice(0, 10)
-                if (map[key] !== undefined) map[key] = (map[key] || 0) + 1
+                if (map[key] !== undefined) map[key].emails = (map[key].emails || 0) + 1
               })
             }
 
-            const data = Object.keys(map).map((k) => ({ date: k, emails: map[k] }))
+            if (contactSearches && Array.isArray(contactSearches)) {
+              contactSearches.forEach((c: any) => {
+                const key = (c.created_at || "").slice(0, 10)
+                if (map[key] !== undefined) map[key].searches = (map[key].searches || 0) + 1
+              })
+            }
+
+            const data = Object.keys(map).map((k) => ({ date: k, emails: map[k].emails, searches: map[k].searches }))
 
             return <PerformanceChart data={data} />
           })()}

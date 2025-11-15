@@ -15,6 +15,7 @@ import {
 interface DataPoint {
   date: string
   emails: number
+  searches?: number
 }
 
 interface PerformanceChartProps {
@@ -31,7 +32,15 @@ export default function PerformanceChart({ data }: PerformanceChartProps) {
           <YAxis allowDecimals={false} />
           <Tooltip />
           <Legend />
-          <Line type="monotone" dataKey="emails" stroke="#4f46e5" strokeWidth={2} dot={{ r: 2 }} />
+          <Line type="monotone" dataKey="emails" name="Emails" stroke="#4f46e5" strokeWidth={2} dot={{ r: 2 }} />
+          <Line
+            type="monotone"
+            dataKey="searches"
+            name="Contact searches"
+            stroke="#059669"
+            strokeWidth={2}
+            dot={{ r: 2 }}
+          />
         </LineChart>
       </ResponsiveContainer>
     </div>
