@@ -743,18 +743,18 @@ export function LocationSearchForm({ isLoading: externalLoading, userId }: Locat
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {places.slice(0, 12).map((place) => (
-                <div key={place.place_id} className="p-4 border rounded-lg space-y-2">
-                  <h3 className="font-semibold text-sm">{place.name}</h3>
-                  {place.formatted_address && (
-                    <p className="text-xs text-muted-foreground">{place.formatted_address}</p>
-                  )}
-                  <div className="flex flex-wrap gap-1">
-                    {place.types?.slice(0, 2).map((type) => (
-                      <Badge key={type} variant="secondary" className="text-xs">
-                        {type.replace(/_/g, ' ')}
-                      </Badge>
-                    ))}
-                  </div>
+                <div key={place.place_id} className="p-4 border rounded-lg space-y-0.5">
+                    <h3 className="font-semibold text-xs mb-0">{place.name}</h3>
+                    {place.formatted_address && (
+                      <p className="text-xs text-muted-foreground">{place.formatted_address}</p>
+                    )}
+                    <div className="flex flex-wrap gap-0.5 items-center -mt-1">
+                      {place.types?.slice(0, 2).map((type) => (
+                        <Badge key={type} variant="secondary" className="text-[10px] px-1 py-0.5">
+                          {type.replace(/_/g, ' ')}
+                        </Badge>
+                      ))}
+                    </div>
                   {place.website && (
                     <a
                       href={place.website}

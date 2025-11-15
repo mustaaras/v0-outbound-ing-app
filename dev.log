@@ -16900,3 +16900,1302 @@ Import trace:
  POST /generator 200 in 812ms (compile: 12ms, proxy.ts: 264ms, render: 537ms)
 [v0] Middleware check: { path: '/generator', hasUser: true }
  POST /generator 200 in 695ms (compile: 6ms, proxy.ts: 174ms, render: 515ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 1073ms (compile: 6ms, proxy.ts: 333ms, render: 733ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /search-buyers 200 in 732ms (compile: 1399µs, proxy.ts: 170ms, render: 561ms)
+ POST /generator 200 in 793ms (compile: 2ms, proxy.ts: 250ms, render: 541ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 717ms (compile: 6ms, proxy.ts: 176ms, render: 535ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 1657ms (compile: 11ms, proxy.ts: 255ms, render: 1391ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 806ms (compile: 13ms, proxy.ts: 242ms, render: 551ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 744ms (compile: 5ms, proxy.ts: 186ms, render: 554ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 944ms (compile: 7ms, proxy.ts: 357ms, render: 579ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 808ms (compile: 5ms, proxy.ts: 185ms, render: 618ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 778ms (compile: 7ms, proxy.ts: 228ms, render: 542ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 725ms (compile: 5ms, proxy.ts: 180ms, render: 540ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /search-buyers 200 in 833ms (compile: 26ms, proxy.ts: 273ms, render: 534ms)
+ POST /dashboard 200 in 813ms (compile: 12ms, proxy.ts: 255ms, render: 546ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 706ms (compile: 13ms, proxy.ts: 181ms, render: 512ms)
+ POST /search-buyers 200 in 708ms (compile: 7ms, proxy.ts: 178ms, render: 523ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /dashboard 200 in 796ms (compile: 5ms, proxy.ts: 260ms, render: 530ms)
+ POST /search-buyers 200 in 891ms (compile: 6ms, proxy.ts: 355ms, render: 530ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /dashboard 200 in 717ms (compile: 6ms, proxy.ts: 183ms, render: 528ms)
+ POST /search-buyers 200 in 717ms (compile: 4ms, proxy.ts: 179ms, render: 534ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /search-buyers 200 in 825ms (compile: 6ms, proxy.ts: 276ms, render: 542ms)
+ POST /dashboard 200 in 809ms (compile: 4ms, proxy.ts: 271ms, render: 534ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /dashboard 200 in 690ms (compile: 5ms, proxy.ts: 169ms, render: 516ms)
+ POST /search-buyers 200 in 700ms (compile: 4ms, proxy.ts: 184ms, render: 513ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /dashboard 200 in 813ms (compile: 6ms, proxy.ts: 267ms, render: 540ms)
+ POST /search-buyers 200 in 884ms (compile: 6ms, proxy.ts: 361ms, render: 517ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /dashboard 200 in 710ms (compile: 4ms, proxy.ts: 184ms, render: 522ms)
+ POST /search-buyers 200 in 701ms (compile: 4ms, proxy.ts: 175ms, render: 522ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /search-buyers 200 in 890ms (compile: 28ms, proxy.ts: 286ms, render: 576ms)
+ POST /dashboard 200 in 888ms (compile: 5ms, proxy.ts: 341ms, render: 542ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /search-buyers 200 in 737ms (compile: 4ms, proxy.ts: 178ms, render: 555ms)
+ POST /dashboard 200 in 736ms (compile: 3ms, proxy.ts: 191ms, render: 542ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /dashboard 200 in 798ms (compile: 9ms, proxy.ts: 244ms, render: 546ms)
+ POST /search-buyers 200 in 1013ms (compile: 5ms, proxy.ts: 450ms, render: 557ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /dashboard 200 in 715ms (compile: 10ms, proxy.ts: 182ms, render: 522ms)
+ POST /search-buyers 200 in 700ms (compile: 3ms, proxy.ts: 174ms, render: 523ms)
+[v0] Middleware check: { path: '/', hasUser: true }
+ GET / 200 in 1113ms (compile: 17ms, proxy.ts: 967ms, render: 128ms)
+[v0] Middleware check: { path: '/auth/signup', hasUser: true }
+[v0] Redirecting to dashboard - user already logged in
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 1950ms (compile: 7ms, proxy.ts: 193ms, render: 1750ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 733ms (compile: 5ms, proxy.ts: 181ms, render: 547ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 730ms (compile: 5ms, proxy.ts: 177ms, render: 548ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 754ms (compile: 12ms, proxy.ts: 181ms, render: 560ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 730ms (compile: 5ms, proxy.ts: 187ms, render: 539ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ GET /search-buyers 200 in 710ms (compile: 7ms, proxy.ts: 277ms, render: 426ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 808ms (compile: 4ms, proxy.ts: 251ms, render: 553ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 724ms (compile: 4ms, proxy.ts: 186ms, render: 534ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 788ms (compile: 6ms, proxy.ts: 240ms, render: 542ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 763ms (compile: 6ms, proxy.ts: 185ms, render: 572ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ GET /generator 200 in 1520ms (compile: 7ms, proxy.ts: 265ms, render: 1248ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 804ms (compile: 5ms, proxy.ts: 225ms, render: 574ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 724ms (compile: 4ms, proxy.ts: 181ms, render: 539ms)
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ GET /contacts 200 in 777ms (compile: 6ms, proxy.ts: 388ms, render: 382ms)
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ POST /contacts 200 in 738ms (compile: 4ms, proxy.ts: 171ms, render: 563ms)
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ POST /contacts 200 in 743ms (compile: 4ms, proxy.ts: 182ms, render: 557ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ GET /generator 200 in 1508ms (compile: 5ms, proxy.ts: 237ms, render: 1266ms)
+[v0] Middleware check: { path: '/api/contacts/saved', hasUser: true }
+ GET /api/contacts/saved 200 in 743ms (compile: 5ms, proxy.ts: 185ms, render: 553ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 765ms (compile: 6ms, proxy.ts: 230ms, render: 529ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 714ms (compile: 9ms, proxy.ts: 175ms, render: 531ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ GET /search-buyers 200 in 641ms (compile: 6ms, proxy.ts: 237ms, render: 398ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 764ms (compile: 5ms, proxy.ts: 229ms, render: 530ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 736ms (compile: 4ms, proxy.ts: 179ms, render: 553ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Scraping website on-demand: https://www.greentechplast.com/
+ POST /search-buyers 200 in 2.8s (compile: 6ms, proxy.ts: 258ms, render: 2.6s)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Extracted domain: greentechplast.com from https://www.greentechplast.com/
+[v0] Extracted domain: damlaplastik.net from http://www.damlaplastik.net/
+[v0] Extracted domain: alpmete.com.tr from http://www.alpmete.com.tr/
+[v0] Extracted domain: plastopack.com.tr from https://www.plastopack.com.tr/
+[v0] Extracted domain: vesbo.com from https://www.vesbo.com/
+[v0] Extracted domain: camplastik.com from http://www.camplastik.com/
+[v0] Extracted domain: netplast.com.tr from http://www.netplast.com.tr/
+[v0] Extracted domain: atisanambalaj.com from http://www.atisanambalaj.com/Default
+[v0] Extracted domain: teknikplastik.com.tr from https://www.teknikplastik.com.tr/
+[v0] Extracted domain: teksanak.com from http://www.teksanak.com/
+[v0] Extracted domain: vesbo.com from https://www.vesbo.com/
+[v0] Skipping website scraping because options.scrapeWebsites === false
+ POST /search-buyers 200 in 1199ms (compile: 6ms, proxy.ts: 243ms, render: 949ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Scraping website on-demand: http://www.damlaplastik.net/
+ POST /search-buyers 200 in 2.4s (compile: 5ms, proxy.ts: 199ms, render: 2.2s)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 731ms (compile: 4ms, proxy.ts: 187ms, render: 540ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 711ms (compile: 4ms, proxy.ts: 179ms, render: 528ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Scraping website on-demand: http://www.alpmete.com.tr/
+ POST /search-buyers 200 in 2.6s (compile: 4ms, proxy.ts: 187ms, render: 2.4s)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Scraping website on-demand: https://www.plastopack.com.tr/
+ POST /search-buyers 200 in 3.4s (compile: 4ms, proxy.ts: 186ms, render: 3.2s)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Scraping website on-demand: https://www.vesbo.com/
+ POST /search-buyers 200 in 33.4s (compile: 5ms, proxy.ts: 189ms, render: 33.2s)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 890ms (compile: 4ms, proxy.ts: 324ms, render: 562ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 728ms (compile: 5ms, proxy.ts: 181ms, render: 542ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Scraping website on-demand: http://www.camplastik.com/
+ POST /search-buyers 200 in 9.9s (compile: 4ms, proxy.ts: 177ms, render: 9.7s)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Creating new company: {
+  name: 'Alp Mete Ambalaj',
+  domain: 'alpmeteambalaj',
+  industry: undefined,
+  company_size: undefined,
+  location: undefined
+}
+[v0] Successfully created company: Alp Mete Ambalaj
+[v0] Creating new contact: info@alpmete.com.tr
+[v0] Successfully created contact: info@alpmete.com.tr
+[v0] Successfully saved contact for user
+ POST /search-buyers 200 in 1582ms (compile: 5ms, proxy.ts: 229ms, render: 1348ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Scraping website on-demand: http://www.netplast.com.tr/
+ POST /search-buyers 200 in 4.1s (compile: 4ms, proxy.ts: 184ms, render: 3.9s)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /search-buyers 200 in 1006ms (compile: 4ms, proxy.ts: 191ms, render: 811ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ GET /generator?recipientEmail=info%40alpmete.com.tr&recipientName=Alp+Mete+Ambalaj&recipientCompany=Alp+Mete+Ambalaj 200 in 1452ms (compile: 7ms, proxy.ts: 217ms, render: 1228ms)
+ POST /search-buyers 200 in 743ms (compile: 3ms, proxy.ts: 183ms, render: 557ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Scraping website on-demand: http://www.atisanambalaj.com/Default
+ POST /generator?recipientEmail=info%40alpmete.com.tr&recipientName=Alp+Mete+Ambalaj&recipientCompany=Alp+Mete+Ambalaj 200 in 697ms (compile: 1923µs, proxy.ts: 171ms, render: 524ms)
+ POST /search-buyers 200 in 710ms (compile: 1283µs, proxy.ts: 176ms, render: 533ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator?recipientEmail=info%40alpmete.com.tr&recipientName=Alp+Mete+Ambalaj&recipientCompany=Alp+Mete+Ambalaj 200 in 765ms (compile: 5ms, proxy.ts: 227ms, render: 533ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Scraping website on-demand: https://www.teknikplastik.com.tr/
+ POST /search-buyers 200 in 1778ms (compile: 4ms, proxy.ts: 180ms, render: 1594ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Scraping website on-demand: http://www.teksanak.com/
+ POST /search-buyers 200 in 1885ms (compile: 4ms, proxy.ts: 183ms, render: 1698ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Scraping website on-demand: https://www.vesbo.com/
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator?recipientEmail=info%40alpmete.com.tr&recipientName=Alp+Mete+Ambalaj&recipientCompany=Alp+Mete+Ambalaj 200 in 798ms (compile: 5ms, proxy.ts: 223ms, render: 571ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator?recipientEmail=info%40alpmete.com.tr&recipientName=Alp+Mete+Ambalaj&recipientCompany=Alp+Mete+Ambalaj 200 in 724ms (compile: 5ms, proxy.ts: 180ms, render: 539ms)
+ POST /search-buyers 200 in 33.4s (compile: 5ms, proxy.ts: 175ms, render: 33.2s)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 762ms (compile: 5ms, proxy.ts: 222ms, render: 536ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 737ms (compile: 4ms, proxy.ts: 173ms, render: 561ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 802ms (compile: 7ms, proxy.ts: 237ms, render: 558ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /search-buyers 200 in 735ms (compile: 3ms, proxy.ts: 186ms, render: 546ms)
+ POST /generator?recipientEmail=info%40alpmete.com.tr&recipientName=Alp+Mete+Ambalaj&recipientCompany=Alp+Mete+Ambalaj 200 in 825ms (compile: 6ms, proxy.ts: 221ms, render: 598ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator?recipientEmail=info%40alpmete.com.tr&recipientName=Alp+Mete+Ambalaj&recipientCompany=Alp+Mete+Ambalaj 200 in 733ms (compile: 5ms, proxy.ts: 185ms, render: 544ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 938ms (compile: 1987µs, proxy.ts: 395ms, render: 541ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /search-buyers 200 in 739ms (compile: 4ms, proxy.ts: 177ms, render: 558ms)
+ POST /generator?recipientEmail=info%40alpmete.com.tr&recipientName=Alp+Mete+Ambalaj&recipientCompany=Alp+Mete+Ambalaj 200 in 759ms (compile: 4ms, proxy.ts: 216ms, render: 538ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator?recipientEmail=info%40alpmete.com.tr&recipientName=Alp+Mete+Ambalaj&recipientCompany=Alp+Mete+Ambalaj 200 in 727ms (compile: 4ms, proxy.ts: 175ms, render: 548ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator?recipientEmail=info%40alpmete.com.tr&recipientName=Alp+Mete+Ambalaj&recipientCompany=Alp+Mete+Ambalaj 200 in 826ms (compile: 3ms, proxy.ts: 269ms, render: 554ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator?recipientEmail=info%40alpmete.com.tr&recipientName=Alp+Mete+Ambalaj&recipientCompany=Alp+Mete+Ambalaj 200 in 751ms (compile: 4ms, proxy.ts: 189ms, render: 559ms)
+ ✓ Compiled in 153ms
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 932ms (compile: 143ms, proxy.ts: 249ms, render: 540ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 702ms (compile: 1269µs, proxy.ts: 173ms, render: 528ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator?recipientEmail=info%40alpmete.com.tr&recipientName=Alp+Mete+Ambalaj&recipientCompany=Alp+Mete+Ambalaj 200 in 716ms (compile: 3ms, proxy.ts: 181ms, render: 532ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator?recipientEmail=info%40alpmete.com.tr&recipientName=Alp+Mete+Ambalaj&recipientCompany=Alp+Mete+Ambalaj 200 in 724ms (compile: 6ms, proxy.ts: 181ms, render: 537ms)
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ GET /contacts 200 in 695ms (compile: 10ms, proxy.ts: 256ms, render: 430ms)
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ POST /contacts 200 in 750ms (compile: 3ms, proxy.ts: 185ms, render: 562ms)
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /contacts 200 in 755ms (compile: 2ms, proxy.ts: 181ms, render: 571ms)
+ GET /generator 200 in 1460ms (compile: 11ms, proxy.ts: 223ms, render: 1227ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 782ms (compile: 4ms, proxy.ts: 236ms, render: 542ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 739ms (compile: 5ms, proxy.ts: 184ms, render: 551ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 1104ms (compile: 8ms, proxy.ts: 572ms, render: 525ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 716ms (compile: 4ms, proxy.ts: 181ms, render: 531ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 724ms (compile: 5ms, proxy.ts: 187ms, render: 531ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 691ms (compile: 1231µs, proxy.ts: 170ms, render: 520ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 772ms (compile: 3ms, proxy.ts: 236ms, render: 533ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 714ms (compile: 5ms, proxy.ts: 179ms, render: 531ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 794ms (compile: 7ms, proxy.ts: 236ms, render: 551ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 721ms (compile: 4ms, proxy.ts: 184ms, render: 533ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 740ms (compile: 6ms, proxy.ts: 191ms, render: 543ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 733ms (compile: 4ms, proxy.ts: 179ms, render: 551ms)
+ ✓ Compiled in 114ms
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ GET /contacts 200 in 654ms (compile: 25ms, proxy.ts: 233ms, render: 397ms)
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ POST /contacts 200 in 730ms (compile: 6ms, proxy.ts: 178ms, render: 546ms)
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ POST /contacts 200 in 710ms (compile: 5ms, proxy.ts: 179ms, render: 526ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ GET /generator 200 in 1452ms (compile: 11ms, proxy.ts: 263ms, render: 1178ms)
+ POST /generator 200 in 765ms (compile: 3ms, proxy.ts: 178ms, render: 584ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 703ms (compile: 1234µs, proxy.ts: 167ms, render: 535ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ GET /generator 200 in 1232ms (compile: 1483µs, proxy.ts: 172ms, render: 1058ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 1017ms (compile: 101ms, proxy.ts: 382ms, render: 534ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 716ms (compile: 4ms, proxy.ts: 183ms, render: 529ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 719ms (compile: 4ms, proxy.ts: 185ms, render: 530ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 715ms (compile: 5ms, proxy.ts: 181ms, render: 529ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 794ms (compile: 3ms, proxy.ts: 252ms, render: 539ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 751ms (compile: 5ms, proxy.ts: 190ms, render: 557ms)
+ ✓ Compiled in 159ms
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 1463ms (compile: 587ms, proxy.ts: 339ms, render: 536ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 759ms (compile: 4ms, proxy.ts: 174ms, render: 581ms)
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ GET /contacts 200 in 611ms (compile: 7ms, proxy.ts: 205ms, render: 400ms)
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ POST /contacts 200 in 751ms (compile: 1366µs, proxy.ts: 222ms, render: 528ms)
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ POST /contacts 200 in 719ms (compile: 2ms, proxy.ts: 172ms, render: 545ms)
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ POST /contacts 200 in 738ms (compile: 6ms, proxy.ts: 188ms, render: 544ms)
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ POST /contacts 200 in 725ms (compile: 4ms, proxy.ts: 188ms, render: 533ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ GET /generator 200 in 1370ms (compile: 10ms, proxy.ts: 188ms, render: 1172ms)
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ GET /contacts 200 in 1196ms (compile: 13ms, proxy.ts: 534ms, render: 648ms)
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ POST /contacts 200 in 910ms (compile: 1396µs, proxy.ts: 188ms, render: 721ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ POST /contacts 200 in 752ms (compile: 1240µs, proxy.ts: 172ms, render: 579ms)
+ GET /generator 200 in 1423ms (compile: 3ms, proxy.ts: 211ms, render: 1209ms)
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ POST /contacts 200 in 795ms (compile: 5ms, proxy.ts: 189ms, render: 601ms)
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ POST /contacts 200 in 768ms (compile: 6ms, proxy.ts: 189ms, render: 573ms)
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ POST /contacts 200 in 753ms (compile: 5ms, proxy.ts: 183ms, render: 565ms)
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ POST /contacts 200 in 751ms (compile: 5ms, proxy.ts: 188ms, render: 558ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ GET /generator 200 in 1418ms (compile: 5ms, proxy.ts: 185ms, render: 1228ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ GET /generator 200 in 1646ms (compile: 7ms, proxy.ts: 399ms, render: 1240ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /search-buyers 200 in 725ms (compile: 3ms, proxy.ts: 174ms, render: 548ms)
+ POST /generator 200 in 711ms (compile: 3ms, proxy.ts: 170ms, render: 538ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /search-buyers 200 in 763ms (compile: 5ms, proxy.ts: 182ms, render: 576ms)
+ POST /generator 200 in 756ms (compile: 5ms, proxy.ts: 225ms, render: 526ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 762ms (compile: 6ms, proxy.ts: 230ms, render: 526ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 727ms (compile: 5ms, proxy.ts: 189ms, render: 534ms)
+ ✓ Compiled in 73ms
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /search-buyers 200 in 824ms (compile: 21ms, proxy.ts: 242ms, render: 561ms)
+ POST /generator 200 in 927ms (compile: 150ms, proxy.ts: 225ms, render: 552ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /search-buyers 200 in 732ms (compile: 4ms, proxy.ts: 196ms, render: 532ms)
+ POST /generator 200 in 741ms (compile: 4ms, proxy.ts: 180ms, render: 557ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 766ms (compile: 5ms, proxy.ts: 228ms, render: 533ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 706ms (compile: 3ms, proxy.ts: 184ms, render: 520ms)
+ ✓ Compiled in 103ms
+[v0] Middleware check: { path: '/generator', hasUser: true }
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /generator 200 in 1142ms (compile: 211ms, proxy.ts: 283ms, render: 649ms)
+ POST /search-buyers 200 in 1225ms (compile: 7ms, proxy.ts: 655ms, render: 562ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /generator 200 in 688ms (compile: 1130µs, proxy.ts: 183ms, render: 504ms)
+ POST /search-buyers 200 in 832ms (compile: 1013µs, proxy.ts: 172ms, render: 659ms)
+ ✓ Compiled in 71ms
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ GET /contacts 200 in 691ms (compile: 31ms, proxy.ts: 234ms, render: 426ms)
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ POST /contacts 200 in 711ms (compile: 6ms, proxy.ts: 173ms, render: 531ms)
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ POST /contacts 200 in 758ms (compile: 6ms, proxy.ts: 177ms, render: 575ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ GET /generator 200 in 1593ms (compile: 138ms, proxy.ts: 246ms, render: 1209ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 783ms (compile: 14ms, proxy.ts: 235ms, render: 533ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 699ms (compile: 5ms, proxy.ts: 175ms, render: 519ms)
+ ✓ Compiled in 176ms
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /search-buyers 200 in 929ms (compile: 15ms, proxy.ts: 258ms, render: 656ms)
+ POST /generator 200 in 1055ms (compile: 140ms, proxy.ts: 232ms, render: 683ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /search-buyers 200 in 739ms (compile: 11ms, proxy.ts: 185ms, render: 543ms)
+ POST /generator 200 in 721ms (compile: 5ms, proxy.ts: 181ms, render: 535ms)
+[v0] Middleware check: { path: '/archive', hasUser: true }
+ GET /archive 200 in 1645ms (compile: 283ms, proxy.ts: 238ms, render: 1124ms)
+[v0] Middleware check: { path: '/archive', hasUser: true }
+ POST /archive 200 in 571ms (compile: 5ms, proxy.ts: 178ms, render: 388ms)
+[v0] Middleware check: { path: '/archive', hasUser: true }
+ POST /archive 200 in 553ms (compile: 5ms, proxy.ts: 189ms, render: 359ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 1415ms (compile: 6ms, proxy.ts: 186ms, render: 1223ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 788ms (compile: 4ms, proxy.ts: 237ms, render: 546ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 717ms (compile: 6ms, proxy.ts: 182ms, render: 529ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /dashboard 200 in 808ms (compile: 22ms, proxy.ts: 223ms, render: 562ms)
+ POST /search-buyers 200 in 883ms (compile: 2ms, proxy.ts: 345ms, render: 536ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /dashboard 200 in 728ms (compile: 6ms, proxy.ts: 172ms, render: 550ms)
+ POST /search-buyers 200 in 710ms (compile: 3ms, proxy.ts: 176ms, render: 532ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 756ms (compile: 6ms, proxy.ts: 214ms, render: 535ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 723ms (compile: 10ms, proxy.ts: 181ms, render: 532ms)
+ ✓ Compiled in 74ms
+[v0] Middleware check: { path: '/', hasUser: false }
+ GET / 200 in 125ms (compile: 20ms, proxy.ts: 3ms, render: 102ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /search-buyers 200 in 504ms (compile: 4ms, proxy.ts: 333ms, render: 167ms)
+ GET /dashboard 200 in 685ms (compile: 5ms, proxy.ts: 415ms, render: 264ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 744ms (compile: 4ms, proxy.ts: 216ms, render: 523ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 702ms (compile: 3ms, proxy.ts: 171ms, render: 528ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 813ms (compile: 9ms, proxy.ts: 237ms, render: 567ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 718ms (compile: 2ms, proxy.ts: 178ms, render: 539ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ GET /generator 200 in 1593ms (compile: 148ms, proxy.ts: 246ms, render: 1198ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 1401ms (compile: 5ms, proxy.ts: 193ms, render: 1204ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 787ms (compile: 6ms, proxy.ts: 232ms, render: 549ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 720ms (compile: 1414µs, proxy.ts: 176ms, render: 543ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ GET /generator 200 in 2.1s (compile: 10ms, proxy.ts: 518ms, render: 1592ms)
+[v0] Middleware check: { path: '/archive', hasUser: true }
+ GET /archive 200 in 856ms (compile: 7ms, proxy.ts: 206ms, render: 643ms)
+[v0] Middleware check: { path: '/archive', hasUser: true }
+ POST /archive 200 in 595ms (compile: 5ms, proxy.ts: 196ms, render: 394ms)
+[v0] Middleware check: { path: '/archive', hasUser: true }
+ POST /archive 200 in 580ms (compile: 4ms, proxy.ts: 198ms, render: 378ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 1503ms (compile: 6ms, proxy.ts: 247ms, render: 1250ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /search-buyers 200 in 832ms (compile: 6ms, proxy.ts: 256ms, render: 570ms)
+ POST /dashboard 200 in 785ms (compile: 1454µs, proxy.ts: 233ms, render: 551ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /search-buyers 200 in 752ms (compile: 6ms, proxy.ts: 196ms, render: 550ms)
+ POST /dashboard 200 in 940ms (compile: 3ms, proxy.ts: 195ms, render: 743ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 792ms (compile: 11ms, proxy.ts: 243ms, render: 538ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 722ms (compile: 4ms, proxy.ts: 194ms, render: 525ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ GET /generator 200 in 1487ms (compile: 9ms, proxy.ts: 228ms, render: 1250ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 1323ms (compile: 5ms, proxy.ts: 191ms, render: 1127ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /search-buyers 200 in 755ms (compile: 4ms, proxy.ts: 222ms, render: 529ms)
+ POST /dashboard 200 in 786ms (compile: 4ms, proxy.ts: 233ms, render: 549ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /search-buyers 200 in 720ms (compile: 3ms, proxy.ts: 186ms, render: 531ms)
+ POST /dashboard 200 in 762ms (compile: 4ms, proxy.ts: 189ms, render: 570ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+[v0] Middleware check: { path: '/admin', hasUser: true }
+[v0] Middleware check: { path: '/admin', hasUser: true }
+ POST /dashboard 200 in 1277ms (compile: 10ms, proxy.ts: 690ms, render: 577ms)
+ POST /admin 200 in 812ms (compile: 2ms, proxy.ts: 232ms, render: 578ms)
+ GET /admin 200 in 2.2s (compile: 265ms, proxy.ts: 626ms, render: 1275ms)
+[v0] Middleware check: { path: '/support', hasUser: true }
+ GET /support 200 in 417ms (compile: 168ms, proxy.ts: 239ms, render: 10ms)
+[v0] Middleware check: { path: '/support', hasUser: true }
+ POST /support 200 in 702ms (compile: 1558µs, proxy.ts: 177ms, render: 523ms)
+[v0] Middleware check: { path: '/support', hasUser: true }
+ POST /support 200 in 720ms (compile: 4ms, proxy.ts: 181ms, render: 535ms)
+[v0] Middleware check: { path: '/support', hasUser: true }
+Fetching conversations for user: 49c1032f-4df2-4cad-b6ee-681b84d0184f
+User email: mustafaaras91@gmail.com
+User object: {
+  "id": "49c1032f-4df2-4cad-b6ee-681b84d0184f",
+  "email": "mustafaaras91@gmail.com",
+  "tier": "free",
+  "stripe_customer_id": null,
+  "stripe_subscription_id": null,
+  "created_at": "2025-11-08T21:55:23.412541+00:00",
+  "updated_at": "2025-11-08T21:55:23.412541+00:00",
+  "first_name": null,
+  "last_name": null
+}
+User messages found: 0
+User message IDs: []
+Admin replies found: 0
+Admin replies data: []
+Final conversations: []
+ POST /support 200 in 1215ms (compile: 1179µs, proxy.ts: 173ms, render: 1041ms)
+[v0] Middleware check: { path: '/support', hasUser: true }
+Fetching conversations for user: 49c1032f-4df2-4cad-b6ee-681b84d0184f
+User email: mustafaaras91@gmail.com
+User object: {
+  "id": "49c1032f-4df2-4cad-b6ee-681b84d0184f",
+  "email": "mustafaaras91@gmail.com",
+  "tier": "free",
+  "stripe_customer_id": null,
+  "stripe_subscription_id": null,
+  "created_at": "2025-11-08T21:55:23.412541+00:00",
+  "updated_at": "2025-11-08T21:55:23.412541+00:00",
+  "first_name": null,
+  "last_name": null
+}
+User messages found: 0
+User message IDs: []
+Admin replies found: 0
+Admin replies data: []
+Final conversations: []
+ POST /support 200 in 883ms (compile: 1224µs, proxy.ts: 182ms, render: 700ms)
+[v0] Middleware check: { path: '/support', hasUser: true }
+[v0] Middleware check: { path: '/pricing', hasUser: true }
+ POST /support 200 in 761ms (compile: 1505µs, proxy.ts: 169ms, render: 590ms)
+[v0] Middleware check: { path: '/support', hasUser: true }
+ GET /pricing 200 in 775ms (compile: 171ms, proxy.ts: 231ms, render: 372ms)
+ POST /support 200 in 745ms (compile: 1306µs, proxy.ts: 182ms, render: 561ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Middleware check: { path: '/support', hasUser: true }
+ POST /search-buyers 200 in 722ms (compile: 6ms, proxy.ts: 182ms, render: 534ms)
+ POST /support 200 in 756ms (compile: 4ms, proxy.ts: 186ms, render: 566ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+[v0] Middleware check: { path: '/support', hasUser: true }
+[v0] Middleware check: { path: '/upgrade', hasUser: true }
+ POST /search-buyers 200 in 725ms (compile: 4ms, proxy.ts: 180ms, render: 540ms)
+ POST /support 200 in 751ms (compile: 5ms, proxy.ts: 203ms, render: 542ms)
+ GET /upgrade 200 in 910ms (compile: 294ms, proxy.ts: 224ms, render: 392ms)
+[v0] Middleware check: { path: '/settings', hasUser: true }
+ GET /settings 200 in 748ms (compile: 184ms, proxy.ts: 180ms, render: 384ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 775ms (compile: 3ms, proxy.ts: 209ms, render: 563ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 1457ms (compile: 6ms, proxy.ts: 248ms, render: 1203ms)
+ POST /dashboard 200 in 761ms (compile: 2ms, proxy.ts: 215ms, render: 544ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 1526ms (compile: 5ms, proxy.ts: 228ms, render: 1293ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 743ms (compile: 5ms, proxy.ts: 184ms, render: 555ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 731ms (compile: 4ms, proxy.ts: 182ms, render: 544ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 819ms (compile: 11ms, proxy.ts: 260ms, render: 548ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 724ms (compile: 5ms, proxy.ts: 188ms, render: 531ms)
+[v0] Middleware check: { path: '/settings', hasUser: true }
+ GET /settings 200 in 586ms (compile: 6ms, proxy.ts: 189ms, render: 391ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 1377ms (compile: 6ms, proxy.ts: 182ms, render: 1190ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 758ms (compile: 4ms, proxy.ts: 183ms, render: 571ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 717ms (compile: 4ms, proxy.ts: 178ms, render: 535ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 1140ms (compile: 10ms, proxy.ts: 345ms, render: 785ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 740ms (compile: 5ms, proxy.ts: 187ms, render: 549ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 772ms (compile: 6ms, proxy.ts: 233ms, render: 533ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 749ms (compile: 4ms, proxy.ts: 209ms, render: 536ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 1473ms (compile: 5ms, proxy.ts: 261ms, render: 1206ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 754ms (compile: 4ms, proxy.ts: 217ms, render: 534ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 721ms (compile: 4ms, proxy.ts: 183ms, render: 534ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 776ms (compile: 6ms, proxy.ts: 230ms, render: 540ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 782ms (compile: 3ms, proxy.ts: 198ms, render: 581ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 816ms (compile: 2ms, proxy.ts: 256ms, render: 558ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 750ms (compile: 4ms, proxy.ts: 190ms, render: 556ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ GET /generator 200 in 1440ms (compile: 7ms, proxy.ts: 236ms, render: 1197ms)
+[v0] Middleware check: { path: '/api/contacts/saved', hasUser: true }
+ GET /api/contacts/saved 200 in 755ms (compile: 6ms, proxy.ts: 185ms, render: 564ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 752ms (compile: 4ms, proxy.ts: 185ms, render: 563ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 737ms (compile: 5ms, proxy.ts: 192ms, render: 539ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 792ms (compile: 7ms, proxy.ts: 234ms, render: 551ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 766ms (compile: 6ms, proxy.ts: 207ms, render: 553ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+AI generation error: Error [GatewayError]: Vercel AI Gateway access failed. If you want to use AI SDK providers directly, use the providers, e.g. @ai-sdk/openai, or register a different global default provider.
+    at async generateTemplate (app/actions/generate.ts:245:22)
+  243 |
+  244 |     // Standard single email generation
+> 245 |     const { text } = await generateText({
+      |                      ^
+  246 |       model: "openai/gpt-4o-mini",
+  247 |       prompt,
+  248 |       temperature: 0.8, {
+  [cause]: Error [GatewayAuthenticationError]: AI Gateway authentication failed: No authentication provided.
+  
+  Option 1 - API key:
+  Create an API key: https://vercel.com/d?to=%2F%5Bteam%5D%2F%7E%2Fai%2Fapi-keys
+  Provide via 'apiKey' option or 'AI_GATEWAY_API_KEY' environment variable.
+  
+  Option 2 - OIDC token:
+  Run 'npx vercel link' to link your project, then 'vc env pull' to fetch the token.
+      at async generateTemplate (app/actions/generate.ts:245:22)
+    243 |
+    244 |     // Standard single email generation
+  > 245 |     const { text } = await generateText({
+        |                      ^
+    246 |       model: "openai/gpt-4o-mini",
+    247 |       prompt,
+    248 |       temperature: 0.8, {
+    statusCode: 401,
+    cause: undefined,
+    type: 'authentication_error'
+  }
+}
+ ⨯ Error: Failed to generate email. Please try again.
+    at generateTemplate (app/actions/generate.ts:276:11)
+  274 |     errorLog("AI generation error:", error)
+  275 |
+> 276 |     throw new Error("Failed to generate email. Please try again.")
+      |           ^
+  277 |   }
+  278 | }
+  279 | {
+  digest: '2514105075'
+}
+ POST /generator 500 in 1303ms (compile: 4ms, proxy.ts: 234ms, render: 1065ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 898ms (compile: 6ms, proxy.ts: 349ms, render: 543ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 728ms (compile: 6ms, proxy.ts: 182ms, render: 540ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 787ms (compile: 4ms, proxy.ts: 234ms, render: 549ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 741ms (compile: 1144µs, proxy.ts: 184ms, render: 556ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 961ms (compile: 3ms, proxy.ts: 322ms, render: 636ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 725ms (compile: 5ms, proxy.ts: 185ms, render: 535ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 780ms (compile: 6ms, proxy.ts: 233ms, render: 540ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 734ms (compile: 6ms, proxy.ts: 186ms, render: 541ms)
+[v0] Middleware check: { path: '/', hasUser: false }
+ ✓ Compiled in 74ms
+ GET / 200 in 97ms (compile: 4ms, proxy.ts: 6ms, render: 88ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /generator 200 in 690ms (compile: 220ms, proxy.ts: 289ms, render: 181ms)
+ GET /dashboard 200 in 815ms (compile: 3ms, proxy.ts: 562ms, render: 250ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 697ms (compile: 3ms, proxy.ts: 176ms, render: 518ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 906ms (compile: 3ms, proxy.ts: 203ms, render: 700ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 784ms (compile: 7ms, proxy.ts: 227ms, render: 550ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 688ms (compile: 1964µs, proxy.ts: 171ms, render: 515ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 901ms (compile: 5ms, proxy.ts: 346ms, render: 550ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 729ms (compile: 5ms, proxy.ts: 182ms, render: 542ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 1427ms (compile: 6ms, proxy.ts: 237ms, render: 1184ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ GET /generator 200 in 1454ms (compile: 4ms, proxy.ts: 186ms, render: 1264ms)
+[v0] Middleware check: { path: '/api/contacts/saved', hasUser: true }
+ GET /api/contacts/saved 200 in 743ms (compile: 6ms, proxy.ts: 184ms, render: 553ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 812ms (compile: 5ms, proxy.ts: 258ms, render: 550ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 737ms (compile: 4ms, proxy.ts: 193ms, render: 540ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 769ms (compile: 4ms, proxy.ts: 219ms, render: 546ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 766ms (compile: 5ms, proxy.ts: 182ms, render: 580ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+AI generation error: Error [GatewayError]: Vercel AI Gateway access failed. If you want to use AI SDK providers directly, use the providers, e.g. @ai-sdk/openai, or register a different global default provider.
+    at async generateTemplate (app/actions/generate.ts:245:22)
+  243 |
+  244 |     // Standard single email generation
+> 245 |     const { text } = await generateText({
+      |                      ^
+  246 |       model: "openai/gpt-4o-mini",
+  247 |       prompt,
+  248 |       temperature: 0.8, {
+  [cause]: Error [GatewayAuthenticationError]: AI Gateway authentication failed: No authentication provided.
+  
+  Option 1 - API key:
+  Create an API key: https://vercel.com/d?to=%2F%5Bteam%5D%2F%7E%2Fai%2Fapi-keys
+  Provide via 'apiKey' option or 'AI_GATEWAY_API_KEY' environment variable.
+  
+  Option 2 - OIDC token:
+  Run 'npx vercel link' to link your project, then 'vc env pull' to fetch the token.
+      at async generateTemplate (app/actions/generate.ts:245:22)
+    243 |
+    244 |     // Standard single email generation
+  > 245 |     const { text } = await generateText({
+        |                      ^
+    246 |       model: "openai/gpt-4o-mini",
+    247 |       prompt,
+    248 |       temperature: 0.8, {
+    statusCode: 401,
+    cause: undefined,
+    type: 'authentication_error'
+  }
+}
+ ⨯ Error: Failed to generate email: Vercel AI Gateway access failed. If you want to use AI SDK providers directly, use the providers, e.g. @ai-sdk/openai, or register a different global default provider.
+    at generateTemplate (app/actions/generate.ts:279:13)
+  277 |     const underlying = error instanceof Error ? error.message : String(error)
+  278 |     if (process.env.NODE_ENV === 'development') {
+> 279 |       throw new Error(`Failed to generate email: ${underlying}`)
+      |             ^
+  280 |     }
+  281 |
+  282 |     // In production, return a safe generic message {
+  digest: '1317066074'
+}
+ POST /generator 500 in 1138ms (compile: 5ms, proxy.ts: 194ms, render: 939ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+AI generation error: Error [GatewayError]: Vercel AI Gateway access failed. If you want to use AI SDK providers directly, use the providers, e.g. @ai-sdk/openai, or register a different global default provider.
+    at async generateTemplate (app/actions/generate.ts:245:22)
+  243 |
+  244 |     // Standard single email generation
+> 245 |     const { text } = await generateText({
+      |                      ^
+  246 |       model: "openai/gpt-4o-mini",
+  247 |       prompt,
+  248 |       temperature: 0.8, {
+  [cause]: Error [GatewayAuthenticationError]: AI Gateway authentication failed: No authentication provided.
+  
+  Option 1 - API key:
+  Create an API key: https://vercel.com/d?to=%2F%5Bteam%5D%2F%7E%2Fai%2Fapi-keys
+  Provide via 'apiKey' option or 'AI_GATEWAY_API_KEY' environment variable.
+  
+  Option 2 - OIDC token:
+  Run 'npx vercel link' to link your project, then 'vc env pull' to fetch the token.
+      at async generateTemplate (app/actions/generate.ts:245:22)
+    243 |
+    244 |     // Standard single email generation
+  > 245 |     const { text } = await generateText({
+        |                      ^
+    246 |       model: "openai/gpt-4o-mini",
+    247 |       prompt,
+    248 |       temperature: 0.8, {
+    statusCode: 401,
+    cause: undefined,
+    type: 'authentication_error'
+  }
+}
+ ⨯ Error: Failed to generate email: Vercel AI Gateway access failed. If you want to use AI SDK providers directly, use the providers, e.g. @ai-sdk/openai, or register a different global default provider.
+    at generateTemplate (app/actions/generate.ts:279:13)
+  277 |     const underlying = error instanceof Error ? error.message : String(error)
+  278 |     if (process.env.NODE_ENV === 'development') {
+> 279 |       throw new Error(`Failed to generate email: ${underlying}`)
+      |             ^
+  280 |     }
+  281 |
+  282 |     // In production, return a safe generic message {
+  digest: '1317066074'
+}
+ POST /generator 500 in 1216ms (compile: 5ms, proxy.ts: 248ms, render: 963ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 774ms (compile: 6ms, proxy.ts: 236ms, render: 532ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 778ms (compile: 5ms, proxy.ts: 199ms, render: 574ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 765ms (compile: 5ms, proxy.ts: 227ms, render: 533ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 739ms (compile: 4ms, proxy.ts: 180ms, render: 555ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 779ms (compile: 4ms, proxy.ts: 225ms, render: 550ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 730ms (compile: 4ms, proxy.ts: 181ms, render: 544ms)
+[v0] Middleware check: { path: '/', hasUser: false }
+ ✓ Compiled in 82ms
+ GET / 200 in 76ms (compile: 5ms, proxy.ts: 11ms, render: 60ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 661ms (compile: 3ms, proxy.ts: 378ms, render: 281ms)
+ POST /generator 200 in 1114ms (compile: 228ms, proxy.ts: 335ms, render: 552ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /generator 200 in 676ms (compile: 1292µs, proxy.ts: 167ms, render: 508ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ GET /generator 200 in 238ms (compile: 5ms, proxy.ts: 176ms, render: 57ms)
+ POST /dashboard 200 in 731ms (compile: 3ms, proxy.ts: 184ms, render: 544ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 714ms (compile: 5ms, proxy.ts: 183ms, render: 526ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 751ms (compile: 5ms, proxy.ts: 231ms, render: 515ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 729ms (compile: 3ms, proxy.ts: 174ms, render: 553ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 779ms (compile: 5ms, proxy.ts: 239ms, render: 534ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 754ms (compile: 6ms, proxy.ts: 183ms, render: 565ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+AI generation error: Error [GatewayError]: Vercel AI Gateway access failed. If you want to use AI SDK providers directly, use the providers, e.g. @ai-sdk/openai, or register a different global default provider.
+    at async generateTemplate (app/actions/generate.ts:246:22)
+  244 |
+  245 |     // Standard single email generation
+> 246 |     const { text } = await generateText({
+      |                      ^
+  247 |       model: "openai/gpt-4o-mini",
+  248 |       prompt,
+  249 |       temperature: 0.8, {
+  [cause]: Error [GatewayAuthenticationError]: AI Gateway authentication failed: No authentication provided.
+  
+  Option 1 - API key:
+  Create an API key: https://vercel.com/d?to=%2F%5Bteam%5D%2F%7E%2Fai%2Fapi-keys
+  Provide via 'apiKey' option or 'AI_GATEWAY_API_KEY' environment variable.
+  
+  Option 2 - OIDC token:
+  Run 'npx vercel link' to link your project, then 'vc env pull' to fetch the token.
+      at async generateTemplate (app/actions/generate.ts:246:22)
+    244 |
+    245 |     // Standard single email generation
+  > 246 |     const { text } = await generateText({
+        |                      ^
+    247 |       model: "openai/gpt-4o-mini",
+    248 |       prompt,
+    249 |       temperature: 0.8, {
+    statusCode: 401,
+    cause: undefined,
+    type: 'authentication_error'
+  }
+}
+ ⨯ Error: Failed to generate email: Vercel AI Gateway access failed. If you want to use AI SDK providers directly, use the providers, e.g. @ai-sdk/openai, or register a different global default provider.
+    at generateTemplate (app/actions/generate.ts:290:13)
+  288 |     const underlying = error instanceof Error ? error.message : String(error)
+  289 |     if (process.env.NODE_ENV === 'development') {
+> 290 |       throw new Error(`Failed to generate email: ${underlying}`)
+      |             ^
+  291 |     }
+  292 |
+  293 |     // In production, return a safe generic message {
+  digest: '356344714'
+}
+ POST /generator 500 in 1157ms (compile: 6ms, proxy.ts: 238ms, render: 913ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 773ms (compile: 6ms, proxy.ts: 234ms, render: 534ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 743ms (compile: 5ms, proxy.ts: 186ms, render: 552ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 770ms (compile: 7ms, proxy.ts: 224ms, render: 539ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 725ms (compile: 4ms, proxy.ts: 186ms, render: 534ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 774ms (compile: 3ms, proxy.ts: 240ms, render: 532ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 760ms (compile: 5ms, proxy.ts: 188ms, render: 567ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 875ms (compile: 8ms, proxy.ts: 337ms, render: 530ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 728ms (compile: 5ms, proxy.ts: 183ms, render: 540ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 1524ms (compile: 5ms, proxy.ts: 527ms, render: 991ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /generator 200 in 791ms (compile: 4ms, proxy.ts: 240ms, render: 546ms)
+ POST /dashboard 200 in 725ms (compile: 4ms, proxy.ts: 179ms, render: 543ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 731ms (compile: 3ms, proxy.ts: 191ms, render: 537ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 819ms (compile: 9ms, proxy.ts: 225ms, render: 585ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 724ms (compile: 4ms, proxy.ts: 186ms, render: 534ms)
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ GET /contacts 200 in 697ms (compile: 15ms, proxy.ts: 252ms, render: 431ms)
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ POST /contacts 200 in 836ms (compile: 4ms, proxy.ts: 194ms, render: 638ms)
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ POST /contacts 200 in 805ms (compile: 5ms, proxy.ts: 208ms, render: 592ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ GET /generator 200 in 1384ms (compile: 5ms, proxy.ts: 238ms, render: 1141ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 804ms (compile: 5ms, proxy.ts: 252ms, render: 547ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 762ms (compile: 4ms, proxy.ts: 183ms, render: 575ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 765ms (compile: 5ms, proxy.ts: 224ms, render: 536ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 744ms (compile: 5ms, proxy.ts: 181ms, render: 558ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+[v0] Middleware check: { path: '/api/contacts/saved', hasUser: true }
+ POST /generator 200 in 889ms (compile: 7ms, proxy.ts: 346ms, render: 536ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ GET /api/contacts/saved 200 in 831ms (compile: 5ms, proxy.ts: 224ms, render: 602ms)
+ POST /generator 200 in 756ms (compile: 5ms, proxy.ts: 179ms, render: 571ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 804ms (compile: 7ms, proxy.ts: 259ms, render: 538ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 703ms (compile: 5ms, proxy.ts: 179ms, render: 519ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 764ms (compile: 8ms, proxy.ts: 224ms, render: 533ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 724ms (compile: 4ms, proxy.ts: 180ms, render: 540ms)
+ ✓ Compiled in 60ms
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 1097ms (compile: 170ms, proxy.ts: 261ms, render: 665ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 704ms (compile: 4ms, proxy.ts: 176ms, render: 524ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 796ms (compile: 8ms, proxy.ts: 233ms, render: 554ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 938ms (compile: 5ms, proxy.ts: 188ms, render: 746ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ GET /generator 200 in 1487ms (compile: 6ms, proxy.ts: 181ms, render: 1300ms)
+[v0] Middleware check: { path: '/api/contacts/saved', hasUser: true }
+ GET /api/contacts/saved 200 in 793ms (compile: 5ms, proxy.ts: 235ms, render: 553ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 780ms (compile: 5ms, proxy.ts: 230ms, render: 546ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 743ms (compile: 5ms, proxy.ts: 201ms, render: 538ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+AI generation error: Error [GatewayError]: Vercel AI Gateway access failed. If you want to use AI SDK providers directly, use the providers, e.g. @ai-sdk/openai, or register a different global default provider.
+    at async generateTemplate (app/actions/generate.ts:246:22)
+  244 |
+  245 |     // Standard single email generation
+> 246 |     const { text } = await generateText({
+      |                      ^
+  247 |       model: "openai/gpt-4o-mini",
+  248 |       prompt,
+  249 |       temperature: 0.8, {
+  [cause]: Error [GatewayAuthenticationError]: AI Gateway authentication failed: No authentication provided.
+  
+  Option 1 - API key:
+  Create an API key: https://vercel.com/d?to=%2F%5Bteam%5D%2F%7E%2Fai%2Fapi-keys
+  Provide via 'apiKey' option or 'AI_GATEWAY_API_KEY' environment variable.
+  
+  Option 2 - OIDC token:
+  Run 'npx vercel link' to link your project, then 'vc env pull' to fetch the token.
+      at async generateTemplate (app/actions/generate.ts:246:22)
+    244 |
+    245 |     // Standard single email generation
+  > 246 |     const { text } = await generateText({
+        |                      ^
+    247 |       model: "openai/gpt-4o-mini",
+    248 |       prompt,
+    249 |       temperature: 0.8, {
+    statusCode: 401,
+    cause: undefined,
+    type: 'authentication_error'
+  }
+}
+ ⨯ Error: Failed to generate email: Vercel AI Gateway access failed. If you want to use AI SDK providers directly, use the providers, e.g. @ai-sdk/openai, or register a different global default provider.
+    at generateTemplate (app/actions/generate.ts:290:13)
+  288 |     const underlying = error instanceof Error ? error.message : String(error)
+  289 |     if (process.env.NODE_ENV === 'development') {
+> 290 |       throw new Error(`Failed to generate email: ${underlying}`)
+      |             ^
+  291 |     }
+  292 |
+  293 |     // In production, return a safe generic message {
+  digest: '356344714'
+}
+ POST /generator 500 in 1152ms (compile: 4ms, proxy.ts: 184ms, render: 963ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 925ms (compile: 7ms, proxy.ts: 347ms, render: 571ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 718ms (compile: 1501µs, proxy.ts: 188ms, render: 528ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 755ms (compile: 1264µs, proxy.ts: 222ms, render: 531ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 690ms (compile: 1275µs, proxy.ts: 176ms, render: 513ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 779ms (compile: 3ms, proxy.ts: 230ms, render: 546ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 722ms (compile: 2ms, proxy.ts: 177ms, render: 543ms)
+[v0] Middleware check: { path: '/', hasUser: false }
+ ✓ Compiled in 54ms
+ GET / 200 in 111ms (compile: 17ms, proxy.ts: 14ms, render: 81ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ GET /generator 200 in 725ms (compile: 242ms, proxy.ts: 301ms, render: 182ms)
+ GET /generator 200 in 755ms (compile: 1779µs, proxy.ts: 657ms, render: 96ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 703ms (compile: 1250µs, proxy.ts: 175ms, render: 528ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 722ms (compile: 5ms, proxy.ts: 178ms, render: 539ms)
+[v0] Middleware check: { path: '/', hasUser: false }
+ ✓ Compiled in 40ms
+ GET / 200 in 81ms (compile: 2ms, proxy.ts: 6ms, render: 73ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ GET /generator 200 in 736ms (compile: 207ms, proxy.ts: 286ms, render: 243ms)
+ GET /generator 200 in 729ms (compile: 3ms, proxy.ts: 574ms, render: 152ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 763ms (compile: 5ms, proxy.ts: 192ms, render: 566ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 744ms (compile: 4ms, proxy.ts: 182ms, render: 558ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 731ms (compile: 1125µs, proxy.ts: 216ms, render: 513ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 686ms (compile: 1157µs, proxy.ts: 170ms, render: 514ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 846ms (compile: 19ms, proxy.ts: 250ms, render: 576ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 741ms (compile: 6ms, proxy.ts: 186ms, render: 549ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 927ms (compile: 7ms, proxy.ts: 357ms, render: 563ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 799ms (compile: 4ms, proxy.ts: 196ms, render: 599ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 767ms (compile: 4ms, proxy.ts: 233ms, render: 530ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 719ms (compile: 4ms, proxy.ts: 184ms, render: 531ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 834ms (compile: 4ms, proxy.ts: 249ms, render: 582ms)
+ POST /generator 200 in 838ms (compile: 1319µs, proxy.ts: 277ms, render: 560ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 733ms (compile: 12ms, proxy.ts: 181ms, render: 541ms)
+ POST /generator 200 in 738ms (compile: 6ms, proxy.ts: 183ms, render: 549ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 1177ms (compile: 33ms, proxy.ts: 496ms, render: 648ms)
+ POST /generator 200 in 1162ms (compile: 45ms, proxy.ts: 451ms, render: 666ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 831ms (compile: 3ms, proxy.ts: 196ms, render: 632ms)
+ POST /generator 200 in 856ms (compile: 5ms, proxy.ts: 181ms, render: 670ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 800ms (compile: 9ms, proxy.ts: 243ms, render: 548ms)
+ POST /generator 200 in 821ms (compile: 5ms, proxy.ts: 258ms, render: 558ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 711ms (compile: 5ms, proxy.ts: 180ms, render: 526ms)
+ POST /generator 200 in 736ms (compile: 4ms, proxy.ts: 185ms, render: 548ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 782ms (compile: 6ms, proxy.ts: 233ms, render: 542ms)
+ POST /generator 200 in 869ms (compile: 3ms, proxy.ts: 346ms, render: 520ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 714ms (compile: 5ms, proxy.ts: 184ms, render: 526ms)
+ POST /generator 200 in 748ms (compile: 5ms, proxy.ts: 190ms, render: 552ms)
+[v0] Middleware check: { path: '/', hasUser: false }
+ ✓ Compiled in 84ms
+ GET / 200 in 92ms (compile: 3ms, proxy.ts: 4ms, render: 86ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 1610ms (compile: 172ms, proxy.ts: 504ms, render: 933ms)
+ POST /generator 200 in 1631ms (compile: 164ms, proxy.ts: 508ms, render: 960ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 766ms (compile: 7ms, proxy.ts: 177ms, render: 582ms)
+ POST /generator 200 in 794ms (compile: 3ms, proxy.ts: 234ms, render: 557ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ GET /generator 200 in 276ms (compile: 3ms, proxy.ts: 180ms, render: 94ms)
+ GET /generator 200 in 264ms (compile: 7ms, proxy.ts: 227ms, render: 29ms)
+[v0] Middleware check: { path: '/', hasUser: false }
+ ✓ Compiled in 76ms
+ GET / 200 in 57ms (compile: 3ms, proxy.ts: 7ms, render: 48ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ GET /generator 200 in 1070ms (compile: 232ms, proxy.ts: 250ms, render: 588ms)
+ GET /generator 200 in 1069ms (compile: 3ms, proxy.ts: 1035ms, render: 32ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 774ms (compile: 3ms, proxy.ts: 185ms, render: 586ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 725ms (compile: 5ms, proxy.ts: 183ms, render: 538ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 863ms (compile: 10ms, proxy.ts: 275ms, render: 578ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 738ms (compile: 5ms, proxy.ts: 182ms, render: 550ms)
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ GET /contacts 200 in 849ms (compile: 8ms, proxy.ts: 441ms, render: 400ms)
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ POST /contacts 200 in 783ms (compile: 6ms, proxy.ts: 184ms, render: 593ms)
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /contacts 200 in 712ms (compile: 5ms, proxy.ts: 180ms, render: 528ms)
+ GET /generator 200 in 1478ms (compile: 5ms, proxy.ts: 218ms, render: 1254ms)
+[v0] Middleware check: { path: '/api/contacts/saved', hasUser: true }
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ GET /api/contacts/saved 200 in 825ms (compile: 6ms, proxy.ts: 250ms, render: 569ms)
+ POST /generator 200 in 806ms (compile: 5ms, proxy.ts: 240ms, render: 561ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 742ms (compile: 4ms, proxy.ts: 183ms, render: 554ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 743ms (compile: 4ms, proxy.ts: 190ms, render: 548ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 774ms (compile: 4ms, proxy.ts: 193ms, render: 577ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+AI generation error: Error [GatewayError]: Vercel AI Gateway access failed. If you want to use AI SDK providers directly, use the providers, e.g. @ai-sdk/openai, or register a different global default provider.
+    at async generateTemplate (app/actions/generate.ts:247:22)
+  245 |
+  246 |     // Standard single email generation
+> 247 |     const { text } = await generateText({
+      |                      ^
+  248 |       model: "openai/gpt-4o-mini",
+  249 |       prompt,
+  250 |       temperature: 0.8, {
+  [cause]: Error [GatewayAuthenticationError]: AI Gateway authentication failed: No authentication provided.
+  
+  Option 1 - API key:
+  Create an API key: https://vercel.com/d?to=%2F%5Bteam%5D%2F%7E%2Fai%2Fapi-keys
+  Provide via 'apiKey' option or 'AI_GATEWAY_API_KEY' environment variable.
+  
+  Option 2 - OIDC token:
+  Run 'npx vercel link' to link your project, then 'vc env pull' to fetch the token.
+      at async generateTemplate (app/actions/generate.ts:247:22)
+    245 |
+    246 |     // Standard single email generation
+  > 247 |     const { text } = await generateText({
+        |                      ^
+    248 |       model: "openai/gpt-4o-mini",
+    249 |       prompt,
+    250 |       temperature: 0.8, {
+    statusCode: 401,
+    cause: undefined,
+    type: 'authentication_error'
+  }
+}
+ ⨯ Error: Failed to generate email: Vercel AI Gateway access failed. If you want to use AI SDK providers directly, use the providers, e.g. @ai-sdk/openai, or register a different global default provider.
+    at generateTemplate (app/actions/generate.ts:291:13)
+  289 |     const underlying = error instanceof Error ? error.message : String(error)
+  290 |     if (process.env.NODE_ENV === 'development') {
+> 291 |       throw new Error(`Failed to generate email: ${underlying}`)
+      |             ^
+  292 |     }
+  293 |
+  294 |     // In production, return a safe generic message {
+  digest: '884563849'
+}
+ POST /generator 500 in 1214ms (compile: 5ms, proxy.ts: 229ms, render: 980ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 785ms (compile: 8ms, proxy.ts: 242ms, render: 535ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 729ms (compile: 5ms, proxy.ts: 190ms, render: 534ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 804ms (compile: 5ms, proxy.ts: 249ms, render: 550ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 756ms (compile: 5ms, proxy.ts: 188ms, render: 563ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 800ms (compile: 5ms, proxy.ts: 220ms, render: 575ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 1165ms (compile: 6ms, proxy.ts: 186ms, render: 973ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 985ms (compile: 9ms, proxy.ts: 433ms, render: 543ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 709ms (compile: 5ms, proxy.ts: 179ms, render: 525ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 763ms (compile: 1984µs, proxy.ts: 221ms, render: 540ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 698ms (compile: 1195µs, proxy.ts: 168ms, render: 528ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 752ms (compile: 1300µs, proxy.ts: 207ms, render: 544ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 723ms (compile: 5ms, proxy.ts: 183ms, render: 535ms)
+ ✓ Compiled in 100ms
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 1018ms (compile: 203ms, proxy.ts: 249ms, render: 567ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 752ms (compile: 7ms, proxy.ts: 191ms, render: 554ms)
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ GET /contacts 200 in 649ms (compile: 7ms, proxy.ts: 234ms, render: 408ms)
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ POST /contacts 200 in 747ms (compile: 5ms, proxy.ts: 187ms, render: 555ms)
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ POST /contacts 200 in 752ms (compile: 4ms, proxy.ts: 180ms, render: 568ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 811ms (compile: 5ms, proxy.ts: 236ms, render: 570ms)
+ GET /generator 200 in 1401ms (compile: 6ms, proxy.ts: 224ms, render: 1171ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 738ms (compile: 5ms, proxy.ts: 181ms, render: 553ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 745ms (compile: 4ms, proxy.ts: 183ms, render: 557ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 748ms (compile: 5ms, proxy.ts: 184ms, render: 560ms)
+[v0] Middleware check: { path: '/api/contacts/saved', hasUser: true }
+ GET /api/contacts/saved 200 in 814ms (compile: 6ms, proxy.ts: 240ms, render: 568ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+AI generation error: Error [GatewayError]: Vercel AI Gateway access failed. If you want to use AI SDK providers directly, use the providers, e.g. @ai-sdk/openai, or register a different global default provider.
+    at async generateTemplate (app/actions/generate.ts:247:22)
+  245 |
+  246 |     // Standard single email generation
+> 247 |     const { text } = await generateText({
+      |                      ^
+  248 |       model: "openai/gpt-4o-mini",
+  249 |       prompt,
+  250 |       temperature: 0.8, {
+  [cause]: Error [GatewayAuthenticationError]: AI Gateway authentication failed: No authentication provided.
+  
+  Option 1 - API key:
+  Create an API key: https://vercel.com/d?to=%2F%5Bteam%5D%2F%7E%2Fai%2Fapi-keys
+  Provide via 'apiKey' option or 'AI_GATEWAY_API_KEY' environment variable.
+  
+  Option 2 - OIDC token:
+  Run 'npx vercel link' to link your project, then 'vc env pull' to fetch the token.
+      at async generateTemplate (app/actions/generate.ts:247:22)
+    245 |
+    246 |     // Standard single email generation
+  > 247 |     const { text } = await generateText({
+        |                      ^
+    248 |       model: "openai/gpt-4o-mini",
+    249 |       prompt,
+    250 |       temperature: 0.8, {
+    statusCode: 401,
+    cause: undefined,
+    type: 'authentication_error'
+  }
+}
+ ⨯ Error: Failed to generate email: Vercel AI Gateway access failed. If you want to use AI SDK providers directly, use the providers, e.g. @ai-sdk/openai, or register a different global default provider.
+    at generateTemplate (app/actions/generate.ts:291:13)
+  289 |     const underlying = error instanceof Error ? error.message : String(error)
+  290 |     if (process.env.NODE_ENV === 'development') {
+> 291 |       throw new Error(`Failed to generate email: ${underlying}`)
+      |             ^
+  292 |     }
+  293 |
+  294 |     // In production, return a safe generic message {
+  digest: '884563849'
+}
+ POST /generator 500 in 1369ms (compile: 5ms, proxy.ts: 411ms, render: 953ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 873ms (compile: 6ms, proxy.ts: 321ms, render: 546ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 713ms (compile: 5ms, proxy.ts: 182ms, render: 526ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 800ms (compile: 5ms, proxy.ts: 265ms, render: 530ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 708ms (compile: 1523µs, proxy.ts: 180ms, render: 527ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 767ms (compile: 5ms, proxy.ts: 222ms, render: 540ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 725ms (compile: 5ms, proxy.ts: 181ms, render: 540ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 830ms (compile: 9ms, proxy.ts: 246ms, render: 575ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 709ms (compile: 1348µs, proxy.ts: 181ms, render: 526ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 764ms (compile: 5ms, proxy.ts: 229ms, render: 531ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 718ms (compile: 5ms, proxy.ts: 183ms, render: 530ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 760ms (compile: 3ms, proxy.ts: 228ms, render: 529ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 844ms (compile: 5ms, proxy.ts: 184ms, render: 656ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 785ms (compile: 6ms, proxy.ts: 246ms, render: 533ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 738ms (compile: 5ms, proxy.ts: 190ms, render: 544ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 784ms (compile: 5ms, proxy.ts: 231ms, render: 548ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 723ms (compile: 4ms, proxy.ts: 179ms, render: 540ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 728ms (compile: 5ms, proxy.ts: 185ms, render: 538ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 738ms (compile: 5ms, proxy.ts: 184ms, render: 549ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 781ms (compile: 8ms, proxy.ts: 230ms, render: 543ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 757ms (compile: 6ms, proxy.ts: 195ms, render: 556ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 928ms (compile: 7ms, proxy.ts: 358ms, render: 564ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 712ms (compile: 5ms, proxy.ts: 177ms, render: 530ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ GET /generator 200 in 1489ms (compile: 5ms, proxy.ts: 196ms, render: 1287ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 728ms (compile: 3ms, proxy.ts: 173ms, render: 551ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 699ms (compile: 5ms, proxy.ts: 176ms, render: 518ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 1348ms (compile: 7ms, proxy.ts: 177ms, render: 1164ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ GET /generator 200 in 1370ms (compile: 4ms, proxy.ts: 188ms, render: 1177ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 800ms (compile: 4ms, proxy.ts: 245ms, render: 550ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 708ms (compile: 5ms, proxy.ts: 181ms, render: 522ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 772ms (compile: 4ms, proxy.ts: 229ms, render: 539ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 731ms (compile: 4ms, proxy.ts: 178ms, render: 549ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 795ms (compile: 5ms, proxy.ts: 247ms, render: 544ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 735ms (compile: 5ms, proxy.ts: 187ms, render: 543ms)

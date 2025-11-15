@@ -101,6 +101,7 @@ ${input.language !== "English" ? `- Write EVERYTHING in ${input.language}, inclu
 Generate ONLY the email body text, no subject line. The sender's signature will be added separately.`
 
   try {
+    // (original behavior) call `generateText` from the `ai` package directly.
     // Derive a domain value required by the templates table schema.
     // Prefer recipient email domain, fall back to recipient company or a placeholder.
     const deriveDomain = (email?: string, company?: string) => {
