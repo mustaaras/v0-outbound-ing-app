@@ -54,6 +54,9 @@ export function LocationSearchForm({ isLoading: externalLoading, userId }: Locat
   const [scrapedResults, setScrapedResults] = useState<Record<string, { loading?: boolean; emails?: string[]; success?: boolean; website?: string }>>({})
   const [isProcessingResults, setIsProcessingResults] = useState(false)
   const [limitError, setLimitError] = useState<string | null>(null)
+  const [canSearchFlag, setCanSearchFlag] = useState<boolean | null>(null)
+  const [remainingSearches, setRemainingSearches] = useState<number | null>(null)
+  const [userTierLocal, setUserTierLocal] = useState<string | null>(null)
   const [mapsLoaded, setMapsLoaded] = useState(false)
   const [googleMaps, setGoogleMaps] = useState<typeof google.maps | null>(null)
   const [savedContacts, setSavedContacts] = useState<Set<string>>(new Set())
@@ -158,16 +161,24 @@ export function LocationSearchForm({ isLoading: externalLoading, userId }: Locat
 
   // Check user access on mount (for future Snov.io integration)
   useEffect(() => {
-    // Currently not needed without Snov.io
-    // const checkAccess = async () => {
-    //   try {
-    //     const access = await validateLocationSearchAccess()
-    //     setUserAccess(access)
-    //   } catch (error) {
-    //     errorLog("[v0] Failed to check user access:", error)
-    //   }
-    // }
-    // checkAccess()
+    const checkAccess = async () => {
+      try {
+        const access = await validateLocationSearchAccess()
+        setCanSearchFlag(Boolean(access.canSearch))
+        setUserTierLocal(access.tier)
+        if (typeof access.remainingSearches === 'number') setRemainingSearches(access.remainingSearches)
+
+        // If free-tier user cannot search, show persistent upgrade message
+        if (access.tier === 'free' && !access.canSearch) {
+          setLimitError("You've used all free location searches this month. Upgrade to Light or Pro to continue searching.")
+        }
+      } catch (error) {
+        // If validation fails (e.g., not authenticated), do not block client-side autocomplete/map usage
+        devLog('[v0] validateLocationSearchAccess error (user may be unauthenticated):', error)
+      }
+    }
+
+    checkAccess()
   }, [])
 
   const processPlaces = useCallback(async (foundPlaces: GooglePlace[]) => {
@@ -319,6 +330,14 @@ export function LocationSearchForm({ isLoading: externalLoading, userId }: Locat
         description: "Please enter a search query (e.g., 'restaurants') and/or location (e.g., 'New York, NY').",
         variant: "destructive",
       })
+      return
+    }
+
+    // Prevent searches client-side for free users who have exhausted their monthly quota.
+    if (userTierLocal === 'free' && canSearchFlag === false) {
+      setLimitError("You've used all free location searches this month. Upgrade to Light or Pro to continue searching.")
+      toast({ title: 'Search Limit Reached', description: 'You have reached your monthly free search limit. Upgrade to continue.', variant: 'destructive' })
+      setIsLoading(false)
       return
     }
 
