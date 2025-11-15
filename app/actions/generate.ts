@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server"
 import { canGenerateTemplate, incrementUsage } from "@/lib/auth-utils"
 import { generateText } from "ai"
 import { errorLog } from "@/lib/logger"
+import fs from 'fs'
 import { rateLimiters } from "@/lib/rate-limit"
 
 interface GenerateTemplateInput {
@@ -272,6 +273,16 @@ Generate ONLY the email body text, no subject line. The sender's signature will 
     return { result: finalText }
   } catch (error) {
     errorLog("AI generation error:", error)
+
+    // Log the full error stack to a temp file to make debugging easier for local dev
+    try {
+      const now = new Date().toISOString()
+      const msg = `--- ${now} ---\n${error instanceof Error ? error.stack || error.message : String(error)}\n\n`
+      // Append so multiple runs are recorded
+      fs.appendFileSync('/tmp/outbound-generate-error.log', msg)
+    } catch (fsErr) {
+      // ignore file write errors
+    }
 
     // In development show the underlying error to help debugging (useful for local dev).
     const underlying = error instanceof Error ? error.message : String(error)
