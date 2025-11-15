@@ -1,6 +1,6 @@
 "use server"
 
-import { createClient } from "@/lib/supabase/server"
+import { createClient, createServiceClient } from "@/lib/supabase/server"
 import { getStripe } from "@/lib/stripe"
 import { errorLog, devLog } from "@/lib/logger"
 import { revalidatePath } from "next/cache"
@@ -81,13 +81,33 @@ export async function deleteAccount(userId: string): Promise<DeleteAccountResult
     devLog("[v0] Deleted user data from database")
 
     // Delete auth user (this is the final step)
-    const { error: authDeleteError } = await supabase.auth.admin.deleteUser(userId)
+    try {
+      // Service role key is required for admin operations. Provide a friendly
+      // error if it's not configured to avoid confusing 403/not_admin errors.
+      if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+        errorLog("[v0] SUPABASE_SERVICE_ROLE_KEY is not configured; cannot perform admin user deletion")
+        return {
+          success: false,
+          error: "Account deletion is not available in this environment. Missing SUPABASE_SERVICE_ROLE_KEY.",
+        }
+      }
 
-    if (authDeleteError) {
-      errorLog("[v0] Error deleting auth user:", authDeleteError)
+      // Use a service-role client to perform admin operations
+      const serviceSupabase = createServiceClient()
+      const { error: authDeleteError } = await serviceSupabase.auth.admin.deleteUser(userId)
+
+      if (authDeleteError) {
+        errorLog("[v0] Error deleting auth user:", authDeleteError)
+        return {
+          success: false,
+          error: "Failed to delete authentication account",
+        }
+      }
+    } catch (e) {
+      errorLog("[v0] Error deleting auth user (service client):", e)
       return {
         success: false,
-        error: "Failed to delete authentication account",
+        error: e instanceof Error ? e.message : "Failed to delete authentication account",
       }
     }
 

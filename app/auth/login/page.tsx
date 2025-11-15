@@ -147,19 +147,34 @@ export default function LoginPage() {
     const supabase = createClient()
     setError(null)
 
+    // attempt oauth sign-in using helper
+
     try {
       const redirectUrl = process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/auth/callback`
 
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: redirectUrl,
-        },
-      })
+      // Use oauthSignIn helper to be robust across Supabase client versions
+      const { oauthSignIn } = await import("@/lib/supabase/client")
+      try {
+        const result = await oauthSignIn(supabase, "google", redirectUrl)
+        if (result?.error) throw result.error
+        return
+      } catch (innerErr) {
+        // If helper fails (different client shape), fall back to hosted redirect
+        devLog("[v0] oauthSignIn helper failed, falling back to direct redirect:", innerErr)
+      }
 
-      if (error) throw error
+      // Fallback: redirect to Supabase's hosted OAuth authorize endpoint
+      const base = process.env.NEXT_PUBLIC_SUPABASE_URL
+      if (!base) {
+        devLog("[v0] OAuth fallback aborted: NEXT_PUBLIC_SUPABASE_URL is missing in the client environment")
+        setError("OAuth is not configured for this environment. Please set NEXT_PUBLIC_SUPABASE_URL in .env.local and restart the dev server.")
+        return
+      }
+
+      const url = `${base.replace(/\/$/, "")}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(redirectUrl)}`
+      window.location.href = url
     } catch (error: unknown) {
-  errorLog("[v0] Google login error:", error)
+      errorLog("[v0] Google login error:", error)
       setError(error instanceof Error ? error.message : "An error occurred")
     }
   }
@@ -171,6 +186,7 @@ export default function LoginPage() {
           <div className="flex flex-col items-center gap-2 text-center">
             <h1 className="text-3xl font-bold tracking-tight">Outbound.ing</h1>
             <p className="text-sm text-muted-foreground">AI-powered cold email generator</p>
+            
           </div>
           <Card>
             <CardHeader>
@@ -287,6 +303,7 @@ export default function LoginPage() {
                       {resendingEmail ? "Sending..." : "Resend Verification Email"}
                     </Button>
                   )}
+                  
                 </div>
                 <div className="mt-4 text-center text-sm">
                   Don&apos;t have an account?{" "}

@@ -14,6 +14,7 @@ import { useState } from "react"
 import { devLog, errorLog } from "@/lib/logger"
 
 export default function SignupPage() {
+  const IS_DEV = process.env.NODE_ENV === "development"
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
   const [email, setEmail] = useState("")
@@ -22,6 +23,8 @@ export default function SignupPage() {
   const [acceptedTerms, setAcceptedTerms] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  // No dev-only fallback UI in final code; oauthSignIn helper will be used and we
+  // fall back to a direct redirect when needed (like the login page does).
   const router = useRouter()
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -106,17 +109,34 @@ export default function SignupPage() {
     const supabase = createClient()
     setError(null)
 
+    // Use oauthSignIn helper (robust across Supabase client versions). If it
+    // fails, fall back to a direct redirect to the hosted Supabase authorize
+    // endpoint (same behavior as the login page).
+
     try {
       const redirectUrl = process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/auth/callback`
 
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: redirectUrl,
-        },
-      })
+      // Use oauthSignIn helper to be robust across Supabase client versions
+      const { oauthSignIn } = await import("@/lib/supabase/client")
+      try {
+        const result = await oauthSignIn(supabase, "google", redirectUrl)
+        if (result?.error) throw result.error
+        return
+      } catch (innerErr) {
+        // Helper didn't work with this client shape; fall back to hosted redirect.
+        devLog("[v0] oauthSignIn helper failed for signup, falling back to direct redirect:", innerErr)
+      }
 
-      if (error) throw error
+      const base = process.env.NEXT_PUBLIC_SUPABASE_URL
+      if (!base) {
+        devLog("[v0] OAuth fallback aborted: NEXT_PUBLIC_SUPABASE_URL is missing in the client environment")
+        setError("OAuth is not configured for this environment. Please set NEXT_PUBLIC_SUPABASE_URL in .env.local and restart the dev server.")
+        return
+      }
+
+      const url = `${base.replace(/\/$/, "")}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(redirectUrl)}`
+      // Directly redirect like in the login page
+      window.location.href = url
     } catch (error: unknown) {
       errorLog("[v0] Google signup error:", error)
       setError(error instanceof Error ? error.message : "An error occurred")
@@ -130,6 +150,9 @@ export default function SignupPage() {
           <div className="flex flex-col items-center gap-2 text-center">
             <h1 className="text-3xl font-bold tracking-tight">Outbound.ing</h1>
             <p className="text-sm text-muted-foreground">AI-powered cold email generator</p>
+            {IS_DEV && (
+              <div className="sr-only">Development mode</div>
+            )}
           </div>
           <Card>
             <CardHeader>

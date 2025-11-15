@@ -425,7 +425,7 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
                   <TabsTrigger
                     key={cat}
                     value={cat}
-                    className={`h-auto text-xs whitespace-nowrap px-3 py-2 rounded-md border transform transition-colors transition-transform duration-200 ease-in-out ${inactiveBgClass} text-gray-900 hover:shadow-md hover:-translate-y-0.5 border-border data-[state=active]:bg-gray-800 data-[state=active]:text-white data-[state=active]:ring-2 data-[state=active]:ring-primary data-[state=active]:border-transparent`}
+                    className={`h-auto text-xs whitespace-nowrap px-3 py-2 rounded-md border transform transition-colors transition-transform duration-200 ease-in-out ${inactiveBgClass} text-gray-900 hover:shadow-md border-border data-[state=active]:bg-gray-800 data-[state=active]:text-white data-[state=active]:ring-2 data-[state=active]:ring-primary data-[state=active]:border-transparent`}
                   >
                     <span className="hidden sm:inline">{cat}</span>
                     <span className="sm:hidden">{getShortCategory(cat)}</span>
@@ -434,6 +434,10 @@ export function GeneratorForm({ user, usage, strategies, userTier, userId, canGe
               })}
             </TabsList>
           </Tabs>
+
+          {/* Mobile-only spacer: reserve vertical space so the wrapped category chips
+              cannot overlap the following label/input on very narrow viewports. */}
+          <div className="block sm:hidden h-24" aria-hidden="true" />
         </div>
 
         <div className="space-y-2">
