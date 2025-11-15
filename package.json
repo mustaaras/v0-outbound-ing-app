@@ -1,6 +1,9 @@
 {
   "name": "my-v0-project",
   "version": "0.1.0",
+  "engines": {
+    "pnpm": "10.x"
+  },
   "private": true,
   "scripts": {
     "build": "next build",
