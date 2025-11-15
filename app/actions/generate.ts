@@ -100,6 +100,21 @@ ${input.language !== "English" ? `- Write EVERYTHING in ${input.language}, inclu
 Generate ONLY the email body text, no subject line. The sender's signature will be added separately.`
 
   try {
+    // Derive a domain value required by the templates table schema.
+    // Prefer recipient email domain, fall back to recipient company or a placeholder.
+    const deriveDomain = (email?: string, company?: string) => {
+      if (email && email.includes("@")) {
+        try {
+          return email.split("@").pop() || (company ? company.replace(/\s+/g, '').toLowerCase() : 'unknown')
+        } catch {
+          // fallthrough
+        }
+      }
+      if (company) return company.replace(/\s+/g, '').toLowerCase()
+      return 'unknown'
+    }
+
+    const domainValue = deriveDomain(input.recipientEmail, input.recipientCompany)
     // Check for premium features
     const isPro = effectiveTier === "pro"
     const isUltra = user.tier === "ultra"
@@ -136,6 +151,7 @@ Generate ONLY the email body text, no subject line. The sender's signature will 
       // Save first variant to database
       const { error: insertError } = await supabase.from("templates").insert({
         user_id: input.userId,
+        domain: domainValue,
         subject: input.subject,
         category: input.category,
         strategy_ids: input.strategyIds,
@@ -207,6 +223,7 @@ Generate ONLY the email body text, no subject line. The sender's signature will 
       // Save email version to database
       const { error: insertError } = await supabase.from("templates").insert({
         user_id: input.userId,
+        domain: domainValue,
         subject: input.subject,
         category: input.category,
         strategy_ids: input.strategyIds,
@@ -235,6 +252,7 @@ Generate ONLY the email body text, no subject line. The sender's signature will 
 
     const { error: insertError } = await supabase.from("templates").insert({
       user_id: input.userId,
+      domain: domainValue,
       subject: input.subject,
       category: input.category,
       strategy_ids: input.strategyIds,
