@@ -344,7 +344,7 @@ export class GoogleMapsUtils {
           headers: {
             'User-Agent': 'Mozilla/5.0 (compatible; OutboundBot/1.0)',
           },
-          signal: AbortSignal.timeout(10000),
+          signal: AbortSignal.timeout(5000),
         })
 
         if (!response.ok) {
@@ -367,7 +367,7 @@ export class GoogleMapsUtils {
         let allEmails: string[] = this.extractEmailsFromText(html)
 
         // If we already have enough emails, cache & return
-        const MAX_EMAILS = 3
+  const MAX_EMAILS = 3
         if (allEmails.length >= MAX_EMAILS) {
           const unique = [...new Set(allEmails)].slice(0, MAX_EMAILS)
           cache.set(domainKey, { ts: Date.now(), emails: unique })
@@ -375,7 +375,45 @@ export class GoogleMapsUtils {
         }
 
         // Find candidate contact pages (more aggressive international patterns)
+        // Extract candidate contact pages using both regex and lightweight DOM section parsing
         const contactCandidates = this.findContactPages(html, website)
+
+        // Try to parse nav/header/footer anchors in order to prioritize likely contact pages
+        try {
+          const navMatches = [] as { href: string; text: string }[]
+
+          const navSectionRegex = /<nav[\s\S]*?>[\s\S]*?<\/nav>/gi
+          const headerSectionRegex = /<header[\s\S]*?>[\s\S]*?<\/header>/gi
+          const footerSectionRegex = /<footer[\s\S]*?>[\s\S]*?<\/footer>/gi
+
+          const extractAnchors = (sectionHtml: string) => {
+            const aRegex = /<a[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi
+            let m
+            while ((m = aRegex.exec(sectionHtml)) !== null) {
+              const href = m[1]
+              const txt = m[2].replace(/<[^>]+>/g, '').trim()
+              if (href) navMatches.push({ href, text: txt })
+            }
+          }
+
+          let m
+          while ((m = navSectionRegex.exec(html)) !== null) extractAnchors(m[0])
+          while ((m = headerSectionRegex.exec(html)) !== null) extractAnchors(m[0])
+          while ((m = footerSectionRegex.exec(html)) !== null) extractAnchors(m[0])
+
+          // Add navMatches to contactCandidates with priority based on anchor text
+          for (const a of navMatches) {
+            try {
+              const resolved = new URL(a.href, website).toString()
+              // prepend so nav/footer anchors get higher priority
+              contactCandidates.unshift(resolved)
+            } catch {
+              // ignore
+            }
+          }
+        } catch (e) {
+          // ignore DOM parsing failures
+        }
         const filtered = contactCandidates
           .map(u => {
             try { return new URL(u, website).toString() } catch { return u }
@@ -389,12 +427,12 @@ export class GoogleMapsUtils {
           .sort((a, b) => b.score - a.score)
           .map(s => s.u)
 
-        // Limit how many pages we will attempt to fetch
-        const MAX_PAGES = 6
-        const toFetch = [...new Set(scored)].slice(0, MAX_PAGES)
+  // Limit how many pages we will attempt to fetch (reduced default for speed/politeness)
+  const MAX_PAGES = 3
+  const toFetch = [...new Set(scored)].slice(0, MAX_PAGES)
 
-        // A simple concurrency pool
-        const CONCURRENCY = 3
+  // A simple concurrency pool (reduced)
+  const CONCURRENCY = 2
         const results: string[] = []
 
         const tasks = toFetch.slice()

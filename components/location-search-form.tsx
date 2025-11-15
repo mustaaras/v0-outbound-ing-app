@@ -508,33 +508,44 @@ export function LocationSearchForm({ isLoading: externalLoading, userId }: Locat
         // Start per-place scraping asynchronously so each card updates as its scrape completes
         ;(async () => {
           const toScrape = result.places.slice(0, 12) // show first 12 results
-          for (const place of toScrape) {
-            // Initialize loading state for this place
-            setScrapedResults(prev => ({ ...prev, [place.place_id]: { loading: true } }))
 
-            if (place.website) {
-              try {
-                const res = await scrapeWebsiteAction(place.website)
-                setScrapedResults(prev => ({
-                  ...prev,
-                  [place.place_id]: {
-                    loading: false,
-                    emails: res.emails || [],
-                    success: res.success,
-                    website: res.website,
-                  }
-                }))
-              } catch (error) {
+          const CONCURRENCY = 4
+          const queue = toScrape.slice()
+
+          const worker = async () => {
+            while (queue.length > 0) {
+              const place = queue.shift()!
+              // Initialize loading state for this place
+              setScrapedResults(prev => ({ ...prev, [place.place_id]: { loading: true } }))
+
+              if (place.website) {
+                try {
+                  const res = await scrapeWebsiteAction(place.website)
+                  setScrapedResults(prev => ({
+                    ...prev,
+                    [place.place_id]: {
+                      loading: false,
+                      emails: res.emails || [],
+                      success: res.success,
+                      website: res.website,
+                    }
+                  }))
+                } catch (error) {
+                  setScrapedResults(prev => ({ ...prev, [place.place_id]: { loading: false, emails: [], success: false } }))
+                }
+              } else {
+                // No website to scrape
                 setScrapedResults(prev => ({ ...prev, [place.place_id]: { loading: false, emails: [], success: false } }))
               }
-            } else {
-              // No website to scrape
-              setScrapedResults(prev => ({ ...prev, [place.place_id]: { loading: false, emails: [], success: false } }))
-            }
 
-            // Small delay to avoid hammering target sites
-            await new Promise(resolve => setTimeout(resolve, 300))
+              // Delay between requests to be polite
+              await new Promise(resolve => setTimeout(resolve, 200))
+            }
           }
+
+          // Start workers
+          const workers = Array.from({ length: CONCURRENCY }, () => worker())
+          await Promise.all(workers)
         })()
 
         // Process places for domain extraction and contact search (skip website scraping server-side)
