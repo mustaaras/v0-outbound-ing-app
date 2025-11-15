@@ -136,6 +136,22 @@ export async function canPerformSearch(
 export async function searchBuyers(input: SearchBuyersInput): Promise<SearchBuyersResult> {
   devLog("[v0] searchBuyers called:", { userId: input.userId, tier: input.userTier })
 
+  const SNOV_ENABLED = process.env.SNOV_ENABLED === "true"
+  if (!SNOV_ENABLED) {
+    devLog('[v0] searchBuyers aborted: SNOV integration disabled via environment')
+    return {
+      success: false,
+      data: {
+        total: 0,
+        results: [],
+        searchesUsed: 0,
+        searchLimit: 0,
+        searchesRemaining: 0,
+      },
+      error: 'Contact search (Snov) is disabled in this deployment.',
+    }
+  }
+
   // Disallow Free tier; Light and above are eligible
   if (input.userTier === "free") {
     return {
@@ -172,6 +188,8 @@ export async function searchBuyers(input: SearchBuyersInput): Promise<SearchBuye
   }
 
   try {
+    const supabase = await createClient()
+
     // Get Snov client and search
     const snovClient = getSnovClient()
     // Determine how many results to request from Snov (cap by searchesRemaining)
@@ -210,6 +228,20 @@ export async function searchBuyers(input: SearchBuyersInput): Promise<SearchBuye
 
     if (chargeAmount > 0) {
       await incrementSearchCountBy(input.userId, chargeAmount)
+    }
+
+    // Log search into contact_search_history for dashboard aggregation and audit
+    try {
+      const queryText = input.domain || input.keyword || input.title || (input.mode ?? "")
+      await supabase.from("contact_search_history").insert({
+        user_id: input.userId,
+        search_query: queryText,
+        search_type: input.mode || "domain",
+        results_count: chargeAmount,
+      })
+    } catch (err) {
+      // Non-fatal: log and continue. Dashboard aggregation will simply miss these entries if insert fails.
+      devLog("[v0] Failed to log contact_search_history:", err)
     }
 
     const newSearchesUsed = searchesUsed + chargeAmount

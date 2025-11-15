@@ -18512,3 +18512,367 @@ AI generation error: Error [GatewayError]: Vercel AI Gateway access failed. If y
  POST /dashboard 200 in 781ms (compile: 5ms, proxy.ts: 236ms, render: 540ms)
 [v0] Middleware check: { path: '/dashboard', hasUser: true }
  POST /dashboard 200 in 740ms (compile: 1226µs, proxy.ts: 179ms, render: 559ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 773ms (compile: 5ms, proxy.ts: 213ms, render: 555ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 708ms (compile: 2ms, proxy.ts: 195ms, render: 510ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 775ms (compile: 7ms, proxy.ts: 228ms, render: 540ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 718ms (compile: 4ms, proxy.ts: 183ms, render: 531ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 791ms (compile: 4ms, proxy.ts: 235ms, render: 552ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 728ms (compile: 6ms, proxy.ts: 188ms, render: 533ms)
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ GET /contacts 200 in 657ms (compile: 10ms, proxy.ts: 251ms, render: 397ms)
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ POST /contacts 200 in 728ms (compile: 5ms, proxy.ts: 180ms, render: 543ms)
+[v0] Middleware check: { path: '/contacts', hasUser: true }
+ POST /contacts 200 in 721ms (compile: 4ms, proxy.ts: 179ms, render: 538ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ GET /search-buyers 200 in 592ms (compile: 8ms, proxy.ts: 201ms, render: 383ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 1842ms (compile: 5ms, proxy.ts: 189ms, render: 1648ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 825ms (compile: 3ms, proxy.ts: 248ms, render: 574ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 782ms (compile: 4ms, proxy.ts: 195ms, render: 583ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 896ms (compile: 6ms, proxy.ts: 340ms, render: 549ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 738ms (compile: 4ms, proxy.ts: 184ms, render: 550ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 782ms (compile: 5ms, proxy.ts: 251ms, render: 526ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 714ms (compile: 5ms, proxy.ts: 179ms, render: 531ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 829ms (compile: 13ms, proxy.ts: 250ms, render: 566ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 752ms (compile: 5ms, proxy.ts: 197ms, render: 550ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 796ms (compile: 6ms, proxy.ts: 229ms, render: 561ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 754ms (compile: 5ms, proxy.ts: 184ms, render: 566ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 813ms (compile: 5ms, proxy.ts: 261ms, render: 546ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 764ms (compile: 4ms, proxy.ts: 215ms, render: 546ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 784ms (compile: 5ms, proxy.ts: 237ms, render: 541ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 731ms (compile: 5ms, proxy.ts: 190ms, render: 536ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 906ms (compile: 6ms, proxy.ts: 352ms, render: 548ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 725ms (compile: 4ms, proxy.ts: 183ms, render: 538ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 775ms (compile: 3ms, proxy.ts: 240ms, render: 532ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 753ms (compile: 4ms, proxy.ts: 188ms, render: 560ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 781ms (compile: 6ms, proxy.ts: 238ms, render: 538ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 717ms (compile: 5ms, proxy.ts: 177ms, render: 535ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 763ms (compile: 5ms, proxy.ts: 225ms, render: 533ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 744ms (compile: 4ms, proxy.ts: 193ms, render: 548ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 794ms (compile: 3ms, proxy.ts: 239ms, render: 553ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 711ms (compile: 3ms, proxy.ts: 178ms, render: 530ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 807ms (compile: 12ms, proxy.ts: 233ms, render: 563ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 705ms (compile: 1471µs, proxy.ts: 177ms, render: 527ms)
+ GET /dashboard 200 in 2.0s (compile: 9ms, proxy.ts: 213ms, render: 1800ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /dashboard 200 in 807ms (compile: -3950µs, proxy.ts: 286ms, render: 525ms)
+ POST /generator 200 in 755ms (compile: 2ms, proxy.ts: 218ms, render: 534ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /dashboard 200 in 717ms (compile: 3ms, proxy.ts: 189ms, render: 525ms)
+ POST /generator 200 in 734ms (compile: 4ms, proxy.ts: 183ms, render: 546ms)
+[v0] Middleware check: { path: '/generator', hasUser: true }
+ POST /generator 200 in 339ms (compile: 1213µs, proxy.ts: 169ms, render: 169ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 934ms (compile: 31ms, proxy.ts: 339ms, render: 564ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 695ms (compile: 1370µs, proxy.ts: 174ms, render: 520ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 829ms (compile: 5ms, proxy.ts: 241ms, render: 584ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 766ms (compile: 7ms, proxy.ts: 180ms, render: 580ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 1316ms (compile: 168ms, proxy.ts: 271ms, render: 877ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 918ms (compile: 5ms, proxy.ts: 218ms, render: 695ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 873ms (compile: 3ms, proxy.ts: 238ms, render: 632ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 780ms (compile: 9ms, proxy.ts: 180ms, render: 591ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 741ms (compile: 1591µs, proxy.ts: 180ms, render: 560ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 782ms (compile: 1287µs, proxy.ts: 172ms, render: 609ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 785ms (compile: 1346µs, proxy.ts: 231ms, render: 553ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 785ms (compile: 1836µs, proxy.ts: 178ms, render: 606ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 765ms (compile: 3ms, proxy.ts: 188ms, render: 575ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 778ms (compile: 3ms, proxy.ts: 177ms, render: 598ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 746ms (compile: 1813µs, proxy.ts: 181ms, render: 564ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 755ms (compile: 1971µs, proxy.ts: 184ms, render: 569ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 785ms (compile: 2ms, proxy.ts: 189ms, render: 594ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 817ms (compile: 2ms, proxy.ts: 178ms, render: 637ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 777ms (compile: 2ms, proxy.ts: 185ms, render: 589ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 764ms (compile: 3ms, proxy.ts: 184ms, render: 576ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 769ms (compile: 1330µs, proxy.ts: 192ms, render: 575ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 782ms (compile: 3ms, proxy.ts: 224ms, render: 555ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 754ms (compile: 2ms, proxy.ts: 184ms, render: 568ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 767ms (compile: 1183µs, proxy.ts: 178ms, render: 588ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 748ms (compile: 1617µs, proxy.ts: 184ms, render: 563ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 748ms (compile: 1664µs, proxy.ts: 178ms, render: 569ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 809ms (compile: 1713µs, proxy.ts: 183ms, render: 624ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 778ms (compile: 2ms, proxy.ts: 176ms, render: 600ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 759ms (compile: 2ms, proxy.ts: 184ms, render: 573ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 760ms (compile: 1904µs, proxy.ts: 177ms, render: 582ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 752ms (compile: 2ms, proxy.ts: 184ms, render: 566ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 742ms (compile: 2ms, proxy.ts: 186ms, render: 553ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 742ms (compile: 1801µs, proxy.ts: 180ms, render: 561ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 745ms (compile: 1356µs, proxy.ts: 178ms, render: 566ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 741ms (compile: 1423µs, proxy.ts: 180ms, render: 559ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 741ms (compile: 1690µs, proxy.ts: 184ms, render: 556ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 762ms (compile: 1759µs, proxy.ts: 181ms, render: 579ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 743ms (compile: 2ms, proxy.ts: 186ms, render: 555ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 765ms (compile: 2ms, proxy.ts: 189ms, render: 574ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 733ms (compile: 1762µs, proxy.ts: 176ms, render: 555ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 822ms (compile: 1875µs, proxy.ts: 178ms, render: 643ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 754ms (compile: 3ms, proxy.ts: 180ms, render: 571ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 755ms (compile: 1953µs, proxy.ts: 178ms, render: 575ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 752ms (compile: 1816µs, proxy.ts: 181ms, render: 569ms)
+[v0] Middleware check: { path: '/api/dev/insert-contact-search', hasUser: false }
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 741ms (compile: 1878µs, proxy.ts: 184ms, render: 555ms)
+ GET /api/dev/insert-contact-search 401 in 280ms (compile: 269ms, proxy.ts: 3ms, render: 8ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 805ms (compile: 1945µs, proxy.ts: 179ms, render: 624ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 791ms (compile: 1707µs, proxy.ts: 186ms, render: 603ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 753ms (compile: 1541µs, proxy.ts: 180ms, render: 572ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 804ms (compile: 1407µs, proxy.ts: 237ms, render: 566ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 767ms (compile: 2ms, proxy.ts: 182ms, render: 582ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 739ms (compile: 1501µs, proxy.ts: 181ms, render: 556ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 767ms (compile: 1949µs, proxy.ts: 183ms, render: 583ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 760ms (compile: 1502µs, proxy.ts: 184ms, render: 575ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 769ms (compile: 2ms, proxy.ts: 191ms, render: 576ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 742ms (compile: 1993µs, proxy.ts: 176ms, render: 564ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 735ms (compile: 1824µs, proxy.ts: 180ms, render: 553ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 728ms (compile: 1806µs, proxy.ts: 179ms, render: 548ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 733ms (compile: 2ms, proxy.ts: 183ms, render: 548ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 743ms (compile: 3ms, proxy.ts: 179ms, render: 561ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 730ms (compile: 1493µs, proxy.ts: 182ms, render: 546ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 779ms (compile: 1309µs, proxy.ts: 177ms, render: 601ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 792ms (compile: 1396µs, proxy.ts: 173ms, render: 617ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 732ms (compile: 1193µs, proxy.ts: 180ms, render: 551ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 726ms (compile: 1157µs, proxy.ts: 179ms, render: 546ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 733ms (compile: 1154µs, proxy.ts: 184ms, render: 548ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 724ms (compile: 1216µs, proxy.ts: 188ms, render: 535ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 720ms (compile: 1144µs, proxy.ts: 175ms, render: 544ms)
+ GET /dashboard 200 in 753ms (compile: 1286µs, proxy.ts: 191ms, render: 561ms)
+ POST /dashboard 200 in 706ms (compile: 1229µs, proxy.ts: 179ms, render: 525ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 703ms (compile: 1269µs, proxy.ts: 171ms, render: 531ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 821ms (compile: 10ms, proxy.ts: 244ms, render: 568ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 732ms (compile: 4ms, proxy.ts: 189ms, render: 540ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 1440ms (compile: 4ms, proxy.ts: 348ms, render: 1088ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 735ms (compile: 5ms, proxy.ts: 181ms, render: 549ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 764ms (compile: 5ms, proxy.ts: 235ms, render: 524ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 689ms (compile: 1507µs, proxy.ts: 168ms, render: 519ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 784ms (compile: 5ms, proxy.ts: 231ms, render: 549ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 736ms (compile: 5ms, proxy.ts: 185ms, render: 546ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 871ms (compile: 17ms, proxy.ts: 310ms, render: 545ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 738ms (compile: 5ms, proxy.ts: 187ms, render: 545ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 1022ms (compile: 29ms, proxy.ts: 444ms, render: 550ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 726ms (compile: 5ms, proxy.ts: 185ms, render: 536ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 760ms (compile: 5ms, proxy.ts: 220ms, render: 535ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 734ms (compile: 4ms, proxy.ts: 186ms, render: 544ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 845ms (compile: 12ms, proxy.ts: 249ms, render: 584ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 742ms (compile: 5ms, proxy.ts: 180ms, render: 558ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 806ms (compile: 6ms, proxy.ts: 250ms, render: 551ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 753ms (compile: 6ms, proxy.ts: 187ms, render: 560ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 1783ms (compile: 10ms, proxy.ts: 543ms, render: 1230ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 1023ms (compile: 1483µs, proxy.ts: 192ms, render: 829ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 1177ms (compile: 8ms, proxy.ts: 237ms, render: 932ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 1019ms (compile: 5ms, proxy.ts: 203ms, render: 811ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 811ms (compile: 4ms, proxy.ts: 240ms, render: 566ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 803ms (compile: 9ms, proxy.ts: 198ms, render: 596ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 890ms (compile: 17ms, proxy.ts: 271ms, render: 602ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 763ms (compile: 3ms, proxy.ts: 191ms, render: 568ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 798ms (compile: 8ms, proxy.ts: 235ms, render: 554ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 746ms (compile: 5ms, proxy.ts: 194ms, render: 547ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 803ms (compile: 5ms, proxy.ts: 244ms, render: 554ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 732ms (compile: 9ms, proxy.ts: 179ms, render: 544ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 842ms (compile: 5ms, proxy.ts: 255ms, render: 582ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 744ms (compile: 8ms, proxy.ts: 183ms, render: 552ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 2.1s (compile: 8ms, proxy.ts: 280ms, render: 1818ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 761ms (compile: 3ms, proxy.ts: 183ms, render: 574ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 728ms (compile: 4ms, proxy.ts: 182ms, render: 542ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 877ms (compile: 3ms, proxy.ts: 335ms, render: 540ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 726ms (compile: 5ms, proxy.ts: 178ms, render: 542ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 846ms (compile: 15ms, proxy.ts: 234ms, render: 597ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 684ms (compile: 1518µs, proxy.ts: 172ms, render: 510ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ GET /search-buyers 200 in 674ms (compile: 26ms, proxy.ts: 252ms, render: 396ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 814ms (compile: 7ms, proxy.ts: 251ms, render: 556ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 695ms (compile: 1320µs, proxy.ts: 170ms, render: 524ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ GET /search-buyers 200 in 626ms (compile: 6ms, proxy.ts: 242ms, render: 379ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 1875ms (compile: 7ms, proxy.ts: 195ms, render: 1673ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ GET /search-buyers 200 in 613ms (compile: 4ms, proxy.ts: 185ms, render: 424ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 734ms (compile: 1635µs, proxy.ts: 210ms, render: 523ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 714ms (compile: 1375µs, proxy.ts: 172ms, render: 541ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 1903ms (compile: 13ms, proxy.ts: 233ms, render: 1657ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 847ms (compile: 6ms, proxy.ts: 324ms, render: 518ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 722ms (compile: 5ms, proxy.ts: 185ms, render: 531ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 1072ms (compile: 8ms, proxy.ts: 494ms, render: 570ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 710ms (compile: 3ms, proxy.ts: 175ms, render: 532ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 799ms (compile: 4ms, proxy.ts: 223ms, render: 572ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 731ms (compile: 1364µs, proxy.ts: 192ms, render: 538ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 807ms (compile: 7ms, proxy.ts: 252ms, render: 548ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 762ms (compile: 5ms, proxy.ts: 185ms, render: 572ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 966ms (compile: 10ms, proxy.ts: 391ms, render: 564ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ POST /dashboard 200 in 726ms (compile: 4ms, proxy.ts: 181ms, render: 541ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ GET /search-buyers 200 in 715ms (compile: 7ms, proxy.ts: 312ms, render: 396ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 2.1s (compile: 4ms, proxy.ts: 187ms, render: 1941ms)
+[v0] Middleware check: { path: '/dashboard', hasUser: true }
+ GET /dashboard 200 in 1775ms (compile: 5ms, proxy.ts: 186ms, render: 1585ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ GET /search-buyers 200 in 561ms (compile: 5ms, proxy.ts: 181ms, render: 375ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 789ms (compile: 5ms, proxy.ts: 234ms, render: 550ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 721ms (compile: 4ms, proxy.ts: 186ms, render: 531ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 801ms (compile: 6ms, proxy.ts: 247ms, render: 548ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 732ms (compile: 5ms, proxy.ts: 190ms, render: 537ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 1318ms (compile: 6ms, proxy.ts: 508ms, render: 804ms)
+[v0] Middleware check: { path: '/search-buyers', hasUser: true }
+ POST /search-buyers 200 in 770ms (compile: 1809µs, proxy.ts: 193ms, render: 575ms)

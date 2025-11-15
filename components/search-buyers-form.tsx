@@ -36,6 +36,9 @@ export function SearchContactsForm({ userId, userTier, searchesUsed, searchLimit
 
   const { toast } = useToast()
 
+  const SNOV_ENABLED = process.env.NEXT_PUBLIC_SNOV_ENABLED === "true"
+
+
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault()
     setErrorMessage(null)
@@ -208,6 +211,22 @@ export function SearchContactsForm({ userId, userTier, searchesUsed, searchLimit
             Search By Domain
           </Button>
         </form>
+      </div>
+    )
+  }
+
+  if (!SNOV_ENABLED) {
+    return (
+      <div className="space-y-6">
+        <Card className="border-muted-foreground/30 bg-muted/10">
+          <CardContent className="p-4 flex items-start gap-3">
+            <AlertCircle className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <p className="text-sm font-semibold">Contact Search Disabled</p>
+              <p className="text-sm text-muted-foreground">The Verified Contacts (Snov) integration is disabled in this deployment. If you need this functionality, enable it via environment configuration.</p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     )
   }
