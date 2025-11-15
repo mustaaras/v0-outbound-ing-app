@@ -3,6 +3,7 @@ import { validateLocationSearchAccess } from "@/app/actions/location-search"
 import { createClient } from "@/lib/supabase/server"
 import { TIER_LIMITS } from "@/lib/types"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import PerformanceChart from "@/components/performance-chart"
 import { Button } from "@/components/ui/button"
 import { TrendingUp, Archive, Crown, MapPin } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
@@ -29,13 +30,25 @@ export default async function DashboardPage() {
     .select("*", { count: "exact", head: true })
     .eq("user_id", user.id)
 
-  // Get recent templates
+  // Get recent templates for list (last 3)
   const { data: recentTemplates } = await supabase
     .from("templates")
     .select("*, strategies(name, category)")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
     .limit(3)
+
+  // Also fetch templates for performance chart (last 30 days)
+  const thirtyDaysAgo = new Date()
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 29)
+  const fromIso = thirtyDaysAgo.toISOString()
+
+  const { data: recentForChart } = await supabase
+    .from("templates")
+    .select("created_at")
+    .eq("user_id", user.id)
+    .gte("created_at", fromIso)
+    .order("created_at", { ascending: true })
 
   // Get remaining location/search access (optional)
   let locationAccess: { canSearch?: boolean; tier?: string; remainingSearches?: number } | null = null
@@ -133,42 +146,31 @@ export default async function DashboardPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Recent Emails</CardTitle>
+          <CardTitle>Performance</CardTitle>
         </CardHeader>
         <CardContent>
-          {!recentTemplates || recentTemplates.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No emails yet. Generate your first one!</p>
-          ) : (
-            <div className="space-y-3">
-              {recentTemplates.map((template) => (
-                <div key={template.id} className="flex items-start justify-between rounded-lg border p-3">
-                  <div className="space-y-1 flex-1">
-                    <div className="font-medium text-sm line-clamp-1">{template.subject || "Untitled"}</div>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <span>{new Date(template.created_at).toLocaleDateString()}</span>
-                      {template.strategies && (
-                        <>
-                          <span>•</span>
-                          <span className="line-clamp-1">{template.strategies.name}</span>
-                          {template.strategies.category && (
-                            <>
-                              <span>•</span>
-                              <span>{template.strategies.category}</span>
-                            </>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-          {recentTemplates && recentTemplates.length > 0 && (
-            <Button asChild variant="link" className="mt-4 h-auto p-0 text-sm">
-              <Link href="/archive">View all →</Link>
-            </Button>
-          )}
+          {/* Build daily counts for the last 30 days and render a client-side chart */}
+          {(() => {
+            // Initialize map of dates
+            const map: Record<string, number> = {}
+            for (let i = 0; i < 30; i++) {
+              const d = new Date()
+              d.setDate(d.getDate() - (29 - i))
+              const key = d.toISOString().slice(0, 10)
+              map[key] = 0
+            }
+
+            if (recentForChart && Array.isArray(recentForChart)) {
+              recentForChart.forEach((r: any) => {
+                const key = (r.created_at || "").slice(0, 10)
+                if (map[key] !== undefined) map[key] = (map[key] || 0) + 1
+              })
+            }
+
+            const data = Object.keys(map).map((k) => ({ date: k, emails: map[k] }))
+
+            return <PerformanceChart data={data} />
+          })()}
         </CardContent>
       </Card>
     </div>
