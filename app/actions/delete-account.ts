@@ -3,6 +3,7 @@
 import { createClient, createServiceClient } from "@/lib/supabase/server"
 import { getStripe } from "@/lib/stripe"
 import { errorLog, devLog } from "@/lib/logger"
+import { sendAccountDeletionEmail } from "@/lib/email/send"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 
@@ -80,10 +81,10 @@ export async function deleteAccount(userId: string): Promise<DeleteAccountResult
 
     devLog("[v0] Deleted user data from database")
 
-    // Delete auth user (this is the final step)
+    // Delete auth user (this is the final step). Use the service role client
+    // to optionally revoke refresh tokens (best-effort) and then delete the
+    // auth user. Provide a friendly error if the service role key is missing.
     try {
-      // Service role key is required for admin operations. Provide a friendly
-      // error if it's not configured to avoid confusing 403/not_admin errors.
       if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
         errorLog("[v0] SUPABASE_SERVICE_ROLE_KEY is not configured; cannot perform admin user deletion")
         return {
@@ -94,6 +95,25 @@ export async function deleteAccount(userId: string): Promise<DeleteAccountResult
 
       // Use a service-role client to perform admin operations
       const serviceSupabase = createServiceClient()
+
+      // Best-effort: revoke any outstanding refresh tokens for the user so
+      // client sessions can't be silently refreshed. If the admin API method
+      // isn't available in the installed supabase client version, this will
+      // simply be a no-op.
+      try {
+        // Use `any` to call a possibly-available admin helper without causing
+        // TypeScript errors if the installed client version doesn't include it.
+        const adminAny = (serviceSupabase.auth.admin as any)
+        if (adminAny && typeof adminAny.invalidateUserRefreshTokens === "function") {
+          await adminAny.invalidateUserRefreshTokens(userId)
+          devLog("[v0] Revoked user refresh tokens for:", userId)
+        }
+      } catch (e) {
+        // Log and continue — token revocation is best-effort and should not
+        // block account deletion if unsupported or failing.
+        errorLog("[v0] Failed to revoke refresh tokens:", e)
+      }
+
       const { error: authDeleteError } = await serviceSupabase.auth.admin.deleteUser(userId)
 
       if (authDeleteError) {
@@ -113,12 +133,28 @@ export async function deleteAccount(userId: string): Promise<DeleteAccountResult
 
     devLog("[v0] Successfully deleted account for:", user.email)
 
-    // Sign out the user
-    await supabase.auth.signOut()
-
-    return {
-      success: true,
+    // Send a deletion confirmation email (best-effort). We do this after
+    // deleting DB records but before signing the browser session out so the
+    // email can reference the user's name/email. Failures are logged but do
+    // not block the deletion flow.
+    try {
+      await sendAccountDeletionEmail(user.email, (user as any).first_name)
+    } catch (e) {
+      errorLog("[v0] Failed to send deletion confirmation email:", e)
     }
+
+    // Sign out the user (clears cookies on the response)
+    try {
+      await supabase.auth.signOut()
+    } catch (e) {
+      // Non-fatal — log and continue
+      errorLog("[v0] Failed to sign out server client after deletion:", e)
+    }
+
+    // Redirect the browser to a post-deletion confirmation page. This will
+    // also serve as the final user-visible acknowledgement that deletion
+    // completed and sessions were cleared.
+    redirect("/account-deleted")
   } catch (error) {
     errorLog("[v0] Account deletion error:", error)
     return {

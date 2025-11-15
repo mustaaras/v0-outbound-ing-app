@@ -153,7 +153,9 @@ export function SettingsForm({ user, hasPassword, renewalDate }: SettingsFormPro
           title: "Account Deleted",
           description: "Your account and all data have been permanently deleted.",
         })
-        // Redirect to home page after a brief delay
+        // The server action will perform a redirect to a confirmation page.
+        // As a fallback (in case the redirect doesn't occur), navigate to
+        // the homepage after a short delay.
         setTimeout(() => {
           router.push("/")
         }, 2000)

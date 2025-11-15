@@ -238,3 +238,43 @@ export async function sendAdminReplyEmail(email: string, replyMessage: string) {
     return { success: false, error }
   }
 }
+
+export async function sendAccountDeletionEmail(email: string, firstName?: string) {
+  try {
+    const resend = getResend()
+
+    const { data, error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to: email,
+      subject: "Your Outbounding account has been deleted",
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+          <h1 style="color: #1a1a1a; font-size: 28px;">Account Deleted</h1>
+          <p style="color: #484848; font-size: 16px; line-height: 26px;">Hi ${firstName || "there"},</p>
+          <p style="color: #484848; font-size: 16px; line-height: 26px;">
+            This is a confirmation that your Outbounding account and all associated data have been permanently deleted from our systems. If you did not request this deletion, please contact our support team immediately.
+          </p>
+          <p style="color: #484848; font-size: 16px; line-height: 26px; margin-top: 20px;">
+            If you change your mind, you can create a new account at <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://outbound.ing'}" style="color: #000; text-decoration: underline;">${process.env.NEXT_PUBLIC_SITE_URL || 'https://outbound.ing'}</a>.
+          </p>
+          <p style="color: #484848; font-size: 16px; line-height: 26px; margin-top: 40px;">
+            Thanks for having used Outbounding.<br/>
+            The Outbounding Team
+          </p>
+        </div>
+      `,
+      replyTo: REPLY_TO,
+    })
+
+    if (error) {
+      errorLog("[Email] Failed to send account deletion confirmation:", error)
+      return { success: false, error }
+    }
+
+    devLog("[Email] Account deletion confirmation sent successfully:", data)
+    return { success: true, data }
+  } catch (error) {
+    errorLog("[Email] Error sending account deletion confirmation:", error)
+    return { success: false, error }
+  }
+}
