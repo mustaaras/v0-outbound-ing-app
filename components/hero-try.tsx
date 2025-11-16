@@ -44,8 +44,8 @@ export default function HeroTry() {
         return
       }
 
-      if (topicTrim.length > 20) {
-        setError("Topic must be 20 characters or less.")
+      if (topicTrim.length > 25) {
+        setError("Topic must be 25 characters or less.")
         setLoading(false)
         return
       }
@@ -126,23 +126,23 @@ export default function HeroTry() {
             className="col-span-1 w-full rounded-md border bg-background px-4 py-3 text-sm shadow-sm focus:outline-none"
           />
 
-          <input
-            aria-label="Topic"
-            placeholder="Topic (max 20 chars)"
-            value={topic}
-            maxLength={20}
-            onChange={(e) => setTopic(e.target.value)}
-            className="col-span-1 w-full rounded-md border bg-background px-4 py-3 text-sm shadow-sm focus:outline-none"
-          />
+                      <input
+                        aria-label="Topic"
+                        placeholder="Topic (max 25 chars)"
+                        value={topic}
+                        maxLength={25}
+                        onChange={(e) => setTopic(e.target.value)}
+                        className="col-span-1 w-full rounded-md border bg-background px-4 py-3 text-sm shadow-sm focus:outline-none"
+                      />
               </div>
             </div>
 
             {/* Signature: placed after the main inputs in the DOM so it's last on mobile,
                 but shown on the right on md+ via the flex layout above */}
-            <div className="mt-3 md:mt-0 md:w-72">
+            <div className="mt-3 md:mt-0 md:w-40">
               <input
                 aria-label="Your signature"
-                placeholder="Your signature (e.g. Jane from Outbound.ing)"
+                placeholder="Your Signature"
                 value={signature}
                 onChange={(e) => setSignature(e.target.value)}
                 className="w-full rounded-md border bg-background px-4 py-3 text-sm shadow-sm focus:outline-none"
@@ -151,7 +151,15 @@ export default function HeroTry() {
           </div>
         </div>
 
-        <div className="mt-3 flex items-center justify-center gap-3">
+  <div className="mt-3 flex items-center justify-center gap-3">
+          <button
+            type="submit"
+            disabled={loading}
+            className="inline-flex items-center rounded-md bg-primary px-6 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60"
+          >
+            {loading ? "Generating…" : "Generate"}
+          </button>
+
           <button
             type="button"
             onClick={handleReset}
@@ -159,14 +167,6 @@ export default function HeroTry() {
             className="inline-flex items-center rounded-md border px-4 py-2 text-sm disabled:opacity-60"
           >
             Reset
-          </button>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="inline-flex items-center rounded-md bg-primary px-6 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60"
-          >
-            {loading ? "Generating…" : "Generate"}
           </button>
         </div>
       </form>
