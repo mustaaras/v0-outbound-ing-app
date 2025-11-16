@@ -1,6 +1,7 @@
 import { updateSession } from "@/lib/supabase/middleware"
 import { rateLimiters, getClientIP } from "@/lib/rate-limit"
 import { createServerClient } from "@supabase/ssr"
+import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
 export async function middleware(request: NextRequest) {
@@ -90,16 +91,12 @@ export async function middleware(request: NextRequest) {
         // If this is a browser navigation (accepts HTML), return a simple human-friendly HTML page
         // instead of raw JSON. For non-HTML clients, keep JSON to preserve API behavior.
         if (accept.includes("text/html")) {
-          const html = `<!doctype html><html><head><meta charset="utf-8"><title>Too many sign-in attempts</title></head><body style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:48px;">` +
-            `<h1>Too many sign-in attempts</h1><p>Please wait ${retryAfter} seconds before trying again.</p><p><a href="/">Return to the homepage</a></p></body></html>`
-
-          return new Response(html, {
-            status: 429,
-            headers: {
-              "Content-Type": "text/html",
-              "Retry-After": String(retryAfter),
-            }
-          })
+          // Redirect browser users back to the homepage and include the retry time
+          // as search params so the client can show a friendly in-app notice.
+          const redirectUrl = new URL('/', request.url)
+          redirectUrl.searchParams.set('rate_limited', 'auth')
+          redirectUrl.searchParams.set('retry_after', String(retryAfter))
+          return NextResponse.redirect(redirectUrl)
         }
 
         return new Response(
