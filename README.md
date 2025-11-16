@@ -1,5 +1,5 @@
 
-# <img src="public/logos/logo-o-new.svg" alt="Outbound.ing Logo" width="48" height="48" style="vertical-align:middle;"/> Outbound.ing
+# <img src="public/logos/logo-o-new-48.svg" alt="Outbound.ing Logo" width="48" height="48" style="vertical-align:middle;"/> Outbound.ing
 
 Outbound.ing is an AI-powered SaaS platform for generating personalized outreach emails and finding business contacts. Built for sales teams, founders, and agencies who want to create effective communication and close more deals.
 
@@ -32,6 +32,29 @@ Outbound.ing is an AI-powered SaaS platform for generating personalized outreach
 - Google Maps Places API (business search)
 - Resend (email delivery)
 - Tailwind CSS 4, Radix UI
+
+## GIS / Contacts Database
+
+This project includes a lightweight GIS/contact-discovery subsystem used to find businesses and extract contact information from the web. The core pieces are Google Maps Places searches, contact-page discovery, and the SQL scripts that create the `contacts` database used by the app.
+
+Quick overview:
+- Data sources: Google Maps Places API (business discovery) and optional third-party providers (Snov.io) for email enrichment.
+- Storage: contacts are stored in the Postgres `contacts` table; migration scripts are in `scripts/` (look for `011_create_contacts_database.sql` and related saved buyers scripts).
+- Validation: server-side rules and heuristics remove tracking addresses and false positives before persisting.
+
+How to run the GIS/contact tools locally:
+1. Add the required environment variables to `.env.local`:
+	- `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` — Google Maps Places key
+	- `SNOV_API_KEY`, `SNOV_CLIENT_ID`, `SNOV_CLIENT_SECRET` (optional) — for Snov enrichment
+2. Review and run the SQL migrations in `scripts/` using your Supabase/psql client to set up the `contacts` and related tables.
+3. Use the built-in scripts and tools:
+	- Client-side: open `public/contact-import-template.csv` for import templates.
+	- Server-side utilities and libraries live in `lib/` (see `lib/contacts-db.ts`, `lib/snov.ts`).
+
+Notes & recommendations:
+- For production-grade GIS and high traffic, move caching and rate-limiting to a shared store (Redis) to avoid in-memory limits across instances.
+- Use hashed filenames for public assets and long-lived Cache-Control headers so static assets (logos, OG images) can be cached safely by CDNs.
+- If you need a separate, extended GIS README or example scripts, consider adding `docs/gis.md` with step-by-step extraction examples.
 
 ## Directory Structure
 
