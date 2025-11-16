@@ -9,6 +9,7 @@ interface RateLimitOptions {
   message?: string
   skipSuccessfulRequests?: boolean
   skipFailedRequests?: boolean
+  name?: string
 }
 
 export class RateLimiter {
@@ -17,6 +18,7 @@ export class RateLimiter {
   private message: string
   private skipSuccessfulRequests: boolean
   private skipFailedRequests: boolean
+  private name: string
 
   constructor(options: RateLimitOptions) {
     this.windowMs = options.windowMs
@@ -24,6 +26,7 @@ export class RateLimiter {
     this.message = options.message || "Too many requests, please try again later."
     this.skipSuccessfulRequests = options.skipSuccessfulRequests || false
     this.skipFailedRequests = options.skipFailedRequests || false
+    this.name = options.name || `${this.windowMs}_${this.maxRequestsValue}`
   }
 
   get maxRequests(): number {
@@ -31,7 +34,9 @@ export class RateLimiter {
   }
 
   private getKey(identifier: string): string {
-    return `rate_limit_${identifier}`
+    // Namespace keys by limiter instance (use configured name) so different
+    // RateLimiter instances do not collide in the shared in-memory store.
+    return `rate_limit_${this.name}_${identifier}`
   }
 
   private getRemainingTime(resetTime: number): number {
@@ -184,9 +189,16 @@ export function resetRateLimit(identifier?: string) {
   }
 
   if (identifier) {
-    const key = `rate_limit_${identifier}`
-    rateLimitStore.delete(key)
-    return { cleared: 1 }
+    // Delete any namespaced keys that end with the identifier to clear
+    // rate limits for all limiter instances for the given identifier.
+    let cleared = 0
+    for (const key of Array.from(rateLimitStore.keys())) {
+      if (key.endsWith(`_${identifier}`)) {
+        rateLimitStore.delete(key)
+        cleared++
+      }
+    }
+    return { cleared }
   }
 
   const size = rateLimitStore.size

@@ -3,7 +3,7 @@ import { rateLimiters } from "@/lib/rate-limit"
 import { createClient } from "@/lib/supabase/server"
 import { generateText } from "ai"
 
-type Body = { name?: string; recipientEmail?: string; topic?: string }
+type Body = { name?: string; recipientEmail?: string; topic?: string; signature?: string }
 
 export async function POST(req: Request) {
   try {
@@ -33,10 +33,11 @@ export async function POST(req: Request) {
       }
     }
 
-    const body = (await req.json()) as Body
-    const name = (body.name || "").trim()
-    const recipientEmail = (body.recipientEmail || "").trim()
-    const topic = (body.topic || "").trim()
+  const body = (await req.json()) as Body
+  const name = (body.name || "").trim()
+  const recipientEmail = (body.recipientEmail || "").trim()
+  const topic = (body.topic || "").trim()
+  const signature = (body.signature || "").trim()
 
     // Simple validation: require name and recipient email
     if (!name || !recipientEmail) {
@@ -52,8 +53,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Topic must be 20 characters or less." }, { status: 400 })
     }
 
-    // Build a short prompt for quick generation
-    const prompt = `Write a single cold outreach email (subject + short body) to ${name} about ${topic || "a short opportunity"}. Keep it concise (3-5 sentences), friendly, and end with a short CTA asking for a quick call or reply. Include a short subject line on the first line prefixed with 'Subject:'. Return plain text.`
+  // Build a short prompt for quick generation
+  const prompt = `Write a single cold outreach email (subject + short body) to ${name} about ${topic || "a short opportunity"}. Keep it concise (3-5 sentences), friendly, and end with a short CTA asking for a quick call or reply. If a sender signature is provided, end the email with that signature exactly as provided. Include a short subject line on the first line prefixed with 'Subject:'. Return plain text.`
 
     try {
       const { text } = await generateText({ model: "openai/gpt-4o-mini", prompt, temperature: 0.6 })
@@ -77,7 +78,16 @@ export async function POST(req: Request) {
     } catch (e) {
   // Fallback deterministic template (topic-aware)
   const subject = topic ? `Quick intro — ${topic}` : `Quick intro`
-  const body = `${name ? `Hi ${name},\n\n` : "Hi there,\n\n"}I hope you’re doing well. I wanted to introduce myself — I work with teams to improve outreach related to ${topic || "sales and hiring"} by combining proven templates with lightweight personalization. Would you be open to a 10-minute call next week to explore whether this could help your team?\n\nBest regards,`
+  const bodyLines = []
+  bodyLines.push(name ? `Hi ${name},\n\n` : "Hi there,\n\n")
+  bodyLines.push(`I hope you’re doing well. I wanted to introduce myself — I work with teams to improve outreach related to ${topic || "sales and hiring"} by combining proven templates with lightweight personalization. Would you be open to a 10-minute call next week to explore whether this could help your team?\n\n`)
+  if (signature) {
+    bodyLines.push(signature)
+  } else {
+    bodyLines.push("Best regards,")
+  }
+
+  const body = bodyLines.join("")
 
   return NextResponse.json({ subject, body, generatedBy: "fallback" })
     }
