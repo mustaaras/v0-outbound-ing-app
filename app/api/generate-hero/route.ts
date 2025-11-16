@@ -74,6 +74,35 @@ export async function POST(req: Request) {
         bodyText = trimmed.split("\n\n").slice(1).join("\n\n").trim()
       }
 
+      // Remove common placeholder signature blocks that some models emit
+      // e.g. lines like "[Your Name]", "Your Phone Number", etc. We strip
+      // trailing placeholder blocks so we can append the real signature cleanly.
+      const stripPlaceholderBlock = (text: string) => {
+        const lines = text.split(/\r?\n/)
+        const placeholderRe = /\[?\s*(Your\s+Name|Your\s+Position|Your\s+Company|Your\s+Phone(?:\s+Number)?|Your\s+Email(?:\s+Address)?)\s*\]?/i
+        // remove trailing lines that are obviously placeholders or empty after them
+        while (lines.length > 0) {
+          const last = lines[lines.length - 1].trim()
+          if (!last) {
+            lines.pop()
+            continue
+          }
+          if (placeholderRe.test(last)) {
+            lines.pop()
+            continue
+          }
+          // also handle cases where a block of bracketed placeholders appears (e.g. [Your Name])
+          if (/^\[.*\]$/.test(last) && last.length < 64) {
+            lines.pop()
+            continue
+          }
+          break
+        }
+        return lines.join("\n")
+      }
+
+      bodyText = stripPlaceholderBlock(bodyText)
+
       // If a signature was provided, ensure it's appended after a common closing (e.g. "Best," or "Best regards,")
       if (signature) {
         const sig = signature.trim()
