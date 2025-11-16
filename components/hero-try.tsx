@@ -102,7 +102,7 @@ export default function HeroTry() {
       </h1>
 
       <p className="text-balance max-w-2xl text-lg text-muted-foreground sm:text-xl">
-        Paste a recipient name, their email, and a short topic (max 20 chars) — we’ll craft a personalized outreach you can copy or open in your mail client.
+        Paste a recipient name, their email, and a short topic — we’ll craft a personalized outreach you can copy or open in your mail client.
       </p>
 
       <form onSubmit={handleGenerate} className="w-full max-w-2xl">
