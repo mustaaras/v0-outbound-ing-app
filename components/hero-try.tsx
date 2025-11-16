@@ -4,7 +4,8 @@ import React, { useState } from "react"
 
 export default function HeroTry() {
   const [name, setName] = useState("")
-  const [company, setCompany] = useState("")
+  const [email, setEmail] = useState("")
+  const [topic, setTopic] = useState("")
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<{ subject: string; body: string } | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -16,10 +17,41 @@ export default function HeroTry() {
     setLoading(true)
 
     try {
+      // Simple client-side validation
+      const emailTrim = email.trim()
+      const nameTrim = name.trim()
+      const topicTrim = topic.trim()
+
+      if (!nameTrim) {
+        setError("Please provide a recipient name.")
+        setLoading(false)
+        return
+      }
+
+      if (!emailTrim) {
+        setError("Please provide a recipient email.")
+        setLoading(false)
+        return
+      }
+
+      // basic email regex
+      const emailRe = /\S+@\S+\.\S+/
+      if (!emailRe.test(emailTrim)) {
+        setError("Please provide a valid email address.")
+        setLoading(false)
+        return
+      }
+
+      if (topicTrim.length > 20) {
+        setError("Topic must be 20 characters or less.")
+        setLoading(false)
+        return
+      }
+
       const res = await fetch("/api/generate-hero", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: name.trim(), company: company.trim() })
+        body: JSON.stringify({ name: nameTrim, recipientEmail: emailTrim, topic: topicTrim })
       })
 
       if (!res.ok) {
@@ -59,24 +91,34 @@ export default function HeroTry() {
       </h1>
 
       <p className="text-balance max-w-2xl text-lg text-muted-foreground sm:text-xl">
-        Paste a name & company — we’ll craft a personalized outreach you can copy.
+        Paste a recipient name, their email, and a short topic (max 20 chars) — we’ll craft a personalized outreach you can copy or open in your mail client.
       </p>
 
       <form onSubmit={handleGenerate} className="w-full max-w-2xl">
-        <div className="flex w-full flex-col gap-3 sm:flex-row">
+        <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-3">
           <input
             aria-label="Recipient name"
             placeholder="Recipient name (e.g. Alex Johnson)"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full rounded-md border bg-background px-4 py-3 text-sm shadow-sm focus:outline-none"
+            className="col-span-1 w-full rounded-md border bg-background px-4 py-3 text-sm shadow-sm focus:outline-none"
           />
+
           <input
-            aria-label="Company"
-            placeholder="Company (e.g. Acme Co)"
-            value={company}
-            onChange={(e) => setCompany(e.target.value)}
-            className="w-full rounded-md border bg-background px-4 py-3 text-sm shadow-sm focus:outline-none"
+            aria-label="Recipient email"
+            placeholder="Recipient email (e.g. alex@acme.com)"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="col-span-1 w-full rounded-md border bg-background px-4 py-3 text-sm shadow-sm focus:outline-none"
+          />
+
+          <input
+            aria-label="Topic"
+            placeholder="Topic (max 20 chars)"
+            value={topic}
+            maxLength={20}
+            onChange={(e) => setTopic(e.target.value)}
+            className="col-span-1 w-full rounded-md border bg-background px-4 py-3 text-sm shadow-sm focus:outline-none"
           />
         </div>
 
@@ -90,7 +132,7 @@ export default function HeroTry() {
           </button>
           <button
             type="button"
-            onClick={() => { setName(""); setCompany(""); setResult(null); setError(null) }}
+            onClick={() => { setName(""); setEmail(""); setTopic(""); setResult(null); setError(null) }}
             className="rounded-md border px-3 py-2 text-sm"
           >
             Reset
@@ -109,6 +151,14 @@ export default function HeroTry() {
             </div>
             <div className="ml-4 flex flex-col items-end gap-2">
               <button onClick={handleCopy} className="rounded-md bg-primary px-3 py-1 text-sm text-primary-foreground">Copy</button>
+              {email && (
+                <a
+                  href={`mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(result.subject)}&body=${encodeURIComponent(result.body)}`}
+                  className="rounded-md border px-3 py-1 text-sm"
+                >
+                  Open in email
+                </a>
+              )}
             </div>
           </div>
         </div>

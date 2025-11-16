@@ -144,6 +144,13 @@ export const rateLimiters = {
     maxRequests: 20, // 20 auth attempts per 15 minutes (more lenient for mobile)
     message: "Too many authentication attempts. Please wait before trying again."
   })
+
+  // Anonymous daily generator limit (logout visitors)
+  ,anonymousDaily: new RateLimiter({
+    windowMs: 24 * 60 * 60 * 1000, // 24 hours
+    maxRequests: 2, // 2 generations per day for anonymous users
+    message: "Daily limit reached. Create an account to generate more samples."
+  })
 }
 
 // Helper function to get client IP (works with Vercel)
