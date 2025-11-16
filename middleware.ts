@@ -55,6 +55,11 @@ export async function middleware(request: NextRequest) {
 
     // Auth routes get stricter rate limiting
     if (pathname.includes("/auth/") || pathname.includes("/api/auth/")) {
+      // Allow the OAuth provider callback through without strict rate limiting
+      // to avoid blocking legitimate sign-in flows (they often hit this URL).
+      if (pathname.includes("/auth/callback")) {
+        return await updateSession(request)
+      }
       // Use user id if available (prevents IP collisions for logged-in users), else fall back to IP
       const identifier = hasUser ? (await (async () => {
         try {
@@ -79,16 +84,34 @@ export async function middleware(request: NextRequest) {
 
   const rateLimitResult = rateLimiters.auth.check(identifier || getClientIP(request))
       if (!rateLimitResult.allowed) {
+        const retryAfter = Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000)
+        const accept = request.headers.get("accept") || ""
+
+        // If this is a browser navigation (accepts HTML), return a simple human-friendly HTML page
+        // instead of raw JSON. For non-HTML clients, keep JSON to preserve API behavior.
+        if (accept.includes("text/html")) {
+          const html = `<!doctype html><html><head><meta charset="utf-8"><title>Too many sign-in attempts</title></head><body style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:48px;">` +
+            `<h1>Too many sign-in attempts</h1><p>Please wait ${retryAfter} seconds before trying again.</p><p><a href="/">Return to the homepage</a></p></body></html>`
+
+          return new Response(html, {
+            status: 429,
+            headers: {
+              "Content-Type": "text/html",
+              "Retry-After": String(retryAfter),
+            }
+          })
+        }
+
         return new Response(
           JSON.stringify({
             error: "Too many authentication attempts. Please wait before trying again.",
-            retryAfter: Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000)
+            retryAfter
           }),
           {
             status: 429,
             headers: {
               "Content-Type": "application/json",
-              "Retry-After": Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000).toString(),
+              "Retry-After": String(retryAfter),
             }
           }
         )
