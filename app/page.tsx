@@ -1,12 +1,11 @@
 import Link from "next/link"
-import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
 import { Wand2, Zap, Crown, Sparkles, Target, Users, Check } from "lucide-react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { PRODUCTS } from "@/lib/products"
+import HeroTry from "@/components/hero-try"
 
 export default function LandingPage() {
-  const HeroTry = dynamic(() => import("@/components/hero-try"), { ssr: false })
 
   return (
     <div className="flex min-h-screen flex-col">
