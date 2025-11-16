@@ -122,20 +122,13 @@ export default function HeroTry() {
           />
         </div>
 
-        <div className="mt-3 flex items-center gap-3">
+        <div className="mt-3 flex items-center justify-center">
           <button
             type="submit"
             disabled={loading}
-            className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60"
+            className="inline-flex items-center rounded-md bg-primary px-6 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60"
           >
             {loading ? "Generating…" : "Generate"}
-          </button>
-          <button
-            type="button"
-            onClick={() => { setName(""); setEmail(""); setTopic(""); setResult(null); setError(null) }}
-            className="rounded-md border px-3 py-2 text-sm"
-          >
-            Reset
           </button>
         </div>
       </form>
