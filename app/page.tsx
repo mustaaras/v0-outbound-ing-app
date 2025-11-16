@@ -1,10 +1,13 @@
 import Link from "next/link"
+import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
 import { Wand2, Zap, Crown, Sparkles, Target, Users, Check } from "lucide-react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { PRODUCTS } from "@/lib/products"
 
 export default function LandingPage() {
+  const HeroTry = dynamic(() => import("@/components/hero-try"), { ssr: false })
+
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -30,49 +33,9 @@ export default function LandingPage() {
       </header>
 
       <main className="flex-1">
-        {/* Hero Section - Fully Centered */}
+        {/* Hero Section - Interactive Try-now */}
         <section className="container flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center py-20 text-center">
-          <div className="mx-auto flex max-w-5xl flex-col items-center gap-8">
-            <div className="inline-flex items-center gap-2 rounded-full border bg-muted px-4 py-2 text-sm">
-              <Sparkles className="h-4 w-4 text-primary" />
-              <span>100+ AI-Powered Sales Strategies + Contact Search</span>
-            </div>
-
-            <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-              Find contacts. Generate emails. Close deals.
-            </h1>
-
-            <p className="text-balance max-w-2xl text-lg text-muted-foreground sm:text-xl">
-              Turn lists into personalized outreach in minutes — no copywriting skill required.
-            </p>
-
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <Button asChild size="lg" className="gap-2">
-                <Link href="/auth/signup">
-                  <Wand2 className="h-4 w-4" />
-                  Try it free
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg">
-                <a href="#examples">See example emails</a>
-              </Button>
-            </div>
-
-            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <Target className="h-4 w-4" />
-                <span>14 Categories</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Zap className="h-4 w-4" />
-                <span>100+ Strategies</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Users className="h-4 w-4" />
-                <span>Custom Tone & Goals</span>
-              </div>
-            </div>
-          </div>
+          <HeroTry />
         </section>
 
         {/* Features Section - Centered */}
