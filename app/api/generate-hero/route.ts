@@ -74,6 +74,35 @@ export async function POST(req: Request) {
         bodyText = trimmed.split("\n\n").slice(1).join("\n\n").trim()
       }
 
+      // If a signature was provided, ensure it's appended after a common closing (e.g. "Best," or "Best regards,")
+      if (signature) {
+        const sig = signature.trim()
+        // Don't duplicate if signature already appears at end
+        const normalized = bodyText.replace(/\s+$/g, "")
+        if (!normalized.endsWith(sig)) {
+          // Look for common closings and insert signature on the following line
+          const closingRe = /(Best(?: regards?)?|Regards|Sincerely|Cheers)[\.,]?$/im
+          const lines = bodyText.split(/\n/)
+          // find a line that matches closingRe from the bottom
+          let inserted = false
+          for (let i = lines.length - 1; i >= 0; i--) {
+            if (closingRe.test(lines[i].trim())) {
+              // insert signature on next line after the closing
+              lines.splice(i + 1, 0, sig)
+              inserted = true
+              break
+            }
+          }
+
+          if (!inserted) {
+            // fallback: append with a blank line before signature
+            lines.push("", sig)
+          }
+
+          bodyText = lines.join("\n")
+        }
+      }
+
       return NextResponse.json({ subject, body: bodyText, generatedBy: "ai" })
     } catch (e) {
   // Fallback deterministic template (topic-aware)
