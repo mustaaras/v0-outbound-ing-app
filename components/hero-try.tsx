@@ -5,6 +5,7 @@ import React, { useState } from "react"
 export default function HeroTry() {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
+  const [signature, setSignature] = useState("")
   const [topic, setTopic] = useState("")
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<{ subject: string; body: string } | null>(null)
@@ -20,7 +21,8 @@ export default function HeroTry() {
       // Simple client-side validation
       const emailTrim = email.trim()
       const nameTrim = name.trim()
-      const topicTrim = topic.trim()
+  const topicTrim = topic.trim()
+  const signatureTrim = signature.trim()
 
       if (!nameTrim) {
         setError("Please provide a recipient name.")
@@ -51,7 +53,7 @@ export default function HeroTry() {
       const res = await fetch("/api/generate-hero", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: nameTrim, recipientEmail: emailTrim, topic: topicTrim })
+        body: JSON.stringify({ name: nameTrim, recipientEmail: emailTrim, topic: topicTrim, signature: signatureTrim })
       })
 
       if (!res.ok) {
@@ -69,6 +71,15 @@ export default function HeroTry() {
     } finally {
       setLoading(false)
     }
+  }
+
+  function handleReset() {
+    setName("")
+    setEmail("")
+    setTopic("")
+    setSignature("")
+    setResult(null)
+    setError(null)
   }
 
   async function handleCopy() {
@@ -95,7 +106,10 @@ export default function HeroTry() {
       </p>
 
       <form onSubmit={handleGenerate} className="w-full max-w-2xl">
-        <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-3">
+        <div className="w-full">
+          <div className="md:flex md:items-start md:gap-4">
+            <div className="flex-1">
+              <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-3">
           <input
             aria-label="Recipient name"
             placeholder="Recipient name (e.g. Alex Johnson)"
@@ -120,9 +134,33 @@ export default function HeroTry() {
             onChange={(e) => setTopic(e.target.value)}
             className="col-span-1 w-full rounded-md border bg-background px-4 py-3 text-sm shadow-sm focus:outline-none"
           />
+              </div>
+            </div>
+
+            {/* Signature: placed after the main inputs in the DOM so it's last on mobile,
+                but shown on the right on md+ via the flex layout above */}
+            <div className="mt-3 md:mt-0 md:w-72">
+              <input
+                aria-label="Your signature"
+                placeholder="Your signature (e.g. Jane from Outbound.ing)"
+                value={signature}
+                onChange={(e) => setSignature(e.target.value)}
+                className="w-full rounded-md border bg-background px-4 py-3 text-sm shadow-sm focus:outline-none"
+              />
+            </div>
+          </div>
         </div>
 
-        <div className="mt-3 flex items-center justify-center">
+        <div className="mt-3 flex items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={handleReset}
+            disabled={loading}
+            className="inline-flex items-center rounded-md border px-4 py-2 text-sm disabled:opacity-60"
+          >
+            Reset
+          </button>
+
           <button
             type="submit"
             disabled={loading}
