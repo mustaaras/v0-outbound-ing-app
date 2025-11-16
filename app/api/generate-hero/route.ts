@@ -9,10 +9,42 @@ export async function POST(req: Request) {
   try {
     const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || req.headers.get("x-client-ip") || "unknown"
 
+    // Parse cookies to read or create a persistent anon_id for anonymous users.
+    const cookieHeader = req.headers.get("cookie") || ""
+    const parseCookie = (name: string) => {
+      if (!cookieHeader) return null
+      const parts = cookieHeader.split(/;\s*/)
+      for (const part of parts) {
+        const [k, ...v] = part.split("=")
+        if (k === name) return decodeURIComponent(v.join("="))
+      }
+      return null
+    }
+
+    const existingAnonId = parseCookie("anon_id")
+    const anonId = existingAnonId || (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function" ? crypto.randomUUID() : String(Date.now()))
+    const createdAnon = !existingAnonId
+    const anonIdentifier = `${ip}:${anonId}`
+
+    // Helper to always attach anon cookie when we created one for an anonymous user.
+    const makeResponse = (body: any, status = 200) => {
+      const res = NextResponse.json(body, { status })
+      if (createdAnon) {
+        res.cookies.set("anon_id", anonId, {
+          httpOnly: true,
+          path: "/",
+          maxAge: 60 * 60 * 24 * 365,
+          sameSite: "lax",
+          secure: process.env.NODE_ENV === "production",
+        })
+      }
+      return res
+    }
+
     // Basic rate-limit check (wrap around aiGeneration limiter)
     const check = rateLimiters.aiGeneration.check(ip)
     if (!check.allowed) {
-      return NextResponse.json({ error: "Too many requests" }, { status: 429 })
+      return makeResponse({ error: "Too many requests" }, 429)
     }
 
     // Check authentication: if user is not logged in, enforce daily anonymous limit
@@ -27,9 +59,9 @@ export async function POST(req: Request) {
     }
 
     if (!userPresent) {
-      const anonCheck = rateLimiters.anonymousDaily.check(ip)
+      const anonCheck = rateLimiters.anonymousDaily.check(anonIdentifier)
       if (!anonCheck.allowed) {
-        return NextResponse.json({ error: "Daily limit reached. Create an account to generate more samples." }, { status: 429 })
+        return makeResponse({ error: "Daily limit reached. Create an account to generate more samples." }, 429)
       }
     }
 
@@ -41,16 +73,16 @@ export async function POST(req: Request) {
 
     // Simple validation: require name and recipient email
     if (!name || !recipientEmail) {
-      return NextResponse.json({ error: "Please provide a recipient name and email." }, { status: 400 })
+      return makeResponse({ error: "Please provide a recipient name and email." }, 400)
     }
 
     // basic server-side email check
     if (!/\S+@\S+\.\S+/.test(recipientEmail)) {
-      return NextResponse.json({ error: "Invalid email address." }, { status: 400 })
+      return makeResponse({ error: "Invalid email address." }, 400)
     }
 
     if (topic.length > 20) {
-      return NextResponse.json({ error: "Topic must be 20 characters or less." }, { status: 400 })
+      return makeResponse({ error: "Topic must be 20 characters or less." }, 400)
     }
 
   // Build a short prompt for quick generation
@@ -132,7 +164,7 @@ export async function POST(req: Request) {
         }
       }
 
-      return NextResponse.json({ subject, body: bodyText, generatedBy: "ai" })
+      return makeResponse({ subject, body: bodyText, generatedBy: "ai" })
     } catch (e) {
   // Fallback deterministic template (topic-aware)
   const subject = topic ? `Quick intro — ${topic}` : `Quick intro`
@@ -147,7 +179,7 @@ export async function POST(req: Request) {
 
   const body = bodyLines.join("")
 
-  return NextResponse.json({ subject, body, generatedBy: "fallback" })
+  return makeResponse({ subject, body, generatedBy: "fallback" })
     }
   } catch (err) {
     return NextResponse.json({ error: "Server error" }, { status: 500 })
