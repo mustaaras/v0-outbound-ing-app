@@ -2,6 +2,7 @@
 
 import { getCurrentUser, canPerformLocationSearch, incrementLocationSearchCount } from "@/lib/auth-utils"
 import { GoogleMapsUtils, GooglePlace } from "@/lib/google-maps"
+import { logContactSearch } from "@/lib/contacts-db"
 import { devLog, errorLog } from "@/lib/logger"
 
 export interface LocationSearchResult {
@@ -33,6 +34,7 @@ export async function processLocationSearch(places: GooglePlace[], options?: { s
 
   // Increment search count
   await incrementLocationSearchCount(user.id)
+    devLog(`[v0] incremented location_searches for user: ${user.id}`)
 
   try {
     // Extract domains from places with websites
@@ -106,6 +108,18 @@ export async function processLocationSearch(places: GooglePlace[], options?: { s
       placesWithPhones,
       places, // Return full place data
       scrapedEmails,
+    }
+
+    // Also log this search into contact_search_history so the dashboard aggregates location searches
+    try {
+      const totalEmailsFound = scrapedEmails.reduce((sum, s) => sum + (s.emails?.length || 0), 0)
+      // If no emails found during scraping, record the number of places as the results_count to show activity
+      const resultsCount = totalEmailsFound > 0 ? totalEmailsFound : places.length
+      // Use a lightweight query label 'google_places' and type 'location' for aggregation
+      await logContactSearch(user.id, 'google_places', 'location', resultsCount)
+        devLog(`[v0] Logged contact_search_history for user ${user.id} (results: ${resultsCount})`)
+    } catch (err) {
+      devLog('[v0] Failed to log location search to contact_search_history:', err)
     }
 
     return result

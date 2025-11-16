@@ -50,9 +50,9 @@ export default async function DashboardPage() {
     .gte("created_at", fromIso)
     .order("created_at", { ascending: true })
 
-  // Fetch contact search history for the same window (contact_search_history.created_at)
-  const { data: contactSearches } = await supabase
-    .from("contact_search_history")
+  // Fetch user's saved contacts for the same window (user_saved_contacts.created_at)
+  const { data: savedContacts } = await supabase
+    .from("user_saved_contacts")
     .select("created_at")
     .eq("user_id", user.id)
     .gte("created_at", fromIso)
@@ -175,8 +175,8 @@ export default async function DashboardPage() {
               })
             }
 
-            if (contactSearches && Array.isArray(contactSearches)) {
-              contactSearches.forEach((c: any) => {
+            if (savedContacts && Array.isArray(savedContacts)) {
+              savedContacts.forEach((c: any) => {
                 const key = (c.created_at || "").slice(0, 10)
                 if (map[key] !== undefined) map[key].searches = (map[key].searches || 0) + 1
               })

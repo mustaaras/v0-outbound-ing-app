@@ -1,4 +1,21 @@
+import type { Metadata } from "next"
 export const dynamic = "force-dynamic"
+
+export const metadata: Metadata = {
+  title: "Email Generator — Outbound.ing",
+  description: "Create personalized B2B outreach emails with AI-powered templates and strategies.",
+  openGraph: {
+    title: "Email Generator — Outbound.ing",
+    description: "Create personalized B2B outreach emails with AI-powered templates and strategies.",
+    images: ["/og-image.png"]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Email Generator — Outbound.ing",
+    description: "Create personalized B2B outreach emails with AI-powered templates and strategies.",
+    images: ["/og-image.png"]
+  }
+}
 
 import { GeneratorForm } from "@/components/generator-form"
 import { getCurrentUser, getUserUsage } from "@/lib/auth-utils"

@@ -10,6 +10,9 @@ import { Analytics } from "@vercel/analytics/react"
 
 const inter = Inter({ subsets: ["latin"] })
 
+// Site-wide URL (ensure NEXT_PUBLIC_SITE_URL is set in env for production)
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://outbound.ing"
+
 export const metadata: Metadata = {
   title: "Outbound.ing - AI-Powered Cold Outreach Emails",
   description: "Generate personalized, high-converting cold outreach emails using AI and proven strategies",
@@ -21,7 +24,37 @@ export const metadata: Metadata = {
     ],
     apple: "/apple-icon.png",
   },
-    generator: 'v0.app'
+  // Open Graph / Social defaults
+  openGraph: {
+    title: "Outbound.ing - AI-Powered Cold Outreach Emails",
+    description: "Generate personalized, high-converting cold outreach emails using AI and proven strategies",
+    url: SITE_URL,
+    siteName: "Outbound.ing",
+    images: [
+      {
+        url: `${SITE_URL}/og-image.png`,
+        width: 1200,
+        height: 630,
+        alt: "Outbound.ing - AI cold outreach"
+      },
+      {
+        url: `${SITE_URL}/favicon.svg`,
+        width: 512,
+        height: 512,
+        alt: "Outbound.ing logo"
+      }
+    ],
+    locale: "en_US",
+    type: "website"
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Outbound.ing - AI-Powered Cold Outreach Emails",
+    description: "Generate personalized, high-converting cold outreach emails using AI and proven strategies",
+    creator: "@outbound_ing",
+    images: [`${SITE_URL}/favicon.svg`]
+  },
+  generator: 'v0.app'
 }
 
 export default function RootLayout({
@@ -42,9 +75,29 @@ export default function RootLayout({
             gtag('config', 'G-7C86NQPQLZ');
           `,
         }} />
+        {/* Canonical link */}
+        <link rel="canonical" href={SITE_URL} />
+
+        {/* JSON-LD organization + website schema for rich results */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "Outbound.ing",
+              "url": SITE_URL,
+              "logo": `${SITE_URL}/favicon.svg`,
+              "sameAs": [
+                "https://x.com/outbound_ing"
+              ]
+            })
+          }}
+        />
       </head>
       <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+  {/* Default to dark for first-time visitors (when no stored preference exists). */}
+  <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
           <ErrorBoundary>
             {children}
           </ErrorBoundary>

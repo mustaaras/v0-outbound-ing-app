@@ -141,7 +141,7 @@ export const rateLimiters = {
   // More lenient rate limiting for authentication (mobile-friendly)
   auth: new RateLimiter({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    maxRequests: 10, // 10 auth attempts per 15 minutes (increased from 5)
+    maxRequests: 20, // 20 auth attempts per 15 minutes (more lenient for mobile)
     message: "Too many authentication attempts. Please wait before trying again."
   })
 }
@@ -168,4 +168,21 @@ export function getClientIP(request: NextRequest): string {
 // Helper function for user-based rate limiting (requires authentication)
 export function getUserIdentifier(userId?: string): string {
   return userId || "anonymous"
+}
+
+// Dev helper: reset rate limit counters (unsafe for production)
+export function resetRateLimit(identifier?: string) {
+  if (process.env.NODE_ENV !== 'development') {
+    throw new Error('resetRateLimit is only available in development')
+  }
+
+  if (identifier) {
+    const key = `rate_limit_${identifier}`
+    rateLimitStore.delete(key)
+    return { cleared: 1 }
+  }
+
+  const size = rateLimitStore.size
+  rateLimitStore.clear()
+  return { cleared: size }
 }

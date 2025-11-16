@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { getCurrentUser } from "@/lib/auth-utils"
 import { redirect } from "next/navigation"
 import { PricingComparison } from "@/components/pricing-comparison"
@@ -21,5 +22,21 @@ export default async function PricingPage() {
       <PricingComparison currentTier={(user as any).tier} />
     </div>
   )
+}
+
+export const metadata: Metadata = {
+  title: "Pricing — Outbound.ing",
+  description: "Simple, transparent pricing plans for AI-powered outreach — Free, Light, and Pro.",
+  openGraph: {
+    title: "Pricing — Outbound.ing",
+    description: "Simple, transparent pricing plans for AI-powered outreach — Free, Light, and Pro.",
+    images: ["/og-image.png"]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Pricing — Outbound.ing",
+    description: "Simple, transparent pricing plans for AI-powered outreach — Free, Light, and Pro.",
+    images: ["/og-image.png"]
+  }
 }
 

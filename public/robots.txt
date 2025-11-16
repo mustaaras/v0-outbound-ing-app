@@ -1,0 +1,11 @@
+# robots.txt for Outbound.ing
+# Allow all crawlers except dev/staging endpoints
+User-agent: *
+Allow: /
+Disallow: /api/dev
+Disallow: /dev
+Disallow: /staging
+Disallow: /preview
+
+# Sitemap (relative path)
+Sitemap: /sitemap.xml
